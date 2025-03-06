@@ -2,7 +2,10 @@ import { PersonelType } from "@/lib/types";
 import { useState } from "react";
 import { axiosUser } from "@/lib/axios/noUser";
 
-export type personel_e02ed2Type = Pick<PersonelType, "name" | "description">;
+export type personel_e02ed2Type = Pick<
+  PersonelType,
+  "id" | "name" | "description"
+>;
 
 export function usePersonel_e02ed2() {
   const [loading, loadingHandler] = useState(false);
