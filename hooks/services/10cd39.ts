@@ -45,9 +45,11 @@ export function useServices_10cd39() {
     // set response of server on state
     loadingHandler(false);
   };
-  const delete_services_data = async () => {
+  const delete_services_data = async (id: number) => {
     loadingHandler(true);
-    const response = await axiosUser.delete("services/");
+    const response = await axiosUser.delete("services/", {
+      params: { id: id },
+    });
     const serverData = response.data.services;
     // set response of server on state
     loadingHandler(false);
