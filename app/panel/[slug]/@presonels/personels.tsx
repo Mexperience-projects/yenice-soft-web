@@ -3,7 +3,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { usePersonel_e02ed2 } from "@/hooks/personel/e02ed2";
 import Personel_e02ed2_create from "@/components/personel/e02ed2_create";
-import Personel_e02ed2_update from "@/components/personel/e02ed2_update";
 import {
   Plus,
   Users,
@@ -16,28 +15,29 @@ import {
   Menu,
   Search,
 } from "lucide-react";
-import type { PersonelType, } from "@/lib/types";
+import type { PersonelType } from "@/lib/types";
 
 export default function PersonnelPage() {
   const {
     get_personel_list_list,
     create_personel_data,
     update_personel_data,
-    delete_personel_data,
     personel_list,
   } = usePersonel_e02ed2();
 
-  const [activeTab, setActiveTab] = useState<"create" | "update" | "list">("list");
-  const [selectedPersonnel, setSelectedPersonnel] = useState<PersonelType | null>(
-    null
+  const [activeTab, setActiveTab] = useState<"create" | "update" | "list">(
+    "list"
   );
+  const [selectedPersonnel, setSelectedPersonnel] =
+    useState<PersonelType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
+  console.log(personel_list);
   useEffect(() => {
     get_personel_list_list();
-  }, [get_personel_list_list]);
+  }, []);
 
   const openModal = (): void => {
     setIsModalOpen(true);
@@ -60,15 +60,6 @@ export default function PersonnelPage() {
     setActiveTab("update");
   };
 
-  const handleCreateSubmit = async (
-    e: FormEvent<HTMLFormElement>
-  ): Promise<void> => {
-    e.preventDefault();
-    await create_personel_data(new FormData(e.currentTarget));
-    setActiveTab("list");
-    e.currentTarget.reset();
-  };
-
   const handleUpdateSubmit = async (
     e: FormEvent<HTMLFormElement>
   ): Promise<void> => {
@@ -84,86 +75,20 @@ export default function PersonnelPage() {
     }
   };
 
-  const filteredPersonnel = personel_list.filter(
-    (person) =>
-      person.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
-    <div className="min-h-screen bg-base-200">
-      {/* Navbar */}
-      <div className="navbar bg-base-100 shadow-md sticky top-0 z-30">
-        <div className="navbar-start">
-          <div className="dropdown">
-            <label
-              tabIndex={0}
-              className="btn btn-ghost lg:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              <Menu className="h-5 w-5" />
-            </label>
-            {isMobileMenuOpen && (
-              <ul
-                tabIndex={0}
-                className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-              >
-                <li>
-                  <a className="font-semibold">Dashboard</a>
-                </li>
-                <li>
-                  <a>Personnel</a>
-                </li>
-                <li>
-                  <a>Departments</a>
-                </li>
-                <li>
-                  <a>Reports</a>
-                </li>
-              </ul>
-            )}
-          </div>
-          <a className="btn btn-ghost normal-case text-xl">
-            Personnel Management
-          </a>
-        </div>
-        <div className="navbar-center hidden lg:flex">
-          <ul className="menu menu-horizontal px-1">
-            <li>
-              <a className="font-semibold">Dashboard</a>
-            </li>
-            <li>
-              <a>Personnel</a>
-            </li>
-            <li>
-              <a>Departments</a>
-            </li>
-            <li>
-              <a>Reports</a>
-            </li>
-          </ul>
-        </div>
-        <div className="navbar-end">
-          <button
-            onClick={openModal}
-            className="btn btn-primary btn-sm md:btn-md"
-          >
-            <Users className="h-4 w-4 md:mr-2" />
-            <span className="hidden md:inline">Manage Personnel</span>
-          </button>
-        </div>
-      </div>
-
-      <div className="container mx-auto p-2 md:p-4">
-        {/* Stats */}
+    <div className="min-h-screen w-full bg-base-200">
+      <div className=" mx-auto p-2 md:p-4 m-10">
         <div className="stats shadow w-full bg-base-100 mb-4 md:mb-6 flex-col md:flex-row">
           <div className="stat">
             <div className="stat-figure text-primary">
               <Users className="h-8 w-8" />
             </div>
             <div className="stat-title">Total Personnel</div>
-            <div className="stat-value text-primary">
-              {personel_list.length}
-            </div>
+            {personel_list !== undefined && (
+              <div className="stat-value text-primary">
+                {personel_list.length}
+              </div>
+            )}
             <div className="stat-desc">Active team members</div>
           </div>
 
@@ -223,12 +148,12 @@ export default function PersonnelPage() {
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Description</th>
+                  <th>description</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredPersonnel.map((personnel, i) => (
+                {personel_list.map((personnel, i) => (
                   <tr key={i} className="hover">
                     <td className="font-medium">{personnel.name}</td>
                     <td>{personnel.description}</td>
@@ -246,7 +171,7 @@ export default function PersonnelPage() {
                         </button>
                         <button
                           className="btn btn-error btn-xs"
-                        // onClick={() => handleDeletePersonnel(personnel.id)}
+                          // onClick={() => handleDeletePersonnel(personnel.id)}
                         >
                           <Trash className="h-3 w-3 mr-1" />
                           Delete
@@ -261,7 +186,7 @@ export default function PersonnelPage() {
 
           {/* Mobile Table Alternative - Visible only on small screens */}
           <div className="md:hidden">
-            {filteredPersonnel.map((personnel, i) => (
+            {personel_list.map((personnel, i) => (
               <div
                 key={i}
                 className="card bg-base-100 border border-base-300 mb-3"
@@ -305,9 +230,7 @@ export default function PersonnelPage() {
                         </li>
                         <li>
                           <a
-                            onClick={() =>
-                                // handleDeletePersonnel(personnel.id)
-                              }
+                            // onClick={() => handleDeletePersonnel(personnel)}
                             className="text-error"
                           >
                             <Trash className="h-4 w-4" /> Delete
@@ -324,7 +247,7 @@ export default function PersonnelPage() {
             ))}
           </div>
 
-          {filteredPersonnel.length === 0 && (
+          {personel_list.length === 0 && (
             <div className="alert alert-info mt-4">
               <div>
                 <svg
@@ -369,34 +292,8 @@ export default function PersonnelPage() {
             </form>
 
             <h3 className="font-bold text-xl mb-6 text-primary">
-              {activeTab === "list" && "Personnel List"}
               {activeTab === "create" && "Add New Personnel"}
-              {activeTab === "update" && "Edit Personnel"}
             </h3>
-
-            <div className="tabs tabs-boxed mb-6">
-              <a
-                className={`tab ${activeTab === "list" ? "tab-active" : ""}`}
-                onClick={() => setActiveTab("list")}
-              >
-                List
-              </a>
-              <a
-                className={`tab ${activeTab === "create" ? "tab-active" : ""}`}
-                onClick={() => setActiveTab("create")}
-              >
-                Add New
-              </a>
-              {selectedPersonnel && (
-                <a
-                  className={`tab ${activeTab === "update" ? "tab-active" : ""
-                    }`}
-                  onClick={() => setActiveTab("update")}
-                >
-                  Edit
-                </a>
-              )}
-            </div>
 
             {activeTab === "list" && (
               <div className="overflow-x-auto">
@@ -404,37 +301,9 @@ export default function PersonnelPage() {
                   <thead>
                     <tr>
                       <th>Name</th>
-                      <th>Position</th>
-                      <th>Department</th>
-                      <th>Email</th>
-                      <th>Actions</th>
+                      <th>Description</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {personel_list.map((personnel, i) => (
-                      <tr key={i} className="hover">
-                        <td>{personnel.name}</td>
-                        <td>
-                          <div className="flex gap-2">
-                            <button
-                              className="btn btn-primary btn-xs"
-                            // onClick={() => handlePersonnelSelect(personnel)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="btn btn-error btn-xs"
-                              onClick={() => { }
-                                // handleDeletePersonnel(personnel.id)
-                              }
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
                 </table>
 
                 {personel_list.length === 0 && (
@@ -452,29 +321,34 @@ export default function PersonnelPage() {
 
             {activeTab === "create" && (
               <div className="bg-base-100 rounded-lg">
-                <form onSubmit={handleCreateSubmit} className="space-y-4">
-                  <Personel_e02ed2_create />
-                  <div className="modal-action">
-                    <button
-                      type="button"
-                      className="btn"
-                      onClick={() => setActiveTab("list")}
-                    >
-                      Cancel
-                    </button>
-                    <button type="submit" className="btn btn-primary">
-                      Save Personnel
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
+                <form action={create_personel_data} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="form-control w-full">
+                      <label className="label">
+                        <span className="label-text">Full Name</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder="Enter full name"
+                        className="input input-bordered w-full"
+                        required
+                      />
+                    </div>
 
-            {activeTab === "update" && selectedPersonnel && (
-              <div className="bg-base-100 rounded-lg">
-                <form onSubmit={handleUpdateSubmit} className="space-y-4">
-                  {/* <input type="hidden" name="id" value={selectedPersonnel.id} /> */}
-                  <Personel_e02ed2_update data={selectedPersonnel} />
+                    <div className="form-control w-full">
+                      <label className="label">
+                        <span className="label-text">Description</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="description"
+                        placeholder="Enter position"
+                        className="input input-bordered w-full"
+                        required
+                      />
+                    </div>
+                  </div>
                   <div className="modal-action">
                     <button
                       type="button"
@@ -483,8 +357,12 @@ export default function PersonnelPage() {
                     >
                       Cancel
                     </button>
-                    <button type="submit" className="btn btn-primary">
-                      Update Personnel
+                    <button
+                      type="submit"
+                      onClick={closeModal}
+                      className="btn btn-primary"
+                    >
+                      Save Personnel
                     </button>
                   </div>
                 </form>

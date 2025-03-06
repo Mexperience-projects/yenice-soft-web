@@ -35,6 +35,7 @@ export interface ClientType {
 
 export interface ItemsType {
     id: number
+    item: number;
     name: string;
     price: number;
     count: number;
