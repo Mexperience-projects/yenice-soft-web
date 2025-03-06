@@ -55,39 +55,6 @@ export default function VisitManagement() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="border-b bg-white">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center">
-            <h1 className="text-xl font-bold text-gray-800 mr-8">
-              Visit Management
-            </h1>
-            <div className="flex space-x-6">
-              <button className="px-3 py-2 text-sm font-medium border-b-2 border-blue-600 text-blue-600">
-                Dashboard
-              </button>
-              <button className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600">
-                Visits
-              </button>
-              <button className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600">
-                Departments
-              </button>
-              <button className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600">
-                Reports
-              </button>
-            </div>
-            <div className="ml-auto">
-              <button
-                onClick={() => setIsCreateModalOpen(true)}
-                className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
-              >
-                <Users className="mr-2 h-4 w-4" />
-                Manage Visits
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div className="bg-white rounded-lg shadow p-6">
