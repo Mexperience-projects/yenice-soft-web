@@ -1,1 +1,1 @@
-export const SERVER_URL = "http://192.168.60.130:8000"
+export const SERVER_URL = "http://192.168.177.130:8000";
