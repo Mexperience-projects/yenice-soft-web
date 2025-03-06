@@ -4,7 +4,6 @@ import { useVisit_ae978b, type visit_ae978bType } from "@/hooks/visit/ae978b";
 import Visit_ae978b_read from "@/components/visit/ae978b_read";
 import { useEffect, useState } from "react";
 import Visit_6b7e2d_update from "@/components/visit/6b7e2d_update";
-import Visit_6b7e2d_delete from "@/components/visit/6b7e2d_delete";
 import { Modal } from "@/components/ui/modal";
 import Visit_ae978b_create from "@/components/visit/ae978b_create";
 import { PlusCircle, Users, FileEdit, Trash2, RefreshCw } from "lucide-react";
@@ -341,7 +340,6 @@ export default function VisitManagement() {
       >
         <div className="p-6">
           <h2 className="text-xl font-bold mb-4 text-gray-800">Delete Visit</h2>
-          {selectedVisit && <Visit_6b7e2d_delete visit={selectedVisit} />}
           <form action={handleDeleteSubmit}>
             <div className="flex justify-end gap-2 mt-6">
               <button
