@@ -1,4 +1,5 @@
 export interface ServicesType {
+    id: number
     name: string;
     price: number;
     description: string;
@@ -9,12 +10,14 @@ export interface ServicesType {
 }
 
 export interface PersonelType {
+    id: number
     name: string;
     description: string;
     visits: VisitType[]
 }
 
 export interface VisitType {
+    id: number
     client: number[];
     service: number[];
     items: number;
@@ -23,6 +26,7 @@ export interface VisitType {
 }
 
 export interface ClientType {
+    id: number
     name: string;
     nationalCo: string;
     birthdate: Date;
@@ -30,24 +34,28 @@ export interface ClientType {
 }
 
 export interface ItemsType {
+    id: number
     name: string;
     price: number;
     count: number;
 }
 
 export interface Service_itemsType {
+    id: number
     item: number[];
     service: number[];
     count: number;
 }
 
 export interface Visit_itemType {
+    id: number
     count: number;
     item: number[];
     visit: number[];
 }
 
 export interface Visit_paymentType {
+    id: number
     visit: number[];
     price: number;
     paid: boolean;
