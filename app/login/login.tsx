@@ -90,12 +90,12 @@ export default function Login() {
                         Password
                       </span>
                     </label>
-                    <button
+                    {/* <button
                       type="button"
                       className="btn btn-link btn-xs text-secondary p-0 h-auto"
                     >
                       Forgot password?
-                    </button>
+                    </button> */}
                   </div>
                   <div className="relative flex items-center justify-center">
                     <Lock className="absolute left-3 top-4 h-4 w-4 text-secondary" />
@@ -129,7 +129,7 @@ export default function Login() {
                   </button>
                 </div>
 
-                <div className="text-center text-sm mt-4">
+                {/* <div className="text-center text-sm mt-4">
                   Don't have an account?{" "}
                   <button
                     type="button"
@@ -137,7 +137,7 @@ export default function Login() {
                   >
                     Sign up
                   </button>
-                </div>
+                </div> */}
               </div>
             </form>
           </div>
