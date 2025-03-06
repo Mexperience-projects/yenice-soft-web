@@ -33,7 +33,7 @@ export function useLogin() {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("refresh");
-    router.push("/login");
+    router.push("/");
   };
 
   return { loading, login, logout };
