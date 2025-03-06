@@ -183,7 +183,7 @@ export default function VisitCreateForm() {
   };
 
   return (
-    <div className="card bg-base-100 shadow-xl">
+    <div className="card bg-base-100 ">
       <div className="card-body">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Client Field */}
@@ -248,14 +248,16 @@ export default function VisitCreateForm() {
                           <li key={service.id}>
                             <a
                               className={`flex items-center ${
-                                formData.selectedServices.includes(service.id)
+                                formData.selectedServices.includes(
+                                  service.id.toString()
+                                )
                                   ? "active"
                                   : ""
                               }`}
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleServiceSelect(service.id);
+                                handleServiceSelect(service.id.toString());
                               }}
                             >
                               <div className="form-control">
@@ -264,7 +266,7 @@ export default function VisitCreateForm() {
                                     type="checkbox"
                                     className="checkbox checkbox-sm"
                                     checked={formData.selectedServices.includes(
-                                      service.id
+                                      service.id.toString()
                                     )}
                                     readOnly
                                   />
@@ -284,7 +286,7 @@ export default function VisitCreateForm() {
             {formData.selectedServices.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {formData.selectedServices.map((id) => {
-                  const service = services.find((s) => s.id === id);
+                  const service = services.find((s) => s.id === Number(id));
                   return service ? (
                     <div key={id} className="badge badge-secondary gap-1">
                       {service.name}

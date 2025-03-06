@@ -262,7 +262,7 @@ export default function VisitManagement() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
       >
-        <div className="p-6 ">
+        <div className="p-6">
           <h2 className="text-xl font-bold mb-4 text-gray-800">
             Create New Visit
           </h2>
