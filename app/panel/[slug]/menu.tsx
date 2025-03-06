@@ -26,7 +26,7 @@ export default function LayoutMenu() {
   ];
 
   return (
-    <div className="h-full bg-white text-gray-700 flex flex-col">
+    <div className="h-full bg-white text-gray-700 flex flex-col w-96">
       {/* Brand Header */}
       <div className="p-6 flex justify-center">
         <div className="flex items-center gap-2">

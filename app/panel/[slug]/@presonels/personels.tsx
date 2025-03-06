@@ -77,7 +77,7 @@ export default function PersonnelPage() {
 
   return (
     <div className="min-h-screen w-full bg-base-200">
-      <div className=" mx-auto p-2 md:p-4 m-10">
+      <div className=" mx-auto p-2 md:p-4">
         <div className="stats shadow w-full bg-base-100 mb-4 md:mb-6 flex-col md:flex-row">
           <div className="stat">
             <div className="stat-figure text-primary">

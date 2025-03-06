@@ -1,6 +1,6 @@
 export default function DashboardPage() {
   return (
-    <div className="p-4 max-w-7xl mx-auto">
+    <div className="bg-gray-50 p-4 max-w-7xl mx-auto">
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
         <div>
