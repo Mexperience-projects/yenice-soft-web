@@ -30,7 +30,11 @@ export function useLogin() {
     loadingHandler(false);
   };
 
-  const logout = () => {};
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("refresh");
+    router.push("/login");
+  };
 
   return { loading, login, logout };
 }

@@ -1,2 +1,2 @@
-import React from 'react'
-import { Login } from '@/app/login/login'
+import React from "react";
+import { Login } from "@/app/login";
