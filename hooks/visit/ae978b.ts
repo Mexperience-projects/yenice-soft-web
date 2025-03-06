@@ -12,7 +12,7 @@ export function useVisit_ae978b() {
   const [visit_list, visit_listHandler] = useState<visit_ae978bType[]>([]);
   const get_visit_list_list = async () => {
     loadingHandler(true);
-    const response = await axiosUser.get("visit/ae978b/");
+    const response = await axiosUser.get("visit/");
     const serverData = response.data.visit;
     // set response of server on state
     visit_listHandler(serverData);
