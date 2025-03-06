@@ -22,7 +22,6 @@ export default function ServicesPage() {
   const [selectedService, setSelectedService] = useState<ServicesType | null>(
     null
   );
-  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -127,11 +126,7 @@ export default function ServicesPage() {
           Services List
         </h2>
 
-        {isLoading ? (
-          <div className="flex justify-center my-12">
-            <span className="loading loading-spinner loading-lg text-indigo-600"></span>
-          </div>
-        ) : filteredServices.length === 0 ? (
+        {filteredServices.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-gray-500 mb-4">No services found</p>
             <button
