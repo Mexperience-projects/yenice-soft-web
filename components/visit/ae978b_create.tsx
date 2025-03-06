@@ -74,8 +74,6 @@ export default function VisitCreateForm() {
   useEffect(() => {
     get_services_list_list();
     setServices(services_list);
-    console.log(services_list);
-
     get_items_list_list();
     setItems(items_list);
   }, []);
