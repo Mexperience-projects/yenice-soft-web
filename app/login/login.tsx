@@ -41,15 +41,6 @@ export default function Login() {
         <div className="card w-full border-none">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg"></div>
           <div className="card-body relative z-10">
-            <form method="dialog">
-              <button
-                className="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-primary"
-                onClick={closeModal}
-              >
-                ✕
-              </button>
-            </form>
-
             <div className="flex flex-col items-center mb-4">
               <div className="w-16 h-16 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center mb-2">
                 <Lock className="h-8 w-8 text-white" />
@@ -114,7 +105,7 @@ export default function Login() {
                   <label className="label cursor-pointer justify-start gap-2">
                     <input
                       type="checkbox"
-                      className="checkbox checkbox-secondary"
+                      className="checkbox checkbox-primary"
                     />
                     <span className="label-text">Remember me</span>
                   </label>
