@@ -14,9 +14,11 @@ export function usePersonel_e02ed2() {
     const response = await axiosUser.get("/personel/");
     const serverData = response.data.personel;
     // set response of server on state
+
     personel_listHandler(serverData);
     loadingHandler(false);
   };
+
   const create_personel_data = async (formData: any) => {
     loadingHandler(true);
     // create backend form
