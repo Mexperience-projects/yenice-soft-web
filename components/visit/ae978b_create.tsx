@@ -345,12 +345,14 @@ export default function VisitCreateForm() {
                           <li key={item.id}>
                             <a
                               className={`flex items-center ${
-                                isItemSelected(item.id) ? "active" : ""
+                                isItemSelected(item.id.toString())
+                                  ? "active"
+                                  : ""
                               }`}
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleItemSelect(item.id);
+                                handleItemSelect(item.id.toString());
                               }}
                             >
                               <div className="form-control">
@@ -358,7 +360,7 @@ export default function VisitCreateForm() {
                                   <input
                                     type="checkbox"
                                     className="checkbox checkbox-sm"
-                                    checked={isItemSelected(item.id)}
+                                    checked={isItemSelected(item.id.toString())}
                                     readOnly
                                   />
                                   <span>{item.name}</span>
@@ -377,7 +379,9 @@ export default function VisitCreateForm() {
             {formData.selectedItems.length > 0 && (
               <div className="mt-2 space-y-2">
                 {formData.selectedItems.map((selectedItem) => {
-                  const item = items.find((i) => i.id === selectedItem.id);
+                  const item = items.find(
+                    (i) => i.id === Number(selectedItem.id)
+                  );
                   return item ? (
                     <div
                       key={selectedItem.id}

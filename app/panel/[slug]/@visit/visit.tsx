@@ -262,28 +262,11 @@ export default function VisitManagement() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
       >
-        <div className="p-6">
+        <div className="p-6 ">
           <h2 className="text-xl font-bold mb-4 text-gray-800">
             Create New Visit
           </h2>
-          <form action={handleCreateSubmit}>
-            <Visit_ae978b_create />
-            <div className="flex justify-end gap-2 mt-6">
-              <button
-                type="button"
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-                onClick={() => setIsCreateModalOpen(false)}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-              >
-                Create Visit
-              </button>
-            </div>
-          </form>
+          <Visit_ae978b_create />
         </div>
       </Modal>
 
