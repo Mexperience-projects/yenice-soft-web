@@ -13,33 +13,27 @@ import {
   Plus,
   Minus,
   X,
+  Check,
+  Edit,
+  Trash2,
 } from "lucide-react";
 import {
-  services_10cd39Type,
+  type services_10cd39Type,
   useServices_10cd39,
 } from "@/hooks/services/10cd39";
-import { items_691d50Type, useItems_691d50 } from "@/hooks/items/691d50";
-
-// Mock data - replace with actual API calls
-const mockServices = [
-  { id: "1", name: "Consultation" },
-  { id: "2", name: "Treatment" },
-  { id: "3", name: "Follow-up" },
-  { id: "4", name: "Therapy" },
-  { id: "5", name: "Assessment" },
-];
-
-const mockItems = [
-  { id: "1", name: "Medication A" },
-  { id: "2", name: "Medication B" },
-  { id: "3", name: "Equipment X" },
-  { id: "4", name: "Supply Y" },
-  { id: "5", name: "Tool Z" },
-];
+import { type items_691d50Type, useItems_691d50 } from "@/hooks/items/691d50";
 
 interface SelectedItem {
   id: string;
   quantity: number;
+}
+
+interface Payment {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  isPaid: boolean;
 }
 
 export default function VisitCreateForm() {
@@ -51,8 +45,19 @@ export default function VisitCreateForm() {
     selectedServices: [] as string[],
     selectedItems: [] as SelectedItem[],
     datetime: "",
-    payment: 0,
+    payments: [] as Payment[],
   });
+
+  // New payment form state
+  const [newPayment, setNewPayment] = useState<Omit<Payment, "id">>({
+    date: new Date().toISOString().split("T")[0],
+    description: "",
+    amount: 0,
+    isPaid: false,
+  });
+
+  // Edit payment state
+  const [editingPaymentId, setEditingPaymentId] = useState<string | null>(null);
 
   const [serviceSearch, setServiceSearch] = useState("");
   const [itemSearch, setItemSearch] = useState("");
@@ -71,7 +76,7 @@ export default function VisitCreateForm() {
     setServices(services_list);
     get_items_list_list();
     setItems(items_list);
-  }, []);
+  }, [get_services_list_list, services_list, get_items_list_list, items_list]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -99,6 +104,22 @@ export default function VisitCreateForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleNewPaymentChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value, type } = e.target;
+
+    setNewPayment((prev) => ({
+      ...prev,
+      [name]:
+        type === "checkbox"
+          ? (e.target as HTMLInputElement).checked
+          : name === "amount"
+          ? Number.parseFloat(value)
+          : value,
+    }));
   };
 
   const handleServiceSelect = (serviceId: string) => {
@@ -149,10 +170,79 @@ export default function VisitCreateForm() {
     });
   };
 
-  const adjustPayment = (amount: number) => {
+  const addPayment = () => {
+    if (newPayment.description && newPayment.amount > 0) {
+      const paymentId = editingPaymentId || `payment_${Date.now()}`;
+
+      setFormData((prev) => {
+        let updatedPayments;
+
+        if (editingPaymentId) {
+          // Update existing payment
+          updatedPayments = prev.payments.map((payment) =>
+            payment.id === editingPaymentId
+              ? { ...newPayment, id: paymentId }
+              : payment
+          );
+        } else {
+          // Add new payment
+          updatedPayments = [
+            ...prev.payments,
+            { ...newPayment, id: paymentId },
+          ];
+        }
+
+        return { ...prev, payments: updatedPayments };
+      });
+
+      // Reset form
+      setNewPayment({
+        date: new Date().toISOString().split("T")[0],
+        description: "",
+        amount: 0,
+        isPaid: false,
+      });
+
+      setEditingPaymentId(null);
+    }
+  };
+
+  const editPayment = (payment: Payment) => {
+    setNewPayment({
+      date: payment.date,
+      description: payment.description,
+      amount: payment.amount,
+      isPaid: payment.isPaid,
+    });
+
+    setEditingPaymentId(payment.id);
+  };
+
+  const deletePayment = (paymentId: string) => {
     setFormData((prev) => ({
       ...prev,
-      payment: Math.max(0, prev.payment + amount),
+      payments: prev.payments.filter((payment) => payment.id !== paymentId),
+    }));
+
+    if (editingPaymentId === paymentId) {
+      setEditingPaymentId(null);
+      setNewPayment({
+        date: new Date().toISOString().split("T")[0],
+        description: "",
+        amount: 0,
+        isPaid: false,
+      });
+    }
+  };
+
+  const togglePaymentStatus = (paymentId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      payments: prev.payments.map((payment) =>
+        payment.id === paymentId
+          ? { ...payment, isPaid: !payment.isPaid }
+          : payment
+      ),
     }));
   };
 
@@ -182,8 +272,15 @@ export default function VisitCreateForm() {
     return formData.selectedItems.some((item) => item.id === itemId);
   };
 
+  const calculateTotalPayment = () => {
+    return formData.payments.reduce(
+      (total, payment) => total + payment.amount,
+      0
+    );
+  };
+
   return (
-    <div className="card bg-base-100 shadow-xl">
+    <div className="card bg-base-100">
       <div className="card-body">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Client Field */}
@@ -248,14 +345,16 @@ export default function VisitCreateForm() {
                           <li key={service.id}>
                             <a
                               className={`flex items-center ${
-                                formData.selectedServices.includes(service.id)
+                                formData.selectedServices.includes(
+                                  service.id.toString()
+                                )
                                   ? "active"
                                   : ""
                               }`}
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleServiceSelect(service.id);
+                                handleServiceSelect(service.id.toString());
                               }}
                             >
                               <div className="form-control">
@@ -264,7 +363,7 @@ export default function VisitCreateForm() {
                                     type="checkbox"
                                     className="checkbox checkbox-sm"
                                     checked={formData.selectedServices.includes(
-                                      service.id
+                                      service.id.toString()
                                     )}
                                     readOnly
                                   />
@@ -284,7 +383,7 @@ export default function VisitCreateForm() {
             {formData.selectedServices.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {formData.selectedServices.map((id) => {
-                  const service = services.find((s) => s.id === id);
+                  const service = services.find((s) => s.id === Number(id));
                   return service ? (
                     <div key={id} className="badge badge-secondary gap-1">
                       {service.name}
@@ -443,37 +542,154 @@ export default function VisitCreateForm() {
             />
           </div>
 
-          {/* Payment Field */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text flex items-center gap-2">
-                <CreditCard className="h-4 w-4" /> Payment
-              </span>
-            </label>
-            <div className="flex items-center space-x-2">
-              <button
-                type="button"
-                className="btn btn-outline btn-square btn-sm"
-                onClick={() => adjustPayment(-100)}
-              >
-                <Minus className="h-4 w-4" />
-              </button>
-              <input
-                id="payment"
-                name="payment"
-                type="number"
-                value={formData.payment}
-                onChange={handleChange}
-                className="input input-bordered w-full"
-                min="0"
-              />
-              <button
-                type="button"
-                className="btn btn-outline btn-square btn-sm"
-                onClick={() => adjustPayment(100)}
-              >
-                <Plus className="h-4 w-4" />
-              </button>
+          {/* Payments Section - Full Width */}
+          <div className="col-span-1 md:col-span-2">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text flex items-center gap-2">
+                  <CreditCard className="h-4 w-4" /> Payments
+                </span>
+                <span className="label-text-alt">
+                  Total: {calculateTotalPayment()}{" "}
+                  {formData.payments.length > 0 &&
+                    `(${formData.payments.length} entries)`}
+                </span>
+              </label>
+
+              {/* Add/Edit Payment Form */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4">
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Date</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="date"
+                    value={newPayment.date}
+                    onChange={handleNewPaymentChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                <div className="form-control md:col-span-2">
+                  <label className="label">
+                    <span className="label-text">Description</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="description"
+                    value={newPayment.description}
+                    onChange={handleNewPaymentChange}
+                    placeholder="Enter payment description"
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Amount</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="amount"
+                    value={newPayment.amount}
+                    onChange={handleNewPaymentChange}
+                    min="0"
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                <div className="form-control">
+                  <label className="label cursor-pointer">
+                    <span className="label-text">Paid</span>
+                    <input
+                      type="checkbox"
+                      name="isPaid"
+                      checked={newPayment.isPaid}
+                      onChange={handleNewPaymentChange as any}
+                      className="checkbox"
+                    />
+                  </label>
+                </div>
+
+                <div className="md:col-span-3 flex justify-end items-end">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={addPayment}
+                    disabled={!newPayment.description || newPayment.amount <= 0}
+                  >
+                    {editingPaymentId ? "Update Payment" : "Add Payment"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Payment List */}
+              {formData.payments.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="table table-compact w-full">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {formData.payments.map((payment) => (
+                        <tr
+                          key={payment.id}
+                          className={
+                            payment.isPaid ? "bg-success bg-opacity-10" : ""
+                          }
+                        >
+                          <td>{payment.date}</td>
+                          <td>{payment.description}</td>
+                          <td>{payment.amount}</td>
+                          <td>
+                            <div className="flex items-center gap-2">
+                              <button
+                                className={`btn btn-xs ${
+                                  payment.isPaid ? "btn-success" : "btn-ghost"
+                                }`}
+                                onClick={() => togglePaymentStatus(payment.id)}
+                              >
+                                {payment.isPaid ? (
+                                  <>
+                                    <Check className="h-3 w-3 mr-1" /> Paid
+                                  </>
+                                ) : (
+                                  "Unpaid"
+                                )}
+                              </button>
+                            </div>
+                          </td>
+                          <td className="flex items-center gap-1">
+                            <button
+                              className="btn btn-ghost btn-xs"
+                              onClick={() => editPayment(payment)}
+                            >
+                              <Edit className="h-3 w-3" />
+                            </button>
+                            <button
+                              className="btn btn-ghost btn-xs text-error"
+                              onClick={() => deletePayment(payment.id)}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-4 text-base-content opacity-60">
+                  No payments added yet
+                </div>
+              )}
             </div>
           </div>
         </div>

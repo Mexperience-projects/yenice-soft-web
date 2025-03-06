@@ -4,6 +4,7 @@ import { axiosUser } from "@/lib/axios/noUser";
 
 export type services_10cd39Type = Pick<
   ServicesType,
+  | "id"
   | "name"
   | "price"
   | "description"
