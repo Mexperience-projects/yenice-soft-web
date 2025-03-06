@@ -16,7 +16,7 @@ import {
   Menu,
   Search,
 } from "lucide-react";
-import type { PersonelType, } from "@/lib/types";
+import type { PersonelType } from "@/lib/types";
 
 export default function PersonnelPage() {
   const {
@@ -27,10 +27,11 @@ export default function PersonnelPage() {
     personel_list,
   } = usePersonel_e02ed2();
 
-  const [activeTab, setActiveTab] = useState<"create" | "update" | "list">("list");
-  const [selectedPersonnel, setSelectedPersonnel] = useState<PersonelType | null>(
-    null
+  const [activeTab, setActiveTab] = useState<"create" | "update" | "list">(
+    "list"
   );
+  const [selectedPersonnel, setSelectedPersonnel] =
+    useState<PersonelType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -84,9 +85,8 @@ export default function PersonnelPage() {
     }
   };
 
-  const filteredPersonnel = personel_list.filter(
-    (person) =>
-      person.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPersonnel = personel_list.filter((person) =>
+    person.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -246,7 +246,7 @@ export default function PersonnelPage() {
                         </button>
                         <button
                           className="btn btn-error btn-xs"
-                        // onClick={() => handleDeletePersonnel(personnel.id)}
+                          // onClick={() => handleDeletePersonnel(personnel.id)}
                         >
                           <Trash className="h-3 w-3 mr-1" />
                           Delete
@@ -305,9 +305,10 @@ export default function PersonnelPage() {
                         </li>
                         <li>
                           <a
-                            onClick={() =>
-                                // handleDeletePersonnel(personnel.id)
-                              }
+                            onClick={
+                              () => {}
+                              // handleDeletePersonnel(personnel.id)
+                            }
                             className="text-error"
                           >
                             <Trash className="h-4 w-4" /> Delete
@@ -389,8 +390,9 @@ export default function PersonnelPage() {
               </a>
               {selectedPersonnel && (
                 <a
-                  className={`tab ${activeTab === "update" ? "tab-active" : ""
-                    }`}
+                  className={`tab ${
+                    activeTab === "update" ? "tab-active" : ""
+                  }`}
                   onClick={() => setActiveTab("update")}
                 >
                   Edit
@@ -418,13 +420,14 @@ export default function PersonnelPage() {
                           <div className="flex gap-2">
                             <button
                               className="btn btn-primary btn-xs"
-                            // onClick={() => handlePersonnelSelect(personnel)}
+                              // onClick={() => handlePersonnelSelect(personnel)}
                             >
                               Edit
                             </button>
                             <button
                               className="btn btn-error btn-xs"
-                              onClick={() => { }
+                              onClick={
+                                () => {}
                                 // handleDeletePersonnel(personnel.id)
                               }
                             >
