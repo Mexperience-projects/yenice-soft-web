@@ -230,14 +230,7 @@ export default function PersonnelPage() {
                         </li>
                         <li>
                           <a
-<<<<<<< HEAD
                             // onClick={() => handleDeletePersonnel(personnel)}
-=======
-                            onClick={
-                              () => {}
-                              // handleDeletePersonnel(personnel.id)
-                            }
->>>>>>> 3245739230722915247b26dcd334ae5d2e0d742c
                             className="text-error"
                           >
                             <Trash className="h-4 w-4" /> Delete
@@ -302,34 +295,6 @@ export default function PersonnelPage() {
               {activeTab === "create" && "Add New Personnel"}
             </h3>
 
-<<<<<<< HEAD
-=======
-            <div className="tabs tabs-boxed mb-6">
-              <a
-                className={`tab ${activeTab === "list" ? "tab-active" : ""}`}
-                onClick={() => setActiveTab("list")}
-              >
-                List
-              </a>
-              <a
-                className={`tab ${activeTab === "create" ? "tab-active" : ""}`}
-                onClick={() => setActiveTab("create")}
-              >
-                Add New
-              </a>
-              {selectedPersonnel && (
-                <a
-                  className={`tab ${
-                    activeTab === "update" ? "tab-active" : ""
-                  }`}
-                  onClick={() => setActiveTab("update")}
-                >
-                  Edit
-                </a>
-              )}
-            </div>
-
->>>>>>> 3245739230722915247b26dcd334ae5d2e0d742c
             {activeTab === "list" && (
               <div className="overflow-x-auto">
                 <table className="table table-zebra w-full">
@@ -339,35 +304,6 @@ export default function PersonnelPage() {
                       <th>Description</th>
                     </tr>
                   </thead>
-<<<<<<< HEAD
-=======
-                  <tbody>
-                    {personel_list.map((personnel, i) => (
-                      <tr key={i} className="hover">
-                        <td>{personnel.name}</td>
-                        <td>
-                          <div className="flex gap-2">
-                            <button
-                              className="btn btn-primary btn-xs"
-                              // onClick={() => handlePersonnelSelect(personnel)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="btn btn-error btn-xs"
-                              onClick={
-                                () => {}
-                                // handleDeletePersonnel(personnel.id)
-                              }
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
->>>>>>> 3245739230722915247b26dcd334ae5d2e0d742c
                 </table>
 
                 {personel_list.length === 0 && (
