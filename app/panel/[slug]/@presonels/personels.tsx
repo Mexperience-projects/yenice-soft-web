@@ -16,7 +16,7 @@ import {
   Menu,
   Search,
 } from "lucide-react";
-import type { Personnel, ViewMode, TabMode } from "@/types/personnel";
+import type { PersonelType, } from "@/lib/types";
 
 export default function PersonnelPage() {
   const {
@@ -27,13 +27,12 @@ export default function PersonnelPage() {
     personel_list,
   } = usePersonel_e02ed2();
 
-  const [activeTab, setActiveTab] = useState<TabMode>("list");
-  const [selectedPersonnel, setSelectedPersonnel] = useState<Personnel | null>(
+  const [activeTab, setActiveTab] = useState<"create" | "update" | "list">("list");
+  const [selectedPersonnel, setSelectedPersonnel] = useState<PersonelType | null>(
     null
   );
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -56,7 +55,7 @@ export default function PersonnelPage() {
     if (modal) modal.close();
   };
 
-  const handlePersonnelSelect = (personnel: Personnel): void => {
+  const handlePersonnelSelect = (personnel: PersonelType): void => {
     setSelectedPersonnel(personnel);
     setActiveTab("update");
   };
@@ -80,17 +79,14 @@ export default function PersonnelPage() {
 
   const handleDeletePersonnel = async (id: string): Promise<void> => {
     if (window.confirm("Are you sure you want to delete this personnel?")) {
-      await delete_personel_data({ id });
+      // await delete_personel_data({ id });
       setActiveTab("list");
     }
   };
 
   const filteredPersonnel = personel_list.filter(
     (person) =>
-      person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      person.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      person.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      person.email.toLowerCase().includes(searchTerm.toLowerCase())
+      person.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -200,32 +196,6 @@ export default function PersonnelPage() {
               <span className="text-sm font-medium hidden md:inline">
                 View:
               </span>
-              <div className="btn-group">
-                <button
-                  className={`btn btn-sm ${
-                    viewMode === "table" ? "btn-active" : ""
-                  }`}
-                  onClick={() => setViewMode("table")}
-                >
-                  Table
-                </button>
-                <button
-                  className={`btn btn-sm ${
-                    viewMode === "cards" ? "btn-active" : ""
-                  }`}
-                  onClick={() => setViewMode("cards")}
-                >
-                  Cards
-                </button>
-                <button
-                  className={`btn btn-sm ${
-                    viewMode === "list" ? "btn-active" : ""
-                  }`}
-                  onClick={() => setViewMode("list")}
-                >
-                  List
-                </button>
-              </div>
               <button
                 onClick={() => {
                   setActiveTab("create");
@@ -241,351 +211,142 @@ export default function PersonnelPage() {
         </div>
 
         {/* Table View */}
-        {viewMode === "table" && (
-          <div className="bg-base-100 rounded-lg shadow-md p-3 md:p-4">
-            <h2 className="text-lg md:text-xl font-bold text-primary mb-3 md:mb-4">
-              Personnel List
-            </h2>
 
-            {/* Desktop Table - Hidden on small screens */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="table table-zebra w-full">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Position</th>
-                    <th>Department</th>
-                    <th>Contact</th>
-                    <th>Hire Date</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredPersonnel.map((personnel, i) => (
-                    <tr key={i} className="hover">
-                      <td className="font-medium">{personnel.name}</td>
-                      <td>
-                        <div className="badge badge-secondary">
-                          {personnel.position}
-                        </div>
-                      </td>
-                      <td>{personnel.department}</td>
-                      <td>
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-1 text-sm">
-                            <Mail className="h-3 w-3" /> {personnel.email}
-                          </div>
-                          <div className="flex items-center gap-1 text-sm">
-                            <Phone className="h-3 w-3" /> {personnel.phone}
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" /> {personnel.hireDate}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="flex gap-2">
-                          <button
-                            className="btn btn-primary btn-xs"
-                            onClick={() => {
-                              handlePersonnelSelect(personnel);
-                              openModal();
-                            }}
-                          >
-                            <Edit className="h-3 w-3 mr-1" />
-                            Edit
-                          </button>
-                          <button
-                            className="btn btn-error btn-xs"
-                            onClick={() => handleDeletePersonnel(personnel.id)}
-                          >
-                            <Trash className="h-3 w-3 mr-1" />
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        <div className="bg-base-100 rounded-lg shadow-md p-3 md:p-4">
+          <h2 className="text-lg md:text-xl font-bold text-primary mb-3 md:mb-4">
+            Personnel List
+          </h2>
 
-            {/* Mobile Table Alternative - Visible only on small screens */}
-            <div className="md:hidden">
-              {filteredPersonnel.map((personnel, i) => (
-                <div
-                  key={i}
-                  className="card bg-base-100 border border-base-300 mb-3"
-                >
-                  <div className="card-body p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-bold text-primary">
-                          {personnel.name}
-                        </h3>
-                        <div className="badge badge-secondary my-1">
-                          {personnel.position}
-                        </div>
-                        <p className="text-sm">{personnel.department}</p>
-                      </div>
-                      <div className="dropdown dropdown-end">
-                        <label tabIndex={0} className="btn btn-ghost btn-xs">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            className="inline-block w-5 h-5 stroke-current"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-                            ></path>
-                          </svg>
-                        </label>
-                        <ul
-                          tabIndex={0}
-                          className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+          {/* Desktop Table - Hidden on small screens */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="table table-zebra w-full">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredPersonnel.map((personnel, i) => (
+                  <tr key={i} className="hover">
+                    <td className="font-medium">{personnel.name}</td>
+                    <td>{personnel.description}</td>
+                    <td>
+                      <div className="flex gap-2">
+                        <button
+                          className="btn btn-primary btn-xs"
+                          onClick={() => {
+                            // handlePersonnelSelect(personnel);
+                            openModal();
+                          }}
                         >
-                          <li>
-                            <a
-                              onClick={() => {
-                                handlePersonnelSelect(personnel);
-                                openModal();
-                              }}
-                            >
-                              <Edit className="h-4 w-4" /> Edit
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              onClick={() =>
-                                handleDeletePersonnel(personnel.id)
-                              }
-                              className="text-error"
-                            >
-                              <Trash className="h-4 w-4" /> Delete
-                            </a>
-                          </li>
-                        </ul>
+                          <Edit className="h-3 w-3 mr-1" />
+                          Edit
+                        </button>
+                        <button
+                          className="btn btn-error btn-xs"
+                        // onClick={() => handleDeletePersonnel(personnel.id)}
+                        >
+                          <Trash className="h-3 w-3 mr-1" />
+                          Delete
+                        </button>
                       </div>
-                    </div>
-
-                    <div className="divider my-1"></div>
-
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="flex items-center gap-1">
-                        <Mail className="h-3 w-3 text-primary" />
-                        <span className="truncate">{personnel.email}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Phone className="h-3 w-3 text-primary" />
-                        <span>{personnel.phone}</span>
-                      </div>
-                      <div className="flex items-center gap-1 col-span-2">
-                        <Calendar className="h-3 w-3 text-primary" />
-                        <span>Hired: {personnel.hireDate}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {filteredPersonnel.length === 0 && (
-              <div className="alert alert-info mt-4">
-                <div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    className="stroke-current flex-shrink-0 w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    ></path>
-                  </svg>
-                  <span>
-                    No personnel records found. Add your first personnel record!
-                  </span>
-                </div>
-              </div>
-            )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
 
-        {/* Card View */}
-        {viewMode === "cards" && (
-          <div className="bg-base-100 rounded-lg shadow-md p-3 md:p-4">
-            <h2 className="text-lg md:text-xl font-bold text-primary mb-3 md:mb-4">
-              Personnel Cards
-            </h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {filteredPersonnel.map((personnel, i) => (
-                <div
-                  key={i}
-                  className="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <div className="card-body p-4">
-                    <h3 className="card-title text-primary">
-                      {personnel.name}
-                    </h3>
-                    <div className="badge badge-secondary mb-2">
-                      {personnel.position}
-                    </div>
-
-                    <div className="text-sm space-y-1">
-                      <p className="flex items-center gap-1">
-                        <span className="font-medium">Department:</span>
-                        <span className="badge badge-outline badge-sm">
-                          {personnel.department}
-                        </span>
-                      </p>
-                      <p className="flex items-center gap-1">
-                        <Mail className="h-3 w-3 text-primary" />
-                        <span className="truncate">{personnel.email}</span>
-                      </p>
-                      <p className="flex items-center gap-1">
-                        <Phone className="h-3 w-3 text-primary" />
-                        <span>{personnel.phone}</span>
-                      </p>
-                      <p className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3 text-primary" />
-                        <span>{personnel.hireDate}</span>
-                      </p>
-                    </div>
-
-                    <div className="card-actions justify-end mt-2">
-                      <button
-                        className="btn btn-primary btn-xs"
-                        onClick={() => {
-                          handlePersonnelSelect(personnel);
-                          openModal();
-                        }}
-                      >
-                        <Edit className="h-3 w-3 mr-1" />
-                        Edit
-                      </button>
-                      <button
-                        className="btn btn-error btn-xs"
-                        onClick={() => handleDeletePersonnel(personnel.id)}
-                      >
-                        <Trash className="h-3 w-3 mr-1" />
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {filteredPersonnel.length === 0 && (
-              <div className="alert alert-info mt-4">
-                <div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    className="stroke-current flex-shrink-0 w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    ></path>
-                  </svg>
-                  <span>
-                    No personnel records found. Add your first personnel record!
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* List View */}
-        {viewMode === "list" && (
-          <div className="bg-base-100 rounded-lg shadow-md p-3 md:p-4">
-            <h2 className="text-lg md:text-xl font-bold text-primary mb-3 md:mb-4">
-              Personnel List
-            </h2>
-
-            <div className="space-y-2">
-              {filteredPersonnel.map((personnel, i) => (
-                <div
-                  key={i}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border rounded-lg hover:bg-base-200 transition-colors"
-                >
-                  <div className="flex-1 mb-2 sm:mb-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+          {/* Mobile Table Alternative - Visible only on small screens */}
+          <div className="md:hidden">
+            {filteredPersonnel.map((personnel, i) => (
+              <div
+                key={i}
+                className="card bg-base-100 border border-base-300 mb-3"
+              >
+                <div className="card-body p-4">
+                  <div className="flex justify-between items-start">
+                    <div>
                       <h3 className="font-bold text-primary">
                         {personnel.name}
                       </h3>
-                      <div className="badge badge-secondary">
-                        {personnel.position}
-                      </div>
                     </div>
-                    <div className="text-sm mt-1 grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-1">
-                      <span>{personnel.department}</span>
-                      <span className="truncate">{personnel.email}</span>
-                      <span>Hired: {personnel.hireDate}</span>
+                    <div className="dropdown dropdown-end">
+                      <label tabIndex={0} className="btn btn-ghost btn-xs">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          className="inline-block w-5 h-5 stroke-current"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+                          ></path>
+                        </svg>
+                      </label>
+                      <ul
+                        tabIndex={0}
+                        className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                      >
+                        <li>
+                          <a
+                            onClick={() => {
+                              // handlePersonnelSelect(personnel);
+                              openModal();
+                            }}
+                          >
+                            <Edit className="h-4 w-4" /> Edit
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            onClick={() =>
+                                // handleDeletePersonnel(personnel.id)
+                              }
+                            className="text-error"
+                          >
+                            <Trash className="h-4 w-4" /> Delete
+                          </a>
+                        </li>
+                      </ul>
                     </div>
                   </div>
-                  <div className="flex gap-2 self-end sm:self-center">
-                    <button
-                      className="btn btn-primary btn-xs sm:btn-sm"
-                      onClick={() => {
-                        handlePersonnelSelect(personnel);
-                        openModal();
-                      }}
-                    >
-                      <Edit className="h-3 w-3 mr-1" />
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-error btn-xs sm:btn-sm"
-                      onClick={() => handleDeletePersonnel(personnel.id)}
-                    >
-                      <Trash className="h-3 w-3 mr-1" />
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
 
-            {filteredPersonnel.length === 0 && (
-              <div className="alert alert-info mt-4">
-                <div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    className="stroke-current flex-shrink-0 w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    ></path>
-                  </svg>
-                  <span>
-                    No personnel records found. Add your first personnel record!
-                  </span>
+                  <div className="divider my-1"></div>
+                  <p>{personnel.description}</p>
                 </div>
               </div>
-            )}
+            ))}
           </div>
-        )}
+
+          {filteredPersonnel.length === 0 && (
+            <div className="alert alert-info mt-4">
+              <div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  className="stroke-current flex-shrink-0 w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
+                </svg>
+                <span>
+                  No personnel records found. Add your first personnel record!
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="fixed bottom-6 right-6">
           <button
@@ -628,9 +389,8 @@ export default function PersonnelPage() {
               </a>
               {selectedPersonnel && (
                 <a
-                  className={`tab ${
-                    activeTab === "update" ? "tab-active" : ""
-                  }`}
+                  className={`tab ${activeTab === "update" ? "tab-active" : ""
+                    }`}
                   onClick={() => setActiveTab("update")}
                 >
                   Edit
@@ -655,24 +415,17 @@ export default function PersonnelPage() {
                       <tr key={i} className="hover">
                         <td>{personnel.name}</td>
                         <td>
-                          <div className="badge badge-secondary">
-                            {personnel.position}
-                          </div>
-                        </td>
-                        <td>{personnel.department}</td>
-                        <td>{personnel.email}</td>
-                        <td>
                           <div className="flex gap-2">
                             <button
                               className="btn btn-primary btn-xs"
-                              onClick={() => handlePersonnelSelect(personnel)}
+                            // onClick={() => handlePersonnelSelect(personnel)}
                             >
                               Edit
                             </button>
                             <button
                               className="btn btn-error btn-xs"
-                              onClick={() =>
-                                handleDeletePersonnel(personnel.id)
+                              onClick={() => { }
+                                // handleDeletePersonnel(personnel.id)
                               }
                             >
                               Delete
@@ -720,7 +473,7 @@ export default function PersonnelPage() {
             {activeTab === "update" && selectedPersonnel && (
               <div className="bg-base-100 rounded-lg">
                 <form onSubmit={handleUpdateSubmit} className="space-y-4">
-                  <input type="hidden" name="id" value={selectedPersonnel.id} />
+                  {/* <input type="hidden" name="id" value={selectedPersonnel.id} /> */}
                   <Personel_e02ed2_update data={selectedPersonnel} />
                   <div className="modal-action">
                     <button
