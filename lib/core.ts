@@ -1,1 +1,1 @@
-export const SERVER_URL = process.env.SERVER_BASE_URL
+export const SERVER_URL = "http://192.168.60.130:8000"

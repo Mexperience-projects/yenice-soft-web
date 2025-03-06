@@ -4,7 +4,7 @@ description: string;
 personel: number[];
 items: number;
 personel_fixed_fee: number;
-personel_precent_fee: string;
+personel_precent_fee: number;
 }
 
 export interface PersonelType{name: string;
