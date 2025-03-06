@@ -21,7 +21,6 @@ export default function LayoutMenu() {
     { href: "/panel/presonels", label: "Personnel", icon: Users },
     { href: "/panel/items", label: "Inventory", icon: Package },
     { href: "/panel/services", label: "Services", icon: HeartPulse },
-    { href: "/panel/settings", label: "Settings", icon: Settings },
   ];
 
   return (
@@ -66,7 +65,7 @@ export default function LayoutMenu() {
       <div className="p-4 border-t border-gray-100">
         <div className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors cursor-pointer">
           <LogOut className="w-5 h-5" />
-          <span className="font-medium">Sign Out</span>
+          <button className="font-medium">Log Out</button>
         </div>
       </div>
     </div>
