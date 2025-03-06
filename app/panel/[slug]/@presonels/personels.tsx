@@ -357,7 +357,11 @@ export default function PersonnelPage() {
                     >
                       Cancel
                     </button>
-                    <button type="submit" className="btn btn-primary">
+                    <button
+                      type="submit"
+                      onClick={closeModal}
+                      className="btn btn-primary"
+                    >
                       Save Personnel
                     </button>
                   </div>

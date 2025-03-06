@@ -25,6 +25,7 @@ export function usePersonel_e02ed2() {
     const data = Object.fromEntries(formData);
     const response = await axiosUser.post("/personel/", data);
     const serverData = response.data.personel;
+    get_personel_list_list();
     // set response of server on state
     loadingHandler(false);
   };
@@ -35,6 +36,7 @@ export function usePersonel_e02ed2() {
     const response = await axiosUser.put("/personel/", data);
     const serverData = response.data.personel;
     // set response of server on state
+    get_personel_list_list();
     loadingHandler(false);
   };
   const delete_personel_data = async () => {
@@ -42,6 +44,7 @@ export function usePersonel_e02ed2() {
     const response = await axiosUser.delete("/personel/");
     const serverData = response.data.personel;
     // set response of server on state
+    get_personel_list_list();
     loadingHandler(false);
   };
 
