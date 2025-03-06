@@ -86,7 +86,6 @@ export default function Services_10cd39_update({ initialData }: ServicesProps) {
               id="personel"
               name="personel"
               type="text"
-              defaultValue={initialData?.personel?.join(",")}
               className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="1,2,3"
             />
