@@ -1,6 +1,6 @@
 import { ServicesType } from '@/lib/types'
 import { useState } from 'react'
-import { axiosNoUser } from '@/lib/axios/noUser'
+import { axiosUser } from '@/lib/axios/noUser'
 
 
 
