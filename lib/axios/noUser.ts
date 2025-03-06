@@ -2,7 +2,10 @@ import axios from "axios";
 import { SERVER_URL } from "../core";
 
 export const axiosUser = axios.create({
-    baseURL: SERVER_URL,  
+    baseURL: SERVER_URL, 
+    validateStatus(status) {
+        return status > 0
+    },
 });
 
 axiosUser.interceptors.request.use(
@@ -17,7 +20,7 @@ axiosUser.interceptors.request.use(
   );
 
 
-  
+
   axiosUser.interceptors.response.use(
     (response) => response,
     (error) => {

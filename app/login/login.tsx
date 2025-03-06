@@ -2,16 +2,19 @@
 
 import type React from "react";
 import { useState } from "react";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, User } from "lucide-react";
+import { useLogin } from "@/hooks/login/UseLogin";
+import { Toaster } from "react-hot-toast";
 
 export default function Login() {
   const [modalOpen, setModalOpen] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useLogin();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Add your login logic here
+    login(email, password);
     console.log("Login attempt with:", { email, password });
   };
 
@@ -33,6 +36,7 @@ export default function Login() {
 
   return (
     <section className="w-full max-w-md mx-auto">
+      <Toaster />
       <div className="modal-box p-0 max-w-md bg-white shadow-xl overflow-hidden">
         <div className="card w-full border-none">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg"></div>
@@ -63,15 +67,15 @@ export default function Login() {
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text text-primary font-medium">
-                      Email
+                      Username
                     </span>
                   </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-secondary" />
+                  <div className="relative ">
+                    <User className="absolute left-3 top-4 h-4 w-4 text-secondary" />
                     <input
-                      type="email"
-                      placeholder="name@example.com"
-                      className="input input-bordered w-full pl-10 border-secondary/30 focus:border-secondary"
+                      type="text"
+                      placeholder="usename"
+                      className="input w-full pl-10 border-secondary/30 focus:border-secondary"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -86,18 +90,19 @@ export default function Login() {
                         Password
                       </span>
                     </label>
-                    <button
+                    {/* <button
                       type="button"
                       className="btn btn-link btn-xs text-secondary p-0 h-auto"
                     >
                       Forgot password?
-                    </button>
+                    </button> */}
                   </div>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-secondary" />
+                  <div className="relative flex items-center justify-center">
+                    <Lock className="absolute left-3 top-4 h-4 w-4 text-secondary" />
                     <input
                       type="password"
-                      className="input input-bordered w-full pl-10 border-secondary/30 focus:border-secondary"
+                      placeholder="password"
+                      className="input  w-full pl-10 border-secondary/30 focus:border-secondary"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
@@ -124,7 +129,7 @@ export default function Login() {
                   </button>
                 </div>
 
-                <div className="text-center text-sm mt-4">
+                {/* <div className="text-center text-sm mt-4">
                   Don't have an account?{" "}
                   <button
                     type="button"
@@ -132,7 +137,7 @@ export default function Login() {
                   >
                     Sign up
                   </button>
-                </div>
+                </div> */}
               </div>
             </form>
           </div>
