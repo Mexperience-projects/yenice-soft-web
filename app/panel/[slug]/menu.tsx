@@ -11,9 +11,11 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import { useLogin } from "@/hooks/login/UseLogin";
 
 export default function LayoutMenu() {
   const pathname = usePathname();
+  const { logout } = useLogin();
 
   const menuItems = [
     { href: "/panel/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -65,7 +67,9 @@ export default function LayoutMenu() {
       <div className="p-4 border-t border-gray-100">
         <div className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors cursor-pointer">
           <LogOut className="w-5 h-5" />
-          <button className="font-medium">Log Out</button>
+          <button onClick={logout} className="font-medium">
+            Log Out
+          </button>
         </div>
       </div>
     </div>
