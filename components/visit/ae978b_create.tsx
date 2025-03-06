@@ -74,9 +74,11 @@ export default function VisitCreateForm() {
   useEffect(() => {
     get_services_list_list();
     setServices(services_list);
+    console.log(services_list);
+
     get_items_list_list();
     setItems(items_list);
-  }, [get_services_list_list, services_list, get_items_list_list, items_list]);
+  }, []);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
