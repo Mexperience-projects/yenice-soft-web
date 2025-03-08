@@ -1,9 +1,11 @@
+"use client";
+
+import { useParams } from "next/navigation";
 import Menu from "./menu";
 import { type ReactNode } from "react";
 
 interface _LayoutType {
   children: ReactNode;
-  params: { slug: string };
   dashboard: ReactNode;
   visit: ReactNode;
   presonels: ReactNode;
@@ -13,28 +15,29 @@ interface _LayoutType {
 
 export default function ({
   children,
-  params,
   dashboard,
   visit,
   presonels,
   items,
   services,
 }: _LayoutType) {
-  // // render content for meny
-  // const renderContent = async () =>
-  //   ({
-  //     dashboard,
-  //     visit,
-  //     presonels,
-  //     items,
-  //     services,
-  //   })[(await params).slug];
+  const params = useParams();
+
+  // render content for meny
+  const renderContent = () =>
+    ({
+      dashboard,
+      visit,
+      presonels,
+      items,
+      services,
+    })[params.slug as string];
 
   return (
     <div className="flex">
       <Menu />
-      {/* <main className="w-full">{renderContent()}</main> */}
-      <main className="w-full">{}</main>
+      <main className="w-full">{renderContent()}</main>
+      {/* <main className="w-full">{}</main> */}
     </div>
   );
 }
