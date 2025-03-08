@@ -76,47 +76,46 @@ export default function PersonnelPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-base-200">
-      <div className=" mx-auto p-2 md:p-4">
-        <div className="stats shadow w-full bg-base-100 mb-4 md:mb-6 flex-col md:flex-row">
-          <div className="stat">
-            <div className="stat-figure text-primary">
-              <Users className="h-8 w-8" />
-            </div>
-            <div className="stat-title">Total Personnel</div>
-            {personel_list !== undefined && (
-              <div className="stat-value text-primary">
-                {personel_list.length}
+    <div className="min-h-screen w-full bg-gray-50">
+      <div className="mx-auto p-2 md:p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
+            <div className="flex-1">
+              <h2 className="text-sm font-medium text-gray-500">
+                Total Visits
+              </h2>
+              <div className="mt-2 flex items-baseline">
+                <p className="text-3xl font-bold text-blue-600">
+                  {personel_list.length}
+                </p>
               </div>
-            )}
-            <div className="stat-desc">Active team members</div>
+              <p className="text-xs text-gray-500 mt-1">Active visit records</p>
+            </div>
+            <div className="flex items-center justify-center bg-blue-100 rounded-full p-3">
+              <Users className="h-6 w-6 text-blue-600" />
+            </div>
           </div>
 
-          <div className="stat">
-            <div className="stat-figure text-secondary">
-              <RefreshCw className="h-8 w-8" />
+          <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
+            <div>
+              <div className="text-gray-600 text-sm">Last Updated</div>
+              <div className="text-teal-500 text-4xl font-bold">Just now</div>
+              <div className="text-gray-500 text-xs">
+                Services data is up to date
+              </div>
             </div>
-            <div className="stat-title">Last Updated</div>
-            <div className="stat-value text-secondary">Just now</div>
-            <div className="stat-desc">Personnel data is up to date</div>
+            <button className="bg-teal-100 p-3 rounded-full text-teal-500 hover:bg-teal-200 transition-colors">
+              <RefreshCw className="h-6 w-6" />
+            </button>
           </div>
         </div>
 
-        {/* Search and View Controls */}
-        <div className="bg-base-100 rounded-lg shadow-md p-3 md:p-4 mb-4">
-          <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
-            <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <Search className="h-4 w-4 text-gray-500" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search personnel..."
-                className="input input-bordered w-full pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
+        {/* Table View */}
+        <div className="bg-base-100 rounded-lg shadow-md p-3 md:p-4">
+          <div className="flex flex-row justify-between">
+            <h2 className="text-lg md:text-xl font-bold text-primary mb-3 md:mb-4">
+              Personnel List
+            </h2>
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium hidden md:inline">
                 View:
@@ -133,14 +132,6 @@ export default function PersonnelPage() {
               </button>
             </div>
           </div>
-        </div>
-
-        {/* Table View */}
-
-        <div className="bg-base-100 rounded-lg shadow-md p-3 md:p-4">
-          <h2 className="text-lg md:text-xl font-bold text-primary mb-3 md:mb-4">
-            Personnel List
-          </h2>
 
           {/* Desktop Table - Hidden on small screens */}
           <div className="hidden md:block overflow-x-auto">

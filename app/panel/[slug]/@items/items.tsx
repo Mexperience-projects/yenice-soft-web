@@ -6,7 +6,7 @@ import Items_691d50_update from "@/components/items/691d50_update";
 import { Modal } from "@/components/ui/modal";
 import { useEffect, useState } from "react";
 import type { ItemsType } from "@/lib/types";
-import { Plus, RefreshCw } from "lucide-react";
+import { Plus, RefreshCw, User } from "lucide-react";
 
 export default function ItemsPage() {
   const {
@@ -69,33 +69,60 @@ export default function ItemsPage() {
     }
   };
 
+  const formatDate = (dateString: Date) => {
+    const date = new Date(dateString);
+    return date.toLocaleString();
+  };
+
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-primary">Items Management</h1>
-        <div className="flex gap-2">
-          <button
-            onClick={loadItems}
-            className="btn btn-outline btn-sm"
-            disabled={isLoading}
-          >
-            <RefreshCw
-              className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
-            />
-            Refresh
+    <div className="container bg-gray-50 mx-auto p-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
+          <div className="flex-1">
+            <h2 className="text-sm font-medium text-gray-500">Total Visits</h2>
+            <div className="mt-2 flex items-baseline">
+              <p className="text-3xl font-bold text-blue-600">0</p>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Active visit records</p>
+          </div>
+          <div className="flex items-center justify-center bg-blue-100 rounded-full p-3">
+            <User className="h-6 w-6 text-blue-600" />
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
+          <div>
+            <div className="text-gray-600 text-sm">Last Updated</div>
+            <div className="text-teal-500 text-4xl font-bold">Just now</div>
+            <div className="text-gray-500 text-xs">
+              Services data is up to date
+            </div>
+          </div>
+          <button className="bg-teal-100 p-3 rounded-full text-teal-500 hover:bg-teal-200 transition-colors">
+            <RefreshCw className="h-6 w-6" />
           </button>
-          <button
-            onClick={() => setCreateModal(true)}
-            className="btn btn-primary btn-sm"
-          >
-            <Plus className="h-4 w-4" />
-            Add New Item
-          </button>
+        </div>
+      </div>
+      <div className="bg-base-100 rounded-lg shadow-md p-3 md:p-4">
+        <div className="flex flex-row justify-between">
+          <h1 className="text-lg md:text-xl font-bold text-primary mb-3 md:mb-4">
+            Items Management
+          </h1>
+          <div className="flex items-center gap-2">
+            <span className="mr-2 text-gray-600">View:</span>
+            <button
+              onClick={() => setCreateModal(true)}
+              className="btn btn-primary btn-sm"
+            >
+              <Plus className="h-4 w-4" />
+              Add New
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Items List */}
-      <div className="overflow-x-auto bg-base-100 rounded-box shadow-md">
+      <div className="overflow-x-auto bg-base-100 shadow-md">
         <table className="table table-zebra w-full">
           <thead>
             <tr>

@@ -6,7 +6,14 @@ import { useEffect, useState } from "react";
 import Visit_6b7e2d_update from "@/components/visit/6b7e2d_update";
 import { Modal } from "@/components/ui/modal";
 import Visit_ae978b_create from "@/components/visit/ae978b_create";
-import { PlusCircle, Users, FileEdit, Trash2, RefreshCw } from "lucide-react";
+import {
+  PlusCircle,
+  Users,
+  FileEdit,
+  Trash2,
+  RefreshCw,
+  Plus,
+} from "lucide-react";
 
 export default function VisitManagement() {
   const { get_visit_list_list, create_visit_data, visit_list } =
@@ -56,94 +63,51 @@ export default function VisitManagement() {
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex">
-              <div className="flex-1">
-                <h2 className="text-sm font-medium text-gray-500">
-                  Total Visits
-                </h2>
-                <div className="mt-2 flex items-baseline">
-                  <p className="text-3xl font-bold text-blue-600">
-                    {visit_list.length}
-                  </p>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Active visit records
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
+            <div className="flex-1">
+              <h2 className="text-sm font-medium text-gray-500">
+                Total Visits
+              </h2>
+              <div className="mt-2 flex items-baseline">
+                <p className="text-3xl font-bold text-blue-600">
+                  {visit_list.length}
                 </p>
               </div>
-              <div className="flex items-center justify-center bg-blue-100 rounded-full p-3">
-                <Users className="h-6 w-6 text-blue-600" />
-              </div>
+              <p className="text-xs text-gray-500 mt-1">Active visit records</p>
+            </div>
+            <div className="flex items-center justify-center bg-blue-100 rounded-full p-3">
+              <Users className="h-6 w-6 text-blue-600" />
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex">
-              <div className="flex-1">
-                <h2 className="text-sm font-medium text-gray-500">
-                  Last Updated
-                </h2>
-                <div className="mt-2">
-                  <p className="text-2xl font-bold text-emerald-500">
-                    Just now
-                  </p>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Visit data is up to date
-                </p>
-              </div>
-              <div className="flex items-center justify-center">
-                <RefreshCw className="h-6 w-6 text-emerald-500" />
+          <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
+            <div>
+              <div className="text-gray-600 text-sm">Last Updated</div>
+              <div className="text-teal-500 text-4xl font-bold">Just now</div>
+              <div className="text-gray-500 text-xs">
+                Services data is up to date
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow mb-6">
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <div className="relative flex-1 max-w-md">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <svg
-                    className="w-4 h-4 text-gray-500"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                    />
-                  </svg>
-                </div>
-                <input
-                  type="search"
-                  className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Search visits..."
-                />
-              </div>
-              <div className="flex items-center">
-                <span className="mr-2 text-sm text-gray-600">View:</span>
-                <button
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
-                >
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Add New
-                </button>
-              </div>
-            </div>
+            <button className="bg-teal-100 p-3 rounded-full text-teal-500 hover:bg-teal-200 transition-colors">
+              <RefreshCw className="h-6 w-6" />
+            </button>
           </div>
         </div>
 
         <div className="bg-white rounded-lg shadow">
-          <div className="p-4 border-b">
+          <div className="p-4 border-b flex flex-row justify-between">
             <h2 className="text-lg font-medium text-blue-600">Visit List</h2>
+            <div className="flex items-center">
+              <span className="mr-2 text-sm text-gray-600">View:</span>
+              <button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="btn btn-primary btn-sm gap-1"
+              >
+                <Plus className="h-4 w-4" />
+                Add New
+              </button>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left text-gray-500">
