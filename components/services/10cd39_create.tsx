@@ -17,9 +17,7 @@ interface ServicesProps {
 
 export default function ServicesUpdateForm({ initialData }: ServicesProps) {
   const [selectedPersonnel, setSelectedPersonnel] = useState<number | null>(
-    initialData?.personel && initialData.personel.length > 0
-      ? initialData.personel[0]
-      : null
+    null
   );
   const [personnelSearch, setPersonnelSearch] = useState("");
   const [showPersonnelDropdown, setShowPersonnelDropdown] = useState(false);
@@ -196,7 +194,7 @@ export default function ServicesUpdateForm({ initialData }: ServicesProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="form-control w-full">
               <label className="label">
-                <span className="label-text">Personnel Fixed Fee</span>
+                <span className="label-text">personnel Expense</span>
               </label>
               <label className="input-group">
                 <span></span>
@@ -212,32 +210,9 @@ export default function ServicesUpdateForm({ initialData }: ServicesProps) {
                 />
               </label>
             </div>
-
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">Personnel Percent Fee</span>
-              </label>
-              <label className="input-group">
-                <span></span>
-                <input
-                  id="personel_precent_fee"
-                  name="personel_precent_fee"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="100"
-                  defaultValue={initialData?.personel_precent_fee}
-                  className="input input-bordered w-full"
-                  placeholder="0.00"
-                />
-              </label>
-            </div>
           </div>
         </div>
       </div>
     </div>
   );
-}
-function setPersonnel(personel_list: personel_e02ed2Type[]): any {
-  throw new Error("Function not implemented.");
 }
