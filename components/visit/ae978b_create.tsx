@@ -540,8 +540,8 @@ export default function VisitCreateForm({
             </label>
             <input
               disabled={readonly}
-              id="datetime"
-              name="datetime"
+              id="date"
+              name="date"
               type="date"
               value={formData.datetime.toString()}
               onChange={handleChange}

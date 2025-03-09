@@ -18,10 +18,13 @@ import {
 } from "lucide-react";
 import type { PaymentsType } from "@/lib/types";
 import { usePayments } from "@/hooks/payments/main";
-import { useVisit_ae978b } from "@/hooks/visit/ae978b";
+import { useVisits } from "@/hooks/visit/ae978b";
 import { Modal } from "@/components/ui/modal";
+import { useTranslation } from "react-i18next";
 
 export default function PaymentsManagement() {
+  const { t } = useTranslation();
+
   // State for payments data
   const [filteredPayments, setFilteredPayments] = useState<PaymentsType[]>([]);
   const {
@@ -30,7 +33,7 @@ export default function PaymentsManagement() {
     loading,
     delete_payments_data,
   } = usePayments();
-  const { get_visit_list_list, visit_list } = useVisit_ae978b();
+  const { get_visit_list_list, visit_list } = useVisits();
 
   // State for CRUD operations
   const [selectedPayment, setSelectedPayment] = useState<PaymentsType | null>(
@@ -217,11 +220,9 @@ export default function PaymentsManagement() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-800 flex items-center">
             <span className="inline-block w-2 h-8 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></span>
-            Payments Management
+            {t("payments.title")}
           </h1>
-          <p className="text-gray-600 ml-5">
-            Manage all your payment transactions
-          </p>
+          <p className="text-gray-600 ml-5">{t("payments.subtitle")}</p>
         </div>
 
         {/* Stats Cards */}
@@ -230,7 +231,7 @@ export default function PaymentsManagement() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Total Payments
+                  {t("payments.totalPayments")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-secondary">
@@ -238,7 +239,7 @@ export default function PaymentsManagement() {
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  All payment records
+                  {t("payments.allPaymentRecords")}
                 </p>
               </div>
               <div className="flex items-center justify-center bg-secondary/10 rounded-full p-3">
@@ -251,7 +252,7 @@ export default function PaymentsManagement() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Paid Payments
+                  {t("payments.paidPayments")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-green-600">
@@ -259,7 +260,7 @@ export default function PaymentsManagement() {
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  {paidPercentage}% of total
+                  {paidPercentage}% {t("payments.ofTotal")}
                 </p>
               </div>
               <div className="flex items-center justify-center bg-green-100 rounded-full p-3">
@@ -272,7 +273,7 @@ export default function PaymentsManagement() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Unpaid Payments
+                  {t("payments.unpaidPayments")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-red-500">
@@ -280,7 +281,7 @@ export default function PaymentsManagement() {
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  {unpaidPercentage}% of total
+                  {unpaidPercentage}% {t("payments.ofTotal")}
                 </p>
               </div>
               <div className="flex items-center justify-center bg-red-100 rounded-full p-3">
@@ -300,7 +301,7 @@ export default function PaymentsManagement() {
                 </div>
                 <input
                   type="text"
-                  placeholder="Search payments..."
+                  placeholder={t("payments.searchPayments")}
                   className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pl-10 p-2.5"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -317,7 +318,7 @@ export default function PaymentsManagement() {
                   onClick={() => setIsFilterOpen(!isFilterOpen)}
                 >
                   <Filter className="h-4 w-4" />
-                  Filters{" "}
+                  {t("common.filter")}{" "}
                   {Object.keys(filters).length > 0 &&
                     `(${Object.keys(filters).length})`}
                 </button>
@@ -327,7 +328,7 @@ export default function PaymentsManagement() {
                   onClick={get_payments_list_list}
                 >
                   <RefreshCw className="h-4 w-4" />
-                  Refresh
+                  {t("common.refresh")}
                 </button>
               </div>
             </div>
@@ -339,7 +340,7 @@ export default function PaymentsManagement() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="form-control">
                   <label className="text-sm font-medium text-gray-700 mb-1">
-                    Payment Status
+                    {t("payments.paymentStatus")}
                   </label>
                   <select
                     className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
@@ -362,15 +363,15 @@ export default function PaymentsManagement() {
                       }
                     }}
                   >
-                    <option value="">All Statuses</option>
-                    <option value="paid">Paid</option>
-                    <option value="unpaid">Unpaid</option>
+                    <option value="">{t("payments.allStatuses")}</option>
+                    <option value="paid">{t("payments.paid")}</option>
+                    <option value="unpaid">{t("payments.unpaid")}</option>
                   </select>
                 </div>
 
                 <div className="form-control">
                   <label className="text-sm font-medium text-gray-700 mb-1">
-                    Visit
+                    {t("payments.visit")}
                   </label>
                   <select
                     className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
@@ -387,7 +388,7 @@ export default function PaymentsManagement() {
                       }
                     }}
                   >
-                    <option value="">All Visits</option>
+                    <option value="">{t("payments.allVisits")}</option>
                     {visit_list.map((visit) => (
                       <option key={visit.id} value={visit.id}>
                         {visit.client.name} -{" "}
@@ -399,7 +400,7 @@ export default function PaymentsManagement() {
 
                 <div className="form-control">
                   <label className="text-sm font-medium text-gray-700 mb-1">
-                    Author
+                    {t("payments.author")}
                   </label>
                   <select
                     className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
@@ -416,7 +417,7 @@ export default function PaymentsManagement() {
                       }
                     }}
                   >
-                    <option value="">All Authors</option>
+                    <option value="">{t("payments.allAuthors")}</option>
                     {
                       //mockUsers.map((user) => (
                       // <option key={user.id} value={user.id}>
@@ -429,12 +430,12 @@ export default function PaymentsManagement() {
 
                 <div className="form-control">
                   <label className="text-sm font-medium text-gray-700 mb-1">
-                    Min Price
+                    {t("payments.minPrice")}
                   </label>
                   <input
                     type="number"
                     className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
-                    placeholder="Min price"
+                    placeholder={t("payments.minPrice")}
                     value={filters.min_price || ""}
                     onChange={(e) => {
                       if (e.target.value === "") {
@@ -452,12 +453,12 @@ export default function PaymentsManagement() {
 
                 <div className="form-control">
                   <label className="text-sm font-medium text-gray-700 mb-1">
-                    Max Price
+                    {t("payments.maxPrice")}
                   </label>
                   <input
                     type="number"
                     className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
-                    placeholder="Max price"
+                    placeholder={t("payments.maxPrice")}
                     value={filters.max_price || ""}
                     onChange={(e) => {
                       if (e.target.value === "") {
@@ -475,7 +476,7 @@ export default function PaymentsManagement() {
 
                 <div className="form-control">
                   <label className="text-sm font-medium text-gray-700 mb-1">
-                    Date Range
+                    {t("payments.dateRange")}
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -500,7 +501,9 @@ export default function PaymentsManagement() {
                         }
                       }}
                     />
-                    <span className="self-center text-gray-500">to</span>
+                    <span className="self-center text-gray-500">
+                      {t("payments.to")}
+                    </span>
                     <input
                       type="date"
                       className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
@@ -532,13 +535,13 @@ export default function PaymentsManagement() {
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                   onClick={resetFilters}
                 >
-                  Clear Filters
+                  {t("common.clearFilters")}
                 </button>
                 <button
                   className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
                   onClick={() => setIsFilterOpen(false)}
                 >
-                  Apply Filters
+                  {t("payments.applyFilters")}
                 </button>
               </div>
             </div>
@@ -557,19 +560,19 @@ export default function PaymentsManagement() {
                 <CreditCard className="h-12 w-12 text-gray-400" />
               </div>
               <h3 className="text-lg font-medium text-gray-800 mb-2">
-                No payments found
+                {t("payments.noPaymentsFound")}
               </h3>
               <p className="text-gray-600 max-w-md">
                 {Object.keys(filters).length > 0 || searchTerm
-                  ? "Try adjusting your filters or search term."
-                  : "There are no payment records in the system."}
+                  ? t("payments.adjustFilters")
+                  : t("payments.noPaymentRecords")}
               </p>
               {Object.keys(filters).length > 0 || searchTerm ? (
                 <button
                   className="mt-6 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                   onClick={resetFilters}
                 >
-                  Clear Filters
+                  {t("common.clearFilters")}
                 </button>
               ) : (
                 <></>
@@ -582,28 +585,28 @@ export default function PaymentsManagement() {
                   <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
                       <th scope="col" className="px-6 py-4 font-medium">
-                        ID
+                        {t("common.id")}
                       </th>
                       <th scope="col" className="px-6 py-4 font-medium">
-                        Visit
+                        {t("payments.visit")}
                       </th>
                       <th scope="col" className="px-6 py-4 font-medium">
-                        Patient
+                        {t("payments.patient")}
                       </th>
                       <th scope="col" className="px-6 py-4 font-medium">
-                        Price
+                        {t("common.price")}
                       </th>
                       <th scope="col" className="px-6 py-4 font-medium">
-                        Status
+                        {t("common.status")}
                       </th>
                       <th scope="col" className="px-6 py-4 font-medium">
-                        Date
+                        {t("common.date")}
                       </th>
                       <th
                         scope="col"
                         className="px-6 py-4 font-medium text-right"
                       >
-                        Actions
+                        {t("common.actions")}
                       </th>
                     </tr>
                   </thead>
@@ -635,7 +638,9 @@ export default function PaymentsManagement() {
                                 : "bg-red-100 text-red-800"
                             }`}
                           >
-                            {payment.paid ? "Paid" : "Unpaid"}
+                            {payment.paid
+                              ? t("payments.paid")
+                              : t("payments.unpaid")}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-gray-700">
@@ -646,7 +651,7 @@ export default function PaymentsManagement() {
                             <button
                               className="p-1.5 bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-lg transition-colors"
                               onClick={() => openVisitModal(payment)}
-                              title="Edit Payment"
+                              title={t("common.edit")}
                             >
                               <FileEdit className="h-4 w-4" />
                             </button>
@@ -656,7 +661,7 @@ export default function PaymentsManagement() {
                                 setSelectedPayment(payment);
                                 setIsDeleteModalOpen(true);
                               }}
-                              title="Delete Payment"
+                              title={t("common.delete")}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -726,12 +731,12 @@ export default function PaymentsManagement() {
         <div className="p-6">
           <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
             <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            Create New Payment
+            {t("payments.createNewPayment")}
           </h3>
           <div className="space-y-4">
             <div className="form-control">
               <label className="text-sm font-medium text-gray-700 mb-1">
-                Visit
+                {t("payments.visit")}
               </label>
               <select
                 className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
@@ -745,7 +750,7 @@ export default function PaymentsManagement() {
                 required
               >
                 <option value={0} disabled>
-                  Select a visit
+                  {t("payments.selectVisit")}
                 </option>
                 {visit_list.map((visit) => (
                   <option key={visit.id} value={visit.id}>
@@ -758,12 +763,12 @@ export default function PaymentsManagement() {
 
             <div className="form-control">
               <label className="text-sm font-medium text-gray-700 mb-1">
-                Price
+                {t("common.price")}
               </label>
               <input
                 type="number"
                 className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
-                placeholder="Enter price"
+                placeholder={t("payments.enterPrice")}
                 value={formData.price}
                 onChange={(e) =>
                   setFormData({
@@ -788,7 +793,9 @@ export default function PaymentsManagement() {
                 />
                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                 <span className="ml-3 text-sm font-medium text-gray-700">
-                  {formData.paid ? "Marked as paid" : "Marked as unpaid"}
+                  {formData.paid
+                    ? t("payments.markedAsPaid")
+                    : t("payments.markedAsUnpaid")}
                 </span>
               </label>
             </div>
@@ -802,7 +809,7 @@ export default function PaymentsManagement() {
                 resetForm();
               }}
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               type="button"
@@ -810,7 +817,7 @@ export default function PaymentsManagement() {
               onClick={handleCreatePayment}
               disabled={formData.visit_id === 0 || formData.price <= 0}
             >
-              Create Payment
+              {t("common.create")}
             </button>
           </div>
         </div>
@@ -829,12 +836,12 @@ export default function PaymentsManagement() {
           <div className="p-6">
             <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
               <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-              Update Payment #{selectedPayment.id}
+              {t("payments.updatePayment")} #{selectedPayment.id}
             </h3>
             <div className="space-y-4">
               <div className="form-control">
                 <label className="text-sm font-medium text-gray-700 mb-1">
-                  Visit
+                  {t("payments.visit")}
                 </label>
                 <select
                   className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
@@ -848,7 +855,7 @@ export default function PaymentsManagement() {
                   required
                 >
                   <option value={0} disabled>
-                    Select a visit
+                    {t("payments.selectVisit")}
                   </option>
                   {visit_list.map((visit) => (
                     <option key={visit.id} value={visit.id}>
@@ -861,12 +868,12 @@ export default function PaymentsManagement() {
 
               <div className="form-control">
                 <label className="text-sm font-medium text-gray-700 mb-1">
-                  Price
+                  {t("common.price")}
                 </label>
                 <input
                   type="number"
                   className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
-                  placeholder="Enter price"
+                  placeholder={t("payments.enterPrice")}
                   value={formData.price}
                   onChange={(e) =>
                     setFormData({
@@ -891,7 +898,9 @@ export default function PaymentsManagement() {
                   />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                   <span className="ml-3 text-sm font-medium text-gray-700">
-                    {formData.paid ? "Marked as paid" : "Marked as unpaid"}
+                    {formData.paid
+                      ? t("payments.markedAsPaid")
+                      : t("payments.markedAsUnpaid")}
                   </span>
                 </label>
               </div>
@@ -906,7 +915,7 @@ export default function PaymentsManagement() {
                   resetForm();
                 }}
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="button"
@@ -914,7 +923,7 @@ export default function PaymentsManagement() {
                 onClick={handleUpdatePayment}
                 disabled={formData.visit_id === 0 || formData.price <= 0}
               >
-                Update Payment
+                {t("common.update")}
               </button>
             </div>
           </div>
@@ -933,29 +942,31 @@ export default function PaymentsManagement() {
           <div className="p-6">
             <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
               <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-              Payment Details
+              {t("payments.paymentDetails")}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                   <DollarSign className="h-4 w-4 text-primary" />
-                  Payment Information
+                  {t("payments.paymentInformation")}
                 </h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">ID:</span>
+                    <span className="text-gray-600">{t("common.id")}:</span>
                     <span className="font-mono text-gray-800">
                       {selectedPayment.id}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Amount:</span>
+                    <span className="text-gray-600">
+                      {t("payments.amount")}:
+                    </span>
                     <span className="font-semibold text-gray-800">
                       {formatCurrency(selectedPayment.price)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Status:</span>
+                    <span className="text-gray-600">{t("common.status")}:</span>
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         selectedPayment.paid
@@ -963,11 +974,15 @@ export default function PaymentsManagement() {
                           : "bg-red-100 text-red-800"
                       }`}
                     >
-                      {selectedPayment.paid ? "Paid" : "Unpaid"}
+                      {selectedPayment.paid
+                        ? t("payments.paid")
+                        : t("payments.unpaid")}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Created:</span>
+                    <span className="text-gray-600">
+                      {t("payments.created")}:
+                    </span>
                     <span className="text-gray-800">
                       {formatDate(selectedPayment.created_at)}
                     </span>
@@ -978,23 +993,27 @@ export default function PaymentsManagement() {
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-secondary" />
-                  Visit Information
+                  {t("payments.visitInformation")}
                 </h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Visit ID:</span>
+                    <span className="text-gray-600">
+                      {t("payments.visitId")}:
+                    </span>
                     <span className="font-mono text-gray-800">
                       #{selectedPayment.visit.id}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Patient:</span>
+                    <span className="text-gray-600">
+                      {t("payments.patient")}:
+                    </span>
                     <span className="text-gray-800">
                       {selectedPayment.visit.client.name}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Date:</span>
+                    <span className="text-gray-600">{t("common.date")}:</span>
                     <span className="text-gray-800">
                       {formatDate(selectedPayment.visit.datetime)}
                     </span>
@@ -1011,7 +1030,7 @@ export default function PaymentsManagement() {
                   setSelectedPayment(null);
                 }}
               >
-                Close
+                {t("common.close")}
               </button>
               <button
                 type="button"
@@ -1022,7 +1041,7 @@ export default function PaymentsManagement() {
                 }}
               >
                 <FileEdit className="h-4 w-4 mr-2 inline" />
-                Edit
+                {t("common.edit")}
               </button>
             </div>
           </div>
@@ -1045,11 +1064,10 @@ export default function PaymentsManagement() {
               </div>
             </div>
             <h3 className="text-xl font-bold mb-2 text-gray-800 text-center">
-              Confirm Deletion
+              {t("payments.confirmDeletion")}
             </h3>
             <p className="text-gray-600 text-center mb-6">
-              Are you sure you want to delete payment #{selectedPayment.id} for{" "}
-              {selectedPayment.visit.client.name}? This action cannot be undone.
+              {t("common.confirmDelete")}
             </p>
             <div className="flex justify-center gap-3 mt-6">
               <button
@@ -1060,14 +1078,14 @@ export default function PaymentsManagement() {
                   setSelectedPayment(null);
                 }}
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="button"
                 className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all duration-300"
                 onClick={handleDeletePayment}
               >
-                Delete
+                {t("common.delete")}
               </button>
             </div>
           </div>

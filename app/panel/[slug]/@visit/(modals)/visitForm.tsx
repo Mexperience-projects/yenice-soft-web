@@ -2,20 +2,28 @@ import { useClients } from "@/hooks/clients/main";
 import { AlertCircle, Edit, Plus, Trash2, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import Visit_ae978b_create from "@/components/visit/ae978b_create";
-import CreateClient from "../../@clients/(modals)/createClient";
-import { ClientType, OperationType } from "@/lib/types";
+import { ClientType, OperationType, VisitType } from "@/lib/types";
 import { Modal } from "@/components/ui/modal";
-import Visit_ae978b_read from "@/components/visit/ae978b_read";
 import { cn } from "@/lib/utils";
+import { useVisits } from "@/hooks/visit/ae978b";
+import { useTranslation } from "react-i18next";
+import CreateClient from "../../@clients/(modals)/createClient";
 
 interface VisitFormProps {
   isOpen: boolean;
   onClose: () => void;
+  selectedVisit?: VisitType;
 }
 
-export default function ({ isOpen, onClose: onClose_ }: VisitFormProps) {
+export default function VisitForm({
+  isOpen,
+  onClose: onClose_,
+  selectedVisit,
+}: VisitFormProps) {
+  const { t } = useTranslation();
   const { create_clients_data, clients_list, get_clients_list_list } =
     useClients();
+  const { create_visit_data } = useVisits();
   const [isClientCreateModalOpen, setIsClientCreateModalOpen] = useState(false);
   const [editMode, editModeHandler] = useState(false);
   const [openDeleteModal, openDeleteModalHandler] = useState(false);
@@ -32,8 +40,16 @@ export default function ({ isOpen, onClose: onClose_ }: VisitFormProps) {
       },
     ] as OperationType[],
   };
+
   const [formData, setFormData] = useState(emptyForm);
   const [menu, menuHandler] = useState<OperationType>(formData.operations[0]);
+
+  useEffect(() => {
+    if (selectedVisit) {
+      setFormData(selectedVisit);
+      menuHandler(selectedVisit.operations[0]);
+    }
+  }, [selectedVisit]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -48,6 +64,7 @@ export default function ({ isOpen, onClose: onClose_ }: VisitFormProps) {
   useEffect(() => {
     get_clients_list_list();
   }, []);
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -64,7 +81,7 @@ export default function ({ isOpen, onClose: onClose_ }: VisitFormProps) {
                     type="char"
                     value={formData.client?.name}
                     onChange={handleChange}
-                    placeholder="Enter client name"
+                    placeholder={t("visits.enterClientName")}
                     className="input input-bordered w-full bg-gray-50 border-gray-200
                         focus:border-primary focus:ring-primary pl-14"
                     required
@@ -92,7 +109,8 @@ export default function ({ isOpen, onClose: onClose_ }: VisitFormProps) {
                         className="btn bg-gradient-to-r from-primary/10 to-secondary/10 hover:from-primary/20 hover:to-secondary/20 border-0 text-secondary btn-sm w-full flex items-center justify-center gap-2"
                         onClick={() => setIsClientCreateModalOpen(true)}
                       >
-                        <Plus className="h-4 w-4" /> Create New Client
+                        <Plus className="h-4 w-4" />{" "}
+                        {t("visits.createNewClient")}
                       </button>
                     </div>
                   </div>
@@ -108,7 +126,7 @@ export default function ({ isOpen, onClose: onClose_ }: VisitFormProps) {
                     from-primary to-secondary shadow disabled:text-white"
                   disabled={item.id === menu?.id}
                 >
-                  {new Date(item.datetime).toLocaleDateString("en")} ({i + 1})
+                  {new Date(item.datetime).toLocaleDateString()} ({i + 1})
                 </button>
               ))}
 
@@ -133,7 +151,7 @@ export default function ({ isOpen, onClose: onClose_ }: VisitFormProps) {
                 flex-row items-center justify-center rounded-xl p-3 space-x-3"
                 >
                   <Plus />
-                  <p className="">add visit</p>
+                  <p className="">{t("visits.addVisit")}</p>
                 </button>
               )}
             </ul>
@@ -144,7 +162,8 @@ export default function ({ isOpen, onClose: onClose_ }: VisitFormProps) {
             <div className="flex flex-row justify-between items-center space-y-2  mb-4">
               <h2 className="text-xl font-bold text-gray-800 flex">
                 <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-                Operation {new Date(menu.datetime).toLocaleDateString("en")}
+                {t("visits.operation")}{" "}
+                {new Date(menu.datetime).toLocaleDateString()}
               </h2>
               <div className="flex flex-rowitems-center justify-center space-x-2">
                 <button
@@ -158,7 +177,7 @@ export default function ({ isOpen, onClose: onClose_ }: VisitFormProps) {
                   )}
                 >
                   <Edit className="h-3.5 w-3.5" />
-                  Edit
+                  {t("common.edit")}
                 </button>
                 <button
                   disabled={formData.operations.length === 1}
@@ -167,7 +186,7 @@ export default function ({ isOpen, onClose: onClose_ }: VisitFormProps) {
                   rounded-lg transition-colors flex items-center gap-1"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                  Delete
+                  {t("common.delete")}
                 </button>
               </div>
             </div>
@@ -190,20 +209,23 @@ export default function ({ isOpen, onClose: onClose_ }: VisitFormProps) {
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                 onClick={onClose}
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
-                type="submit"
+                onClick={() => {
+                  console.log("OKOKOK");
+
+                  create_visit_data(formData);
+                }}
                 className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
               >
-                Save Data
+                {t("visits.saveData")}
               </button>
             </div>
           </div>
         </div>
       </Modal>
 
-      {/* Ask for Delete Modal */}
       {/* Delete Visit Modal */}
       <Modal
         isOpen={openDeleteModal}
@@ -218,11 +240,10 @@ export default function ({ isOpen, onClose: onClose_ }: VisitFormProps) {
             </div>
           </div>
           <h2 className="text-xl font-bold mb-2 text-gray-800 text-center">
-            Delete Visit
+            {t("visits.deleteVisit")}
           </h2>
           <p className="text-gray-600 text-center mb-6">
-            Are you sure you want to delete this visit? This action cannot be
-            undone.
+            {t("visits.deleteVisitConfirm")}
           </p>
           <div className="flex justify-center gap-3 mt-6">
             <button
@@ -232,7 +253,7 @@ export default function ({ isOpen, onClose: onClose_ }: VisitFormProps) {
                 openDeleteModalHandler(false);
               }}
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               onClick={() => {
@@ -244,7 +265,7 @@ export default function ({ isOpen, onClose: onClose_ }: VisitFormProps) {
               }}
               className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all duration-300"
             >
-              Delete Visit
+              {t("common.delete")}
             </button>
           </div>
         </div>

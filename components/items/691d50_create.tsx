@@ -1,17 +1,21 @@
+import { useTranslation } from "react-i18next";
+
 type ItemsProps = {};
 
 export default function Items_691d50_create({}: ItemsProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="grid gap-4">
       <div className="form-control">
         <label className="label">
-          <span className="label-text">Item Name</span>
+          <span className="label-text">{t("common.name")}</span>
         </label>
         <input
           id="name"
           name="name"
           type="text"
-          placeholder="Enter item name"
+          placeholder={t("inventory.enterItemName")}
           className="input input-bordered w-full"
           required
         />
@@ -19,7 +23,7 @@ export default function Items_691d50_create({}: ItemsProps) {
 
       <div className="form-control">
         <label className="label">
-          <span className="label-text">Price</span>
+          <span className="label-text">{t("common.price")}</span>
         </label>
         <div className="input-group">
           <span>$</span>
@@ -38,7 +42,7 @@ export default function Items_691d50_create({}: ItemsProps) {
 
       <div className="form-control">
         <label className="label">
-          <span className="label-text">Count</span>
+          <span className="label-text">{t("common.count")}</span>
         </label>
         <input
           id="count"

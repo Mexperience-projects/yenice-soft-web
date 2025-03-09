@@ -15,8 +15,11 @@ import {
 import { Modal } from "@/components/ui/modal";
 import Services_10cd39_create from "@/components/services/10cd39_create";
 import { usePersonel_e02ed2 } from "@/hooks/personel/e02ed2";
+import { useTranslation } from "react-i18next";
 
 export default function ServicesPage() {
+  const { t } = useTranslation();
+
   const {
     get_services_list_list,
     create_services_data,
@@ -78,9 +81,11 @@ export default function ServicesPage() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-800 flex items-center">
             <span className="inline-block w-2 h-8 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></span>
-            Services Management
+            {t("services.management")}
           </h1>
-          <p className="text-gray-600 ml-5">Manage your service offerings</p>
+          <p className="text-gray-600 ml-5">
+            {t("services.manageYourOfferings")}
+          </p>
         </div>
 
         {/* Stats Cards */}
@@ -89,7 +94,7 @@ export default function ServicesPage() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Total Services
+                  {t("services.totalServices")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-secondary">
@@ -97,7 +102,7 @@ export default function ServicesPage() {
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Active service offerings
+                  {t("services.activeOfferings")}
                 </p>
               </div>
               <div className="flex items-center justify-center bg-secondary/10 rounded-full p-3">
@@ -110,13 +115,15 @@ export default function ServicesPage() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Last Updated
+                  {t("services.lastUpdated")}
                 </h2>
                 <div className="mt-2">
-                  <p className="text-3xl font-bold text-gray-700">Just now</p>
+                  <p className="text-3xl font-bold text-gray-700">
+                    {t("inventory.justNow")}
+                  </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Services data is up to date
+                  {t("services.dataUpToDate")}
                 </p>
               </div>
               <button
@@ -136,7 +143,7 @@ export default function ServicesPage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <h2 className="text-lg font-semibold text-gray-800 flex items-center">
                 <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-                Services List
+                {t("services.servicesList")}
               </h2>
 
               <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -147,7 +154,7 @@ export default function ServicesPage() {
                   <input
                     type="text"
                     className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pl-10 p-2.5"
-                    placeholder="Search services..."
+                    placeholder={t("services.searchServices")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -158,7 +165,7 @@ export default function ServicesPage() {
                   className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300"
                 >
                   <Plus className="h-4 w-4" />
-                  <span>Add New Service</span>
+                  <span>{t("services.addNewService")}</span>
                 </button>
               </div>
             </div>
@@ -171,19 +178,19 @@ export default function ServicesPage() {
                 <Briefcase className="h-12 w-12 text-gray-400 mx-auto" />
               </div>
               <h3 className="text-lg font-medium text-gray-800 mb-2">
-                No Services Found
+                {t("services.noServicesFound")}
               </h3>
               <p className="text-gray-500 max-w-md mx-auto mb-6">
                 {searchQuery
-                  ? "No services match your search criteria. Try a different search term or clear your search."
-                  : "No services have been added yet. Add your first service to get started!"}
+                  ? t("services.noServicesMatch")
+                  : t("services.noServicesYet")}
               </p>
               <button
                 onClick={handleAddNew}
                 className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 mx-auto"
               >
                 <Plus className="h-4 w-4" />
-                <span>Add New Service</span>
+                <span>{t("services.addNewService")}</span>
               </button>
             </div>
           ) : (
@@ -192,16 +199,16 @@ export default function ServicesPage() {
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                   <tr>
                     <th scope="col" className="px-6 py-4 font-medium">
-                      Name
+                      {t("common.name")}
                     </th>
                     <th scope="col" className="px-6 py-4 font-medium">
-                      Description
+                      {t("common.description")}
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-4 font-medium text-right"
                     >
-                      Actions
+                      {t("common.actions")}
                     </th>
                   </tr>
                 </thead>
@@ -226,14 +233,14 @@ export default function ServicesPage() {
                             className="px-3 py-1.5 bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-lg transition-colors flex items-center gap-1"
                           >
                             <Edit className="h-3.5 w-3.5" />
-                            Edit
+                            {t("common.edit")}
                           </button>
                           <button
                             onClick={() => handleDelete(service.id || 0)}
                             className="px-3 py-1.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-colors flex items-center gap-1"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
-                            Delete
+                            {t("common.delete")}
                           </button>
                         </div>
                       </td>
@@ -248,10 +255,11 @@ export default function ServicesPage() {
           {filteredServices.length > 0 && (
             <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
               <div className="text-sm text-gray-500">
-                Showing{" "}
+                {t("common.showing")}{" "}
                 <span className="font-medium">{filteredServices.length}</span>{" "}
-                of <span className="font-medium">{services_list.length}</span>{" "}
-                services
+                {t("common.of")}{" "}
+                <span className="font-medium">{services_list.length}</span>{" "}
+                {t("services.services")}
               </div>
             </div>
           )}
@@ -263,7 +271,9 @@ export default function ServicesPage() {
         <div className="p-6">
           <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
             <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            {modalMode === "create" ? "Add New Service" : "Edit Service"}
+            {modalMode === "create"
+              ? t("services.addNewService")
+              : t("services.editService")}
           </h3>
           <form
             action={(formData) => {
@@ -280,13 +290,15 @@ export default function ServicesPage() {
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                 onClick={() => setServicesModal(false)}
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
               >
-                {modalMode === "create" ? "Create Service" : "Update Service"}
+                {modalMode === "create"
+                  ? t("services.createService")
+                  : t("services.updateService")}
               </button>
             </div>
           </form>
@@ -302,11 +314,10 @@ export default function ServicesPage() {
             </div>
           </div>
           <h3 className="text-xl font-bold mb-2 text-gray-800 text-center">
-            Delete Service
+            {t("services.deleteService")}
           </h3>
           <p className="text-gray-600 text-center mb-6">
-            Are you sure you want to delete this service? This action cannot be
-            undone.
+            {t("services.deleteServiceConfirm")}
           </p>
           <div className="flex justify-center gap-3 mt-6">
             <button
@@ -314,14 +325,14 @@ export default function ServicesPage() {
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
               onClick={() => setDeleteModal(false)}
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               type="button"
               className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all duration-300"
               onClick={confirmDelete}
             >
-              Delete Service
+              {t("common.delete")}
             </button>
           </div>
         </div>

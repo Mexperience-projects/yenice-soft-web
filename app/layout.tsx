@@ -1,5 +1,6 @@
 import "./globals.css";
 import Gaurd from "./guard";
+import { ClientI18nProvider } from "./i18n-provider";
 
 export default function RootLayout({
   children,
@@ -7,9 +8,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="EN">
+    <html lang="en">
       <body>
-        <Gaurd>{children}</Gaurd>
+        <Gaurd>
+          <ClientI18nProvider>{children}</ClientI18nProvider>
+        </Gaurd>
       </body>
     </html>
   );

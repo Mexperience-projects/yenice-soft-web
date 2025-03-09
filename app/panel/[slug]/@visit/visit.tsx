@@ -1,6 +1,6 @@
 "use client";
 
-import { useVisit_ae978b, type visit_ae978bType } from "@/hooks/visit/ae978b";
+import { useVisits, type visit_ae978bType } from "@/hooks/visit/ae978b";
 import Visit_ae978b_read from "@/components/visit/ae978b_read";
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/modal";
@@ -17,10 +17,11 @@ import {
   AlertCircle,
 } from "lucide-react";
 import VisitForm from "./(modals)/visitForm";
+import { useTranslation } from "react-i18next";
 
 export default function VisitManagement() {
-  const { get_visit_list_list, visit_list, delete_visit_data } =
-    useVisit_ae978b();
+  const { t } = useTranslation();
+  const { get_visit_list_list, visit_list, delete_visit_data } = useVisits();
 
   const [selectedVisit, setSelectedVisit] = useState<
     visit_ae978bType | undefined
@@ -61,11 +62,9 @@ export default function VisitManagement() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-800 flex items-center">
             <span className="inline-block w-2 h-8 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></span>
-            Visit Management
+            {t("visits.management")}
           </h1>
-          <p className="text-gray-600 ml-5">
-            Manage and track all client visits
-          </p>
+          <p className="text-gray-600 ml-5">{t("visits.manageAndTrack")}</p>
         </div>
 
         {/* Stats Cards */}
@@ -74,7 +73,7 @@ export default function VisitManagement() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Total Visits
+                  {t("visits.totalVisits")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-secondary">
@@ -82,7 +81,7 @@ export default function VisitManagement() {
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Active visit records
+                  {t("visits.activeVisitRecords")}
                 </p>
               </div>
               <div className="flex items-center justify-center bg-secondary/10 rounded-full p-3">
@@ -95,7 +94,7 @@ export default function VisitManagement() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Upcoming Visits
+                  {t("visits.upcomingVisits")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-primary">
@@ -107,7 +106,7 @@ export default function VisitManagement() {
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Scheduled for future dates
+                  {t("visits.scheduledForFuture")}
                 </p>
               </div>
               <div className="flex items-center justify-center bg-primary/10 rounded-full p-3">
@@ -120,13 +119,15 @@ export default function VisitManagement() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Last Updated
+                  {t("visits.lastUpdated")}
                 </h2>
                 <div className="mt-2">
-                  <p className="text-3xl font-bold text-gray-700">Just now</p>
+                  <p className="text-3xl font-bold text-gray-700">
+                    {t("inventory.justNow")}
+                  </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Visit data is up to date
+                  {t("visits.dataUpToDate")}
                 </p>
               </div>
               <button
@@ -146,7 +147,7 @@ export default function VisitManagement() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <h2 className="text-lg font-semibold text-gray-800 flex items-center">
                 <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-                Visit Records
+                {t("visits.visitRecords")}
               </h2>
 
               <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -157,7 +158,7 @@ export default function VisitManagement() {
                   <input
                     type="text"
                     className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pl-10 p-2.5"
-                    placeholder="Search visits..."
+                    placeholder={t("visits.searchVisits")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -168,7 +169,7 @@ export default function VisitManagement() {
                   className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300"
                 >
                   <Plus className="h-4 w-4" />
-                  <span>Add New Visit</span>
+                  <span>{t("visits.addNewVisit")}</span>
                 </button>
               </div>
             </div>
@@ -180,19 +181,19 @@ export default function VisitManagement() {
               <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                   <th scope="col" className="px-6 py-4 font-medium">
-                    Client
+                    {t("visits.client")}
                   </th>
                   <th scope="col" className="px-6 py-4 font-medium">
-                    Service
+                    {t("visits.service")}
                   </th>
                   <th scope="col" className="px-6 py-4 font-medium">
-                    Date & Time
+                    {t("visits.dateTime")}
                   </th>
                   <th scope="col" className="px-6 py-4 font-medium">
-                    Status
+                    {t("common.status")}
                   </th>
                   <th scope="col" className="px-6 py-4 font-medium text-right">
-                    Actions
+                    {t("common.actions")}
                   </th>
                 </tr>
               </thead>
@@ -205,19 +206,19 @@ export default function VisitManagement() {
                           <Calendar className="h-6 w-6 text-gray-400" />
                         </div>
                         <p className="text-gray-500 font-medium">
-                          No visits found
+                          {t("visits.noVisitsFound")}
                         </p>
                         <p className="text-gray-400 text-sm mt-1">
                           {searchTerm
-                            ? "Try a different search term"
-                            : "Create a new visit to get started"}
+                            ? t("visits.tryDifferentSearch")
+                            : t("visits.createNewToStart")}
                         </p>
                         {searchTerm && (
                           <button
                             onClick={() => setSearchTerm("")}
                             className="mt-3 text-primary hover:text-primary/80 text-sm font-medium"
                           >
-                            Clear search
+                            {t("common.clearSearch")}
                           </button>
                         )}
                       </div>
@@ -249,12 +250,12 @@ export default function VisitManagement() {
                           {isPast ? (
                             <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                               <CheckCircle2 className="h-3 w-3 mr-1" />
-                              Completed
+                              {t("visits.completed")}
                             </span>
                           ) : (
                             <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                               <Calendar className="h-3 w-3 mr-1" />
-                              Scheduled
+                              {t("visits.scheduled")}
                             </span>
                           )}
                         </td>
@@ -266,7 +267,7 @@ export default function VisitManagement() {
                                 setIsViewModalOpen(true);
                               }}
                               className="text-gray-600 hover:text-primary bg-gray-100 hover:bg-primary/10 p-2 rounded-lg transition-colors"
-                              title="View Details"
+                              title={t("common.view")}
                             >
                               <Users className="h-4 w-4" />
                             </button>
@@ -276,7 +277,7 @@ export default function VisitManagement() {
                                 setIsUpdateModalOpen(true);
                               }}
                               className="text-gray-600 hover:text-secondary bg-gray-100 hover:bg-secondary/10 p-2 rounded-lg transition-colors"
-                              title="Edit Visit"
+                              title={t("common.edit")}
                             >
                               <FileEdit className="h-4 w-4" />
                             </button>
@@ -286,7 +287,7 @@ export default function VisitManagement() {
                                 setIsDeleteModalOpen(true);
                               }}
                               className="text-gray-600 hover:text-red-500 bg-gray-100 hover:bg-red-50 p-2 rounded-lg transition-colors"
-                              title="Delete Visit"
+                              title={t("common.delete")}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -304,19 +305,21 @@ export default function VisitManagement() {
           {visit_list.length > 0 && (
             <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
               <div className="text-sm text-gray-500">
-                Showing <span className="font-medium">{visit_list.length}</span>{" "}
-                of <span className="font-medium">{visit_list.length}</span>{" "}
-                visits
+                {t("common.showing")}{" "}
+                <span className="font-medium">{visit_list.length}</span>{" "}
+                {t("common.of")}{" "}
+                <span className="font-medium">{visit_list.length}</span>{" "}
+                {t("visits.visits")}
               </div>
               <div className="flex items-center gap-2">
                 <button className="px-3 py-1 text-sm text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200">
-                  Previous
+                  {t("visits.previous")}
                 </button>
                 <button className="px-3 py-1 text-sm text-white bg-primary rounded-md hover:bg-primary/90">
                   1
                 </button>
                 <button className="px-3 py-1 text-sm text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200">
-                  Next
+                  {t("visits.next")}
                 </button>
               </div>
             </div>
@@ -329,7 +332,7 @@ export default function VisitManagement() {
         <div className="p-6">
           <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
             <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            Visit Details
+            {t("visits.visitDetails")}
           </h2>
           {selectedVisit && <Visit_ae978b_read data={selectedVisit} />}
           <div className="flex justify-end mt-6">
@@ -337,7 +340,7 @@ export default function VisitManagement() {
               className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
               onClick={() => setIsViewModalOpen(false)}
             >
-              Close
+              {t("common.close")}
             </button>
           </div>
         </div>
@@ -351,6 +354,7 @@ export default function VisitManagement() {
           setIsUpdateModalOpen(false);
           setSelectedVisit(undefined);
         }}
+        selectedVisit={selectedVisit}
       />
       {/* Delete Visit Modal */}
       <Modal
@@ -367,11 +371,10 @@ export default function VisitManagement() {
             </div>
           </div>
           <h2 className="text-xl font-bold mb-2 text-gray-800 text-center">
-            Delete Visit
+            {t("visits.deleteVisit")}
           </h2>
           <p className="text-gray-600 text-center mb-6">
-            Are you sure you want to delete this visit? This action cannot be
-            undone.
+            {t("visits.deleteVisitConfirm")}
           </p>
           <form action={handleDeleteSubmit}>
             <div className="flex justify-center gap-3 mt-6">
@@ -383,13 +386,13 @@ export default function VisitManagement() {
                   setSelectedVisit(undefined);
                 }}
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all duration-300"
               >
-                Delete Visit
+                {t("common.delete")}
               </button>
             </div>
           </form>

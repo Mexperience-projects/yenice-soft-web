@@ -1,15 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ClientType } from "@/lib/types";
-import {
-  Calendar,
-  User,
-  Users,
-  CreditCard,
-  CalendarDays,
-  Info,
-} from "lucide-react";
+import type React from "react";
+
+import { useState } from "react";
+import type { ClientType } from "@/lib/types";
+import { User, Users, CreditCard, CalendarDays } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ClientFormProps {
   client?: ClientType;
@@ -22,6 +18,8 @@ export default function ClientForm({
   onSubmit,
   isSubmitting = false,
 }: ClientFormProps) {
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     name: client?.name || "",
     nationalCo: client?.nationalCo || "",
@@ -52,24 +50,24 @@ export default function ClientForm({
     const newErrors = { ...errors };
 
     if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
+      newErrors.name = t("clients.nameRequired");
       isValid = false;
     }
 
     if (!formData.nationalCo.trim()) {
-      newErrors.nationalCo = "National ID is required";
+      newErrors.nationalCo = t("clients.nationalIdRequired");
       isValid = false;
     }
 
     if (!formData.birthdate) {
-      newErrors.birthdate = "Birthdate is required";
+      newErrors.birthdate = t("clients.birthdateRequired");
       isValid = false;
     } else {
       const selectedDate = new Date(formData.birthdate);
       const today = new Date();
 
       if (selectedDate > today) {
-        newErrors.birthdate = "Birthdate cannot be in the future";
+        newErrors.birthdate = t("clients.birthdateFuture");
         isValid = false;
       }
     }
@@ -123,7 +121,7 @@ export default function ClientForm({
         <div className="card-body">
           <h2 className="card-title text-lg flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Client Information
+            {t("clients.clientInformation")}
           </h2>
 
           <div className="divider my-0"></div>
@@ -133,7 +131,7 @@ export default function ClientForm({
             <label className="label">
               <span className="label-text flex items-center gap-1">
                 <User className="h-4 w-4" />
-                Full Name
+                {t("clients.fullName")}
               </span>
               <span className="label-text-alt text-error">{errors.name}</span>
             </label>
@@ -142,14 +140,14 @@ export default function ClientForm({
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Enter client's full name"
+              placeholder={t("clients.enterFullName")}
               className={`input input-bordered w-full ${
                 errors.name ? "input-error" : ""
               }`}
             />
             <label className="label">
               <span className="label-text-alt text-base-content opacity-60">
-                Client's legal full name
+                {t("clients.legalFullName")}
               </span>
             </label>
           </div>
@@ -159,7 +157,7 @@ export default function ClientForm({
             <label className="label">
               <span className="label-text flex items-center gap-1">
                 <CreditCard className="h-4 w-4" />
-                National ID
+                {t("clients.nationalId")}
               </span>
               <span className="label-text-alt text-error">
                 {errors.nationalCo}
@@ -170,14 +168,14 @@ export default function ClientForm({
               name="nationalCo"
               value={formData.nationalCo}
               onChange={handleChange}
-              placeholder="Enter national ID number"
+              placeholder={t("clients.enterNationalId")}
               className={`input input-bordered w-full ${
                 errors.nationalCo ? "input-error" : ""
               }`}
             />
             <label className="label">
               <span className="label-text-alt text-base-content opacity-60">
-                Government-issued identification number
+                {t("clients.governmentId")}
               </span>
             </label>
           </div>
@@ -187,7 +185,7 @@ export default function ClientForm({
             <label className="label">
               <span className="label-text flex items-center gap-1">
                 <CalendarDays className="h-4 w-4" />
-                Birthdate
+                {t("clients.birthdate")}
               </span>
               <span className="label-text-alt text-error">
                 {errors.birthdate}
@@ -205,13 +203,14 @@ export default function ClientForm({
               />
               {formData.birthdate && (
                 <div className="badge badge-neutral self-center whitespace-nowrap">
-                  Age: {calculateAge(formData.birthdate)} years
+                  {t("clients.age")}: {calculateAge(formData.birthdate)}{" "}
+                  {t("clients.years")}
                 </div>
               )}
             </div>
             <label className="label">
               <span className="label-text-alt text-base-content opacity-60">
-                Client's date of birth
+                {t("clients.dateOfBirth")}
               </span>
             </label>
           </div>
@@ -219,7 +218,7 @@ export default function ClientForm({
           {/* Gender Field */}
           <div className="form-control w-full">
             <label className="label">
-              <span className="label-text">Gender</span>
+              <span className="label-text">{t("clients.gender")}</span>
             </label>
             <div className="flex flex-wrap gap-4">
               <label className="label cursor-pointer justify-start gap-2 border rounded-lg px-4 py-2 hover:bg-base-200 transition-colors">
@@ -231,7 +230,7 @@ export default function ClientForm({
                   checked={formData.gender === "1"}
                   onChange={handleChange}
                 />
-                <span className="label-text">Male</span>
+                <span className="label-text">{t("clients.male")}</span>
               </label>
               <label className="label cursor-pointer justify-start gap-2 border rounded-lg px-4 py-2 hover:bg-base-200 transition-colors">
                 <input
@@ -242,7 +241,7 @@ export default function ClientForm({
                   checked={formData.gender === "2"}
                   onChange={handleChange}
                 />
-                <span className="label-text">Female</span>
+                <span className="label-text">{t("clients.female")}</span>
               </label>
             </div>
           </div>

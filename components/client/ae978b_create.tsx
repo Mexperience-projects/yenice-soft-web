@@ -3,8 +3,10 @@
 import { useState } from "react";
 import ClientForm from "./client-form";
 import { useClients } from "@/hooks/clients/main";
+import { useTranslation } from "react-i18next";
 
 export default function ClientCreate() {
+  const { t } = useTranslation();
   const { create_clients_data } = useClients();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -20,7 +22,7 @@ export default function ClientCreate() {
       setSuccess(true);
       // Reset form or redirect
     } catch (err) {
-      setError("Failed to create client. Please try again.");
+      setError(t("clients.failedToCreate"));
       console.error(err);
     } finally {
       setIsSubmitting(false);
@@ -30,7 +32,9 @@ export default function ClientCreate() {
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-primary">Create New Client</h1>
+        <h1 className="text-2xl font-bold text-primary">
+          {t("clients.addNewClient")}
+        </h1>
       </div>
 
       {success && (
@@ -48,7 +52,7 @@ export default function ClientCreate() {
               d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <span>Client created successfully!</span>
+          <span>{t("clients.createdSuccessfully")}</span>
         </div>
       )}
 

@@ -6,7 +6,7 @@ interface VisitProps {
 }
 
 export default function Visit_ae978b_read({ data }: VisitProps) {
-  const { service, items, datetime, payments } = data;
+  const { service, items, datetime: datetime, payments } = data;
 
   const formatDate = (dateString: Date) => {
     const date = new Date(dateString);

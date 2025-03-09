@@ -12,8 +12,11 @@ import {
   UserCheck,
 } from "lucide-react";
 import type { PersonelType } from "@/lib/types";
+import { useTranslation } from "react-i18next";
 
 export default function PersonnelPage() {
+  const { t } = useTranslation();
+
   const {
     get_personel_list_list,
     create_personel_data,
@@ -57,7 +60,7 @@ export default function PersonnelPage() {
   const handleDeletePersonnel = async (
     personel: PersonelType
   ): Promise<void> => {
-    if (window.confirm("Are you sure you want to delete this personnel?")) {
+    if (window.confirm(t("personnel.deleteConfirm"))) {
       delete_personel_data(personel.id);
       setActiveTab("list");
     }
@@ -70,11 +73,9 @@ export default function PersonnelPage() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-800 flex items-center">
             <span className="inline-block w-2 h-8 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></span>
-            Personnel Management
+            {t("personnel.title")}
           </h1>
-          <p className="text-gray-600 ml-5">
-            Manage your staff and team members
-          </p>
+          <p className="text-gray-600 ml-5">{t("personnel.subtitle")}</p>
         </div>
 
         {/* Stats Cards */}
@@ -83,7 +84,7 @@ export default function PersonnelPage() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Total Personnel
+                  {t("personnel.totalPersonnel")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-secondary">
@@ -91,7 +92,7 @@ export default function PersonnelPage() {
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Active team members
+                  {t("personnel.activeTeamMembers")}
                 </p>
               </div>
               <div className="flex items-center justify-center bg-secondary/10 rounded-full p-3">
@@ -104,7 +105,7 @@ export default function PersonnelPage() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Available Staff
+                  {t("personnel.availableStaff")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-primary">
@@ -112,7 +113,7 @@ export default function PersonnelPage() {
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Ready for assignment
+                  {t("personnel.readyForAssignment")}
                 </p>
               </div>
               <div className="flex items-center justify-center bg-primary/10 rounded-full p-3">
@@ -125,13 +126,15 @@ export default function PersonnelPage() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Last Updated
+                  {t("personnel.lastUpdated")}
                 </h2>
                 <div className="mt-2">
-                  <p className="text-3xl font-bold text-gray-700">Just now</p>
+                  <p className="text-3xl font-bold text-gray-700">
+                    {t("personnel.justNow")}
+                  </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Personnel data is up to date
+                  {t("personnel.personnelUpToDate")}
                 </p>
               </div>
               <button
@@ -151,7 +154,7 @@ export default function PersonnelPage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <h2 className="text-lg font-semibold text-gray-800 flex items-center">
                 <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-                Personnel Records
+                {t("personnel.personnelRecords")}
               </h2>
 
               <button
@@ -162,7 +165,7 @@ export default function PersonnelPage() {
                 className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300"
               >
                 <Plus className="h-4 w-4" />
-                <span>Add New Personnel</span>
+                <span>{t("personnel.addNewPersonnel")}</span>
               </button>
             </div>
           </div>
@@ -173,13 +176,13 @@ export default function PersonnelPage() {
               <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                   <th scope="col" className="px-6 py-4 font-medium">
-                    Name
+                    {t("common.name")}
                   </th>
                   <th scope="col" className="px-6 py-4 font-medium">
-                    Description
+                    {t("common.description")}
                   </th>
                   <th scope="col" className="px-6 py-4 font-medium text-right">
-                    Actions
+                    {t("common.actions")}
                   </th>
                 </tr>
               </thead>
@@ -205,14 +208,14 @@ export default function PersonnelPage() {
                           }}
                         >
                           <Edit className="h-3.5 w-3.5" />
-                          Edit
+                          {t("common.edit")}
                         </button>
                         <button
                           className="px-3 py-1.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-colors flex items-center gap-1"
                           onClick={() => handleDeletePersonnel(personnel)}
                         >
                           <Trash className="h-3.5 w-3.5" />
-                          Delete
+                          {t("common.delete")}
                         </button>
                       </div>
                     </td>
@@ -266,7 +269,7 @@ export default function PersonnelPage() {
                           }}
                           className="flex items-center gap-2 text-secondary hover:bg-secondary/10"
                         >
-                          <Edit className="h-4 w-4" /> Edit
+                          <Edit className="h-4 w-4" /> {t("common.edit")}
                         </a>
                       </li>
                       <li>
@@ -274,7 +277,7 @@ export default function PersonnelPage() {
                           onClick={() => handleDeletePersonnel(personnel)}
                           className="flex items-center gap-2 text-red-500 hover:bg-red-50"
                         >
-                          <Trash className="h-4 w-4" /> Delete
+                          <Trash className="h-4 w-4" /> {t("common.delete")}
                         </a>
                       </li>
                     </ul>
@@ -290,11 +293,10 @@ export default function PersonnelPage() {
                 <UserPlus className="h-12 w-12 text-gray-400 mx-auto" />
               </div>
               <h3 className="text-lg font-medium text-gray-800 mb-2">
-                No Personnel Records
+                {t("personnel.noPersonnelRecords")}
               </h3>
               <p className="text-gray-500 max-w-md mx-auto mb-6">
-                No personnel records found. Add your first team member to get
-                started!
+                {t("personnel.noPersonnelFound")}
               </p>
               <button
                 onClick={() => {
@@ -304,7 +306,7 @@ export default function PersonnelPage() {
                 className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 mx-auto"
               >
                 <Plus className="h-4 w-4" />
-                <span>Add First Personnel</span>
+                <span>{t("personnel.addFirstPersonnel")}</span>
               </button>
             </div>
           )}
@@ -313,9 +315,9 @@ export default function PersonnelPage() {
           {personel_list.length > 0 && (
             <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
               <div className="text-sm text-gray-500">
-                Showing{" "}
+                {t("common.showing")}{" "}
                 <span className="font-medium">{personel_list.length}</span>{" "}
-                personnel records
+                {t("personnel.personnelRecords").toLowerCase()}
               </div>
             </div>
           )}
@@ -343,7 +345,9 @@ export default function PersonnelPage() {
 
             <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
               <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-              {activeTab === "create" ? "Add New Personnel" : "Edit Personnel"}
+              {activeTab === "create"
+                ? t("personnel.addNewPersonnel")
+                : t("personnel.editPersonnel")}
             </h3>
 
             <form
@@ -359,13 +363,13 @@ export default function PersonnelPage() {
                 <div className="form-control w-full">
                   <label className="label">
                     <span className="label-text text-gray-700 font-medium">
-                      Full Name
+                      {t("personnel.fullName")}
                     </span>
                   </label>
                   <input
                     type="text"
                     name="name"
-                    placeholder="Enter full name"
+                    placeholder={t("personnel.enterFullName")}
                     className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
                     defaultValue={selectedPersonnel?.name}
                     required
@@ -375,13 +379,13 @@ export default function PersonnelPage() {
                 <div className="form-control w-full">
                   <label className="label">
                     <span className="label-text text-gray-700 font-medium">
-                      Description
+                      {t("common.description")}
                     </span>
                   </label>
                   <input
                     type="text"
                     name="description"
-                    placeholder="Enter position or role"
+                    placeholder={t("personnel.enterPosition")}
                     className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
                     defaultValue={selectedPersonnel?.description}
                     required
@@ -397,14 +401,16 @@ export default function PersonnelPage() {
                     closeModal();
                   }}
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </button>
                 <button
                   type="submit"
                   onClick={closeModal}
                   className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
                 >
-                  {activeTab === "create" ? "Add Personnel" : "Save Changes"}
+                  {activeTab === "create"
+                    ? t("personnel.addNewPersonnel")
+                    : t("personnel.saveChanges")}
                 </button>
               </div>
             </form>

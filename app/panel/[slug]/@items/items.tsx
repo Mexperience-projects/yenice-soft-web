@@ -14,8 +14,11 @@ import {
   Edit,
   Trash2,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function ItemsPage() {
+  const { t } = useTranslation();
+
   const {
     get_items_list_list,
     create_items_data,
@@ -83,9 +86,9 @@ export default function ItemsPage() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-800 flex items-center">
             <span className="inline-block w-2 h-8 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></span>
-            Inventory Management
+            {t("inventory.title")}
           </h1>
-          <p className="text-gray-600 ml-5">Manage your items and inventory</p>
+          <p className="text-gray-600 ml-5">{t("inventory.subtitle")}</p>
         </div>
 
         {/* Stats Cards */}
@@ -94,14 +97,16 @@ export default function ItemsPage() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Total Items
+                  {t("inventory.totalItems")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-secondary">
                     {items_list.length}
                   </p>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Items in inventory</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {t("inventory.itemsInInventory")}
+                </p>
               </div>
               <div className="flex items-center justify-center bg-secondary/10 rounded-full p-3">
                 <Package className="h-6 w-6 text-secondary" />
@@ -113,7 +118,7 @@ export default function ItemsPage() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Total Value
+                  {t("inventory.totalValue")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-primary">
@@ -126,7 +131,9 @@ export default function ItemsPage() {
                       .toFixed(2)}
                   </p>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Inventory value</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {t("inventory.inventoryValue")}
+                </p>
               </div>
               <div className="flex items-center justify-center bg-primary/10 rounded-full p-3">
                 <ShoppingCart className="h-6 w-6 text-primary" />
@@ -138,13 +145,15 @@ export default function ItemsPage() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Last Updated
+                  {t("inventory.lastUpdated")}
                 </h2>
                 <div className="mt-2">
-                  <p className="text-3xl font-bold text-gray-700">Just now</p>
+                  <p className="text-3xl font-bold text-gray-700">
+                    {t("inventory.justNow")}
+                  </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Inventory data is up to date
+                  {t("inventory.inventoryUpToDate")}
                 </p>
               </div>
               <button
@@ -164,7 +173,7 @@ export default function ItemsPage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <h2 className="text-lg font-semibold text-gray-800 flex items-center">
                 <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-                Inventory Items
+                {t("inventory.inventoryItems")}
               </h2>
 
               <button
@@ -172,7 +181,7 @@ export default function ItemsPage() {
                 className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300"
               >
                 <Plus className="h-4 w-4" />
-                <span>Add New Item</span>
+                <span>{t("inventory.addNewItem")}</span>
               </button>
             </div>
           </div>
@@ -183,16 +192,16 @@ export default function ItemsPage() {
               <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                   <th scope="col" className="px-6 py-4 font-medium">
-                    Name
+                    {t("common.name")}
                   </th>
                   <th scope="col" className="px-6 py-4 font-medium">
-                    Price
+                    {t("common.price")}
                   </th>
                   <th scope="col" className="px-6 py-4 font-medium">
-                    Count
+                    {t("common.count")}
                   </th>
                   <th scope="col" className="px-6 py-4 font-medium text-right">
-                    Actions
+                    {t("common.actions")}
                   </th>
                 </tr>
               </thead>
@@ -210,10 +219,10 @@ export default function ItemsPage() {
                             <Package className="h-6 w-6 text-gray-400" />
                           </div>
                           <p className="text-gray-500 font-medium">
-                            No items found
+                            {t("inventory.noItemsFound")}
                           </p>
                           <p className="text-gray-400 text-sm mt-1">
-                            Add a new item to get started
+                            {t("inventory.addItemToStart")}
                           </p>
                         </div>
                       )}
@@ -251,14 +260,14 @@ export default function ItemsPage() {
                             className="px-3 py-1.5 bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-lg transition-colors flex items-center gap-1"
                           >
                             <Edit className="h-3.5 w-3.5" />
-                            Edit
+                            {t("common.edit")}
                           </button>
                           <button
                             onClick={() => handleDeleteClick(item)}
                             className="px-3 py-1.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-colors flex items-center gap-1"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
-                            Delete
+                            {t("common.delete")}
                           </button>
                         </div>
                       </td>
@@ -273,8 +282,9 @@ export default function ItemsPage() {
           {items_list.length > 0 && (
             <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
               <div className="text-sm text-gray-500">
-                Showing <span className="font-medium">{items_list.length}</span>{" "}
-                items
+                {t("common.showing")}{" "}
+                <span className="font-medium">{items_list.length}</span>{" "}
+                {t("inventory.itemsInInventory")}
               </div>
             </div>
           )}
@@ -286,7 +296,7 @@ export default function ItemsPage() {
         <div className="p-6">
           <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
             <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            Add New Item
+            {t("inventory.addNewItem")}
           </h3>
           <form action={handleCreateSubmit}>
             <Items_691d50_create />
@@ -296,13 +306,13 @@ export default function ItemsPage() {
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                 onClick={() => setCreateModal(false)}
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
               >
-                Save Item
+                {t("inventory.saveItem")}
               </button>
             </div>
           </form>
@@ -315,7 +325,7 @@ export default function ItemsPage() {
           <div className="p-6">
             <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
               <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-              Edit Item: {selectedItem.name}
+              {t("inventory.editItem")}: {selectedItem.name}
             </h3>
             <form action={handleUpdateSubmit}>
               <Items_691d50_update item={selectedItem} />
@@ -325,13 +335,13 @@ export default function ItemsPage() {
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                   onClick={() => setUpdateModal(false)}
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
                 >
-                  Update Item
+                  {t("common.update")}
                 </button>
               </div>
             </form>
@@ -349,11 +359,10 @@ export default function ItemsPage() {
               </div>
             </div>
             <h3 className="text-xl font-bold mb-2 text-gray-800 text-center">
-              Delete Item
+              {t("inventory.deleteItem")}
             </h3>
             <p className="text-gray-600 text-center mb-6">
-              Are you sure you want to delete "{selectedItem.name}"? This action
-              cannot be undone.
+              {t("inventory.deleteItemConfirm")}
             </p>
             <div className="flex justify-center gap-3 mt-6">
               <button
@@ -361,14 +370,14 @@ export default function ItemsPage() {
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                 onClick={() => setDeleteModal(false)}
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="button"
                 className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all duration-300"
                 onClick={handleDeleteSubmit}
               >
-                Delete Item
+                {t("common.delete")}
               </button>
             </div>
           </div>

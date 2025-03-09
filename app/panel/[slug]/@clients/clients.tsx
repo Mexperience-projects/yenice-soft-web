@@ -19,8 +19,11 @@ import {
 import { useClients } from "@/hooks/clients/main";
 import type { ClientType } from "@/lib/types";
 import { Modal } from "@/components/ui/modal";
+import { useTranslation } from "react-i18next";
 
 export default function ClientManagement() {
+  const { t } = useTranslation();
+
   const {
     get_clients_list_list,
     create_clients_data,
@@ -45,7 +48,6 @@ export default function ClientManagement() {
 
   const handleUpdateSubmit = async (formData: FormData) => {
     if (selectedClient) {
-      // await update_client_data(formData);
       setIsUpdateModalOpen(false);
       update_clients_data(formData);
       setSelectedClient(null);
@@ -54,7 +56,6 @@ export default function ClientManagement() {
 
   const handleDeleteSubmit = async () => {
     if (selectedClient) {
-      // await delete_client_data(selectedClient.id);
       setIsDeleteModalOpen(false);
       delete_clients_data(selectedClient.id);
       setSelectedClient(null);
@@ -63,11 +64,7 @@ export default function ClientManagement() {
 
   const formatDate = (dateString: Date) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+    return date.toLocaleDateString();
   };
 
   const formatBirthdate = (dateString: Date) => {
@@ -75,7 +72,7 @@ export default function ClientManagement() {
     const today = new Date();
     const age = today.getFullYear() - date.getFullYear();
 
-    return `${formatDate(dateString)} (${age} years)`;
+    return `${formatDate(dateString)} (${age} ${t("clients.years")})`;
   };
 
   // Filter clients based on search term and gender filter
@@ -99,9 +96,9 @@ export default function ClientManagement() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-800 flex items-center">
             <span className="inline-block w-2 h-8 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></span>
-            Client Management
+            {t("clients.title")}
           </h1>
-          <p className="text-gray-600 ml-5">Manage your client records</p>
+          <p className="text-gray-600 ml-5">{t("clients.subtitle")}</p>
         </div>
 
         <div className="flex justify-end mb-6">
@@ -110,7 +107,7 @@ export default function ClientManagement() {
             className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300"
           >
             <Plus className="h-4 w-4" />
-            <span>Add New Client</span>
+            <span>{t("clients.addNewClient")}</span>
           </button>
         </div>
 
@@ -120,7 +117,7 @@ export default function ClientManagement() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Total Clients
+                  {t("clients.totalClients")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-secondary">
@@ -128,7 +125,7 @@ export default function ClientManagement() {
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Active client records
+                  {t("clients.activeClientRecords")}
                 </p>
               </div>
               <div className="flex items-center justify-center bg-secondary/10 rounded-full p-3">
@@ -142,7 +139,7 @@ export default function ClientManagement() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Male Clients
+                  {t("clients.maleClients")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-primary">
@@ -154,7 +151,7 @@ export default function ClientManagement() {
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Male client records
+                  {t("clients.maleClientRecords")}
                 </p>
               </div>
               <div className="flex items-center justify-center bg-primary/10 rounded-full p-3">
@@ -168,7 +165,7 @@ export default function ClientManagement() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Female Clients
+                  {t("clients.femaleClients")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-secondary">
@@ -180,7 +177,7 @@ export default function ClientManagement() {
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Female client records
+                  {t("clients.femaleClientRecords")}
                 </p>
               </div>
               <div className="flex items-center justify-center bg-secondary/10 rounded-full p-3">
@@ -196,7 +193,7 @@ export default function ClientManagement() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <h2 className="text-lg font-semibold text-gray-800 flex items-center">
                 <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-                Client Records
+                {t("clients.clientRecords")}
               </h2>
               <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                 {/* Search Input */}
@@ -207,7 +204,7 @@ export default function ClientManagement() {
                   <input
                     type="text"
                     className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pl-10 p-2.5"
-                    placeholder="Search by name or ID..."
+                    placeholder={t("clients.searchByNameOrId")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -221,7 +218,7 @@ export default function ClientManagement() {
                     className="px-4 py-2.5 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg flex items-center gap-2 transition-colors"
                   >
                     <Download className="h-4 w-4" />
-                    Export
+                    {t("common.export")}
                     <ChevronDown className="h-4 w-4" />
                   </div>
                   <ul
@@ -250,22 +247,22 @@ export default function ClientManagement() {
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                   <tr>
                     <th scope="col" className="px-6 py-4 font-medium">
-                      Name
+                      {t("clients.name")}
                     </th>
                     <th scope="col" className="px-6 py-4 font-medium">
-                      National ID
+                      {t("clients.nationalId")}
                     </th>
                     <th scope="col" className="px-6 py-4 font-medium">
-                      Birthdate
+                      {t("clients.birthdate")}
                     </th>
                     <th scope="col" className="px-6 py-4 font-medium">
-                      Gender
+                      {t("clients.gender")}
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-4 font-medium text-right"
                     >
-                      Actions
+                      {t("common.actions")}
                     </th>
                   </tr>
                 </thead>
@@ -278,19 +275,19 @@ export default function ClientManagement() {
                             <Users className="h-6 w-6 text-gray-400" />
                           </div>
                           <p className="text-gray-500 font-medium">
-                            No clients found
+                            {t("clients.noClientsFound")}
                           </p>
                           <p className="text-gray-400 text-sm mt-1">
                             {searchTerm || filterGender !== "all"
-                              ? "No clients match your search criteria."
-                              : "Add a new client to get started."}
+                              ? t("clients.noClientsMatch")
+                              : t("clients.addClientToStart")}
                           </p>
                           {searchTerm && (
                             <button
                               onClick={() => setSearchTerm("")}
                               className="mt-3 text-primary hover:text-primary/80 text-sm font-medium"
                             >
-                              Clear search
+                              {t("common.clearSearch")}
                             </button>
                           )}
                         </div>
@@ -321,7 +318,9 @@ export default function ClientManagement() {
                                 : "bg-secondary/10 text-secondary"
                             }`}
                           >
-                            {client.gender === 1 ? "Male" : "Female"}
+                            {client.gender === 1
+                              ? t("clients.male")
+                              : t("clients.female")}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right">
@@ -332,7 +331,7 @@ export default function ClientManagement() {
                                 setSelectedClient(client);
                                 setIsViewModalOpen(true);
                               }}
-                              title="View Details"
+                              title={t("common.view")}
                             >
                               <Eye className="h-4 w-4 text-gray-600" />
                             </button>
@@ -342,7 +341,7 @@ export default function ClientManagement() {
                                 setSelectedClient(client);
                                 setIsUpdateModalOpen(true);
                               }}
-                              title="Edit Client"
+                              title={t("common.edit")}
                             >
                               <FileEdit className="h-4 w-4 text-secondary" />
                             </button>
@@ -352,7 +351,7 @@ export default function ClientManagement() {
                                 setSelectedClient(client);
                                 setIsDeleteModalOpen(true);
                               }}
-                              title="Delete Client"
+                              title={t("common.delete")}
                             >
                               <Trash2 className="h-4 w-4 text-red-500" />
                             </button>
@@ -388,11 +387,9 @@ export default function ClientManagement() {
         <div className="p-6">
           <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
             <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            Add New Client
+            {t("clients.addNewClient")}
           </h3>
-          <p className="text-gray-600 mb-4">
-            Enter the client's information below to create a new record.
-          </p>
+          <p className="text-gray-600 mb-4">{t("clients.enterFullName")}</p>
 
           <form action={create_clients_data}>
             <ClientForm />
@@ -402,13 +399,13 @@ export default function ClientManagement() {
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                 onClick={() => setIsCreateModalOpen(false)}
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
               >
-                Create Client
+                {t("common.create")}
               </button>
             </div>
           </form>
@@ -423,11 +420,9 @@ export default function ClientManagement() {
         <div className="p-6">
           <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
             <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            Update Client
+            {t("clients.updateClient")}
           </h3>
-          <p className="text-gray-600 mb-4">
-            Edit the client's information below.
-          </p>
+          <p className="text-gray-600 mb-4">{t("clients.editClientInfo")}</p>
 
           <form action={handleUpdateSubmit}>
             <input name="id" type="hidden" value={selectedClient?.id} />
@@ -438,13 +433,13 @@ export default function ClientManagement() {
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                 onClick={() => setIsUpdateModalOpen(false)}
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
               >
-                Update Client
+                {t("common.update")}
               </button>
             </div>
           </form>
@@ -456,7 +451,7 @@ export default function ClientManagement() {
         <div className="p-6">
           <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
             <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            Client Details
+            {t("clients.clientDetails")}
           </h3>
 
           {selectedClient && (
@@ -465,18 +460,20 @@ export default function ClientManagement() {
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                     <UserCircle className="h-4 w-4 text-primary" />
-                    Personal Information
+                    {t("clients.personalInformation")}
                   </h4>
                   <div className="space-y-3">
                     <div>
-                      <p className="text-sm font-medium text-gray-500">Name</p>
+                      <p className="text-sm font-medium text-gray-500">
+                        {t("clients.name")}
+                      </p>
                       <p className="font-medium text-gray-800">
                         {selectedClient.name}
                       </p>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">
-                        National ID
+                        {t("clients.nationalId")}
                       </p>
                       <p className="font-medium text-gray-800">
                         {selectedClient.nationalCo}
@@ -484,7 +481,7 @@ export default function ClientManagement() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">
-                        Birthdate
+                        {t("clients.birthdate")}
                       </p>
                       <p className="font-medium text-gray-800">
                         {formatBirthdate(selectedClient.birthdate)}
@@ -492,7 +489,7 @@ export default function ClientManagement() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">
-                        Gender
+                        {t("clients.gender")}
                       </p>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -501,7 +498,9 @@ export default function ClientManagement() {
                             : "bg-secondary/10 text-secondary"
                         }`}
                       >
-                        {selectedClient.gender === 1 ? "Male" : "Female"}
+                        {selectedClient.gender === 1
+                          ? t("clients.male")
+                          : t("clients.female")}
                       </span>
                     </div>
                   </div>
@@ -510,10 +509,10 @@ export default function ClientManagement() {
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-secondary" />
-                    Visit History
+                    {t("clients.visitHistory")}
                   </h4>
                   <div className="flex items-center justify-center h-32 text-gray-500 text-sm">
-                    Visit history will be displayed here
+                    {t("clients.visitHistoryDisplay")}
                   </div>
                 </div>
               </div>
@@ -521,10 +520,10 @@ export default function ClientManagement() {
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                   <CreditCard className="h-4 w-4 text-primary" />
-                  Payment History
+                  {t("clients.paymentHistory")}
                 </h4>
                 <div className="flex items-center justify-center h-32 text-gray-500 text-sm">
-                  Payment history will be displayed here
+                  {t("clients.paymentHistoryDisplay")}
                 </div>
               </div>
             </div>
@@ -535,7 +534,7 @@ export default function ClientManagement() {
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
               onClick={() => setIsViewModalOpen(false)}
             >
-              Close
+              {t("common.close")}
             </button>
             <button
               className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
@@ -545,7 +544,7 @@ export default function ClientManagement() {
               }}
             >
               <FileEdit className="h-4 w-4 mr-2 inline" />
-              Edit Client
+              {t("common.edit")}
             </button>
           </div>
         </div>
@@ -563,30 +562,33 @@ export default function ClientManagement() {
             </div>
           </div>
           <h3 className="text-xl font-bold mb-2 text-gray-800 text-center">
-            Delete Client
+            {t("clients.deleteClient")}
           </h3>
           <p className="text-gray-600 text-center mb-6">
-            Are you sure you want to delete this client? This action cannot be
-            undone.
+            {t("clients.deleteClientConfirm")}
           </p>
 
           {selectedClient && (
             <div className="bg-gray-50 p-4 rounded-lg mb-6">
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Name:</span>
+                  <span className="text-gray-600">{t("clients.name")}:</span>
                   <span className="font-medium text-gray-800">
                     {selectedClient.name}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">National ID:</span>
+                  <span className="text-gray-600">
+                    {t("clients.nationalId")}:
+                  </span>
                   <span className="font-medium text-gray-800">
                     {selectedClient.nationalCo}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Birthdate:</span>
+                  <span className="text-gray-600">
+                    {t("clients.birthdate")}:
+                  </span>
                   <span className="font-medium text-gray-800">
                     {formatDate(selectedClient.birthdate)}
                   </span>
@@ -600,13 +602,13 @@ export default function ClientManagement() {
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
               onClick={() => setIsDeleteModalOpen(false)}
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all duration-300"
               onClick={handleDeleteSubmit}
             >
-              Delete Client
+              {t("common.delete")}
             </button>
           </div>
         </div>
@@ -620,6 +622,7 @@ interface ClientFormProps {
 }
 
 function ClientForm({ client }: ClientFormProps = {}) {
+  const { t } = useTranslation();
   const [birthdate, setBirthdate] = useState<Date | undefined>(
     client?.birthdate ? new Date(client.birthdate) : undefined
   );
@@ -628,13 +631,13 @@ function ClientForm({ client }: ClientFormProps = {}) {
     <div className="space-y-4">
       <div className="form-control w-full">
         <label className="text-sm font-medium text-gray-700 mb-1">
-          Full Name
+          {t("clients.fullName")}
         </label>
         <input
           type="text"
           name="name"
           defaultValue={client?.name || ""}
-          placeholder="Enter client's full name"
+          placeholder={t("clients.enterFullName")}
           className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
           required
         />
@@ -642,13 +645,13 @@ function ClientForm({ client }: ClientFormProps = {}) {
 
       <div className="form-control w-full">
         <label className="text-sm font-medium text-gray-700 mb-1">
-          National ID
+          {t("clients.nationalId")}
         </label>
         <input
           type="text"
           name="nationalCo"
           defaultValue={client?.nationalCo || ""}
-          placeholder="Enter national ID number"
+          placeholder={t("clients.enterNationalId")}
           className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
           required
         />
@@ -656,7 +659,7 @@ function ClientForm({ client }: ClientFormProps = {}) {
 
       <div className="form-control w-full">
         <label className="text-sm font-medium text-gray-700 mb-1">
-          Birthdate
+          {t("clients.birthdate")}
         </label>
         <input
           type="date"
@@ -672,7 +675,9 @@ function ClientForm({ client }: ClientFormProps = {}) {
       </div>
 
       <div className="form-control">
-        <label className="text-sm font-medium text-gray-700 mb-1">Gender</label>
+        <label className="text-sm font-medium text-gray-700 mb-1">
+          {t("clients.gender")}
+        </label>
         <div className="flex gap-4">
           <label className="inline-flex items-center">
             <input
@@ -682,7 +687,9 @@ function ClientForm({ client }: ClientFormProps = {}) {
               className="w-4 h-4 text-primary bg-gray-100 border-gray-300 focus:ring-primary"
               defaultChecked={!client || client.gender === 1}
             />
-            <span className="ml-2 text-sm text-gray-700">Male</span>
+            <span className="ml-2 text-sm text-gray-700">
+              {t("clients.male")}
+            </span>
           </label>
           <label className="inline-flex items-center">
             <input
@@ -692,7 +699,9 @@ function ClientForm({ client }: ClientFormProps = {}) {
               className="w-4 h-4 text-secondary bg-gray-100 border-gray-300 focus:ring-secondary"
               defaultChecked={client?.gender === 2}
             />
-            <span className="ml-2 text-sm text-gray-700">Female</span>
+            <span className="ml-2 text-sm text-gray-700">
+              {t("clients.female")}
+            </span>
           </label>
         </div>
       </div>

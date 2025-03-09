@@ -1,14 +1,16 @@
 "use client";
 
-import { items_691d50Type } from "@/hooks/items/691d50";
-import type { ItemsType } from "@/lib/types";
+import type { items_691d50Type } from "@/hooks/items/691d50";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ItemsProps {
   item: items_691d50Type;
 }
 
 export default function Items_691d50_update({ item }: ItemsProps) {
+  const { t } = useTranslation();
+
   const nameRef = useRef<HTMLInputElement>(null);
   const priceRef = useRef<HTMLInputElement>(null);
   const countRef = useRef<HTMLInputElement>(null);
@@ -26,7 +28,7 @@ export default function Items_691d50_update({ item }: ItemsProps) {
       <input type="hidden" name="id" ref={idRef} />
       <div className="form-control">
         <label className="label">
-          <span className="label-text">Item Name</span>
+          <span className="label-text">{t("common.name")}</span>
         </label>
         <input
           id="name"
@@ -40,7 +42,7 @@ export default function Items_691d50_update({ item }: ItemsProps) {
 
       <div className="form-control">
         <label className="label">
-          <span className="label-text">Price</span>
+          <span className="label-text">{t("common.price")}</span>
         </label>
         <div className="input-group">
           <span>$</span>
@@ -59,7 +61,7 @@ export default function Items_691d50_update({ item }: ItemsProps) {
 
       <div className="form-control">
         <label className="label">
-          <span className="label-text">Count</span>
+          <span className="label-text">{t("common.count")}</span>
         </label>
         <input
           id="count"
