@@ -184,10 +184,8 @@ export default function ServicesUpdateForm({ initialData }: ServicesProps) {
             {/* Hidden input to store selected personnel ID as an array */}
             <input
               type="hidden"
-              name="personel"
-              value={
-                selectedPersonnel ? JSON.stringify([selectedPersonnel]) : "[]"
-              }
+              name="personel_id"
+              value={selectedPersonnel || undefined}
             />
           </div>
 

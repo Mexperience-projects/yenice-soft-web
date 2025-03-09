@@ -1,6 +1,8 @@
 import { ItemsType } from "@/lib/types";
 import { useState } from "react";
 import { axiosUser } from "@/lib/axios/noUser";
+import { useAppDispatch, useAppSelector } from "@/store/HOCs";
+import { setItems } from "@/store/slice/items";
 
 export type items_691d50Type = Pick<
   ItemsType,
@@ -9,13 +11,14 @@ export type items_691d50Type = Pick<
 
 export function useItems_691d50() {
   const [loading, loadingHandler] = useState(false);
-  const [items_list, items_listHandler] = useState<items_691d50Type[]>([]);
+  const dispatch = useAppDispatch();
+  const items_list = useAppSelector((store) => store.items);
   const get_items_list_list = async () => {
     loadingHandler(true);
     const response = await axiosUser.get("items/");
     const serverData = response.data.items;
     // set response of server on state
-    items_listHandler(serverData);
+    dispatch(setItems(serverData));
     loadingHandler(false);
   };
   const create_items_data = async (formData: any) => {
@@ -24,6 +27,7 @@ export function useItems_691d50() {
     const data = Object.fromEntries(formData);
     const response = await axiosUser.post("items/", data);
     const serverData = response.data.items;
+    get_items_list_list();
     // set response of server on state
     loadingHandler(false);
   };
@@ -33,6 +37,7 @@ export function useItems_691d50() {
     const data = Object.fromEntries(formData);
     const response = await axiosUser.put("items/", data);
     const serverData = response.data.items;
+    get_items_list_list();
     // set response of server on state
     loadingHandler(false);
   };
@@ -40,6 +45,7 @@ export function useItems_691d50() {
     loadingHandler(true);
     const response = await axiosUser.delete("items/", { params: { id } });
     const serverData = response.data.items;
+    get_items_list_list();
     // set response of server on state
     loadingHandler(false);
   };

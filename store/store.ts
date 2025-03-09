@@ -5,12 +5,14 @@ import {
 } from "@reduxjs/toolkit";
 
 import personels from "./slice/personels";
+import items from "./slice/items";
 import core from "./core/slice";
 
 export const store = configureStore({
   reducer: {
     core,
     personels,
+    items,
   },
 });
 
