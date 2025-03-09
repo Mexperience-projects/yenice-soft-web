@@ -22,6 +22,7 @@ import {
   useServices_10cd39,
 } from "@/hooks/services/10cd39";
 import { type items_691d50Type, useItems_691d50 } from "@/hooks/items/691d50";
+import { useClients } from "@/hooks/clients/main";
 
 interface SelectedItem {
   id: string;
@@ -39,6 +40,7 @@ interface Payment {
 export default function VisitCreateForm() {
   const [services, setServices] = useState<services_10cd39Type[]>([]);
   const [items, setItems] = useState<items_691d50Type[]>([]);
+  const { get_clients_list_list, clients_list } = useClients();
 
   const [formData, setFormData] = useState({
     client: "",
@@ -76,6 +78,7 @@ export default function VisitCreateForm() {
     setServices(services_list);
     get_items_list_list();
     setItems(items_list);
+    get_clients_list_list();
   }, []);
 
   // Close dropdowns when clicking outside
@@ -290,15 +293,53 @@ export default function VisitCreateForm() {
                 <User className="h-4 w-4" /> Client
               </span>
             </label>
-            <input
-              id="client"
-              name="client"
-              value={formData.client}
-              onChange={handleChange}
-              placeholder="Enter client name"
-              className="input input-bordered w-full"
-              required
-            />
+
+            <div className="relative group">
+              <input
+                id="client"
+                name="client"
+                value={formData.client}
+                onChange={handleChange}
+                placeholder="Enter client name"
+                className="input input-bordered w-full"
+                required
+                // onFocus={() => setIsClientFieldFocused(true)}
+                // onBlur={() =>
+                //   setTimeout(() => setIsClientFieldFocused(false), 200)
+                // }
+              />
+
+              <div className="absolute z-30 bg-base-100 shadow-lg rounded-box w-full hidden group-hover:flex hover:flex">
+                <div className="max-h-60 overflow-y-auto">
+                  {clients_list.map((client) => (
+                    <div
+                      key={client.id}
+                      className="p-2 hover:bg-base-200 cursor-pointer"
+                      onClick={() => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          client: client.name,
+                        }));
+                      }}
+                    >
+                      {client.name}
+                    </div>
+                  ))}
+                </div>
+                <div className="border-t border-base-300 w-full p-2">
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm w-full text-primary flex items-center justify-center gap-2"
+                    onClick={() => {
+                      // Handle create new client action
+                      console.log("Create new client clicked");
+                    }}
+                  >
+                    <Plus className="h-4 w-4" /> Create New Client
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Services Field */}
