@@ -19,11 +19,11 @@ export interface PersonelType {
 
 export interface VisitType {
   id: number;
-  client: number[];
+  client: ClientType;
   service: number[];
   items: number;
   datetime: Date;
-  payments: number;
+  payments: PaymentsType[];
 }
 
 export interface ClientType {
@@ -66,6 +66,9 @@ export interface Visit_paymentType {
 export interface PaymentsType {
   id: number;
   personel_id: PersonelType["id"];
-  price: string;
+  price: number;
   date: Date;
+  created_at: Date;
+  paid: boolean;
+  visit: VisitType;
 }

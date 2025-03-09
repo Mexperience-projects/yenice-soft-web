@@ -1,4 +1,4 @@
-import Visit from "@/app/panel/[slug]/@visit/visit";
+import Visit from "@/app/panel/[slug]/@payments/payments";
 
 export default function () {
   return (
