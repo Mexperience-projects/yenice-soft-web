@@ -17,8 +17,13 @@ import { useClients } from "@/hooks/clients/main";
 import type { ClientType } from "@/lib/types";
 
 export default function ClientManagement() {
-  const { get_clients_list_list, create_clients_data, clients_list } =
-    useClients();
+  const {
+    get_clients_list_list,
+    create_clients_data,
+    clients_list,
+    update_clients_data,
+    delete_clients_data,
+  } = useClients();
 
   const [selectedClient, setSelectedClient] = useState<ClientType | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -38,8 +43,8 @@ export default function ClientManagement() {
     if (selectedClient) {
       // await update_client_data(formData);
       setIsUpdateModalOpen(false);
+      update_clients_data(formData);
       setSelectedClient(null);
-      get_clients_list_list(); // Refresh the list
     }
   };
 
@@ -47,8 +52,8 @@ export default function ClientManagement() {
     if (selectedClient) {
       // await delete_client_data(selectedClient.id);
       setIsDeleteModalOpen(false);
+      delete_clients_data(selectedClient.id);
       setSelectedClient(null);
-      get_clients_list_list(); // Refresh the list
     }
   };
 
@@ -369,6 +374,7 @@ export default function ClientManagement() {
           </p>
 
           <form action={handleUpdateSubmit} className="mt-4">
+            <input name="id" type="hidden" value={selectedClient?.id} />
             {selectedClient && <ClientForm client={selectedClient} />}
             <div className="modal-action">
               <button
