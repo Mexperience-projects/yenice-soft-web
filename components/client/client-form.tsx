@@ -248,37 +248,6 @@ export default function ClientForm({
           </div>
         </div>
       </div>
-
-      {/* Additional Information Card (Optional) */}
-      <div className="card bg-base-100 shadow-sm">
-        <div className="card-body">
-          <h2 className="card-title text-lg flex items-center gap-2">
-            <Info className="h-5 w-5" />
-            Additional Information
-          </h2>
-
-          <div className="divider my-0"></div>
-
-          <div className="bg-base-200 rounded-lg p-4 text-center text-base-content opacity-70">
-            Additional client fields can be added here (address, phone, email,
-            etc.)
-          </div>
-        </div>
-      </div>
-
-      {/* Form Actions */}
-      <div className="flex justify-end gap-2 mt-6">
-        <button type="button" className="btn btn-outline">
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className={`btn btn-primary ${isSubmitting ? "loading" : ""}`}
-          disabled={isSubmitting}
-        >
-          {client ? "Update Client" : "Create Client"}
-        </button>
-      </div>
     </div>
   );
 }

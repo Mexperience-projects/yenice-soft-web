@@ -4,7 +4,6 @@ import { useVisit_ae978b, type visit_ae978bType } from "@/hooks/visit/ae978b";
 import Visit_ae978b_read from "@/components/visit/ae978b_read";
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/modal";
-import Visit_ae978b_create from "@/components/visit/ae978b_create";
 import {
   Users,
   FileEdit,
@@ -17,24 +16,16 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
-import ClientForm from "@/components/client/client-form";
-import { useClients } from "@/hooks/clients/main";
+import VisitForm from "./(modals)/visitForm";
 
 export default function VisitManagement() {
-  const {
-    get_visit_list_list,
-    create_visit_data,
-    visit_list,
-    delete_visit_data,
-    update_visit_data,
-  } = useVisit_ae978b();
-  const { create_clients_data } = useClients();
+  const { get_visit_list_list, visit_list, delete_visit_data } =
+    useVisit_ae978b();
 
   const [selectedVisit, setSelectedVisit] = useState<
     visit_ae978bType | undefined
   >();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isClientCreateModalOpen, setIsClientCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -59,17 +50,9 @@ export default function VisitManagement() {
   };
 
   // Filter visits based on search term
-  const filteredVisits = visit_list.filter(
-    (visit) =>
-      visit.client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      visit.service.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredVisits = visit_list.filter((visit) =>
+    visit.client.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const handleCreateSubmit = async (formData: FormData) => {
-    await create_visit_data(formData);
-    setIsCreateModalOpen(false);
-    get_visit_list_list();
-  };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
@@ -361,55 +344,14 @@ export default function VisitManagement() {
       </Modal>
 
       {/* Create/Update Visit Modal */}
-      <Modal
+      <VisitForm
         isOpen={isCreateModalOpen || isUpdateModalOpen}
         onClose={() => {
           setIsCreateModalOpen(false);
           setIsUpdateModalOpen(false);
           setSelectedVisit(undefined);
         }}
-      >
-        <div className="p-6">
-          <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
-            <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            {isUpdateModalOpen ? "Update Visit" : "Create New Visit"}
-          </h2>
-          <form
-            action={
-              isUpdateModalOpen && selectedVisit
-                ? update_visit_data
-                : handleCreateSubmit
-            }
-          >
-            {selectedVisit && (
-              <input name="id" type="hidden" value={selectedVisit.id} />
-            )}
-            <Visit_ae978b_create
-              openNewClient={() => setIsClientCreateModalOpen(true)}
-            />
-            <div className="flex justify-end gap-2 mt-6">
-              <button
-                type="button"
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
-                onClick={() => {
-                  setIsCreateModalOpen(false);
-                  setIsUpdateModalOpen(false);
-                  setSelectedVisit(undefined);
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
-              >
-                {isUpdateModalOpen ? "Update Visit" : "Create Visit"}
-              </button>
-            </div>
-          </form>
-        </div>
-      </Modal>
-
+      />
       {/* Delete Visit Modal */}
       <Modal
         isOpen={isDeleteModalOpen}
@@ -453,59 +395,6 @@ export default function VisitManagement() {
           </form>
         </div>
       </Modal>
-
-      {/* Create Client Modal */}
-      <dialog
-        className={`modal ${isClientCreateModalOpen ? "modal-open" : ""}`}
-      >
-        <div className="modal-box max-w-2xl bg-white rounded-xl shadow-lg">
-          <form method="dialog">
-            <button
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-              onClick={() => setIsClientCreateModalOpen(false)}
-            >
-              ✕
-            </button>
-          </form>
-          <h3 className="font-bold text-lg text-gray-800 flex items-center">
-            <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            Add New Client
-          </h3>
-          <p className="py-2 text-gray-600">
-            Enter the client's information below to create a new record.
-          </p>
-
-          <form
-            action={(form_) => {
-              create_clients_data(form_);
-              setIsClientCreateModalOpen(false);
-            }}
-            className="mt-4"
-          >
-            <ClientForm />
-            <div className="flex justify-end gap-2 mt-6">
-              <button
-                type="button"
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
-                onClick={() => setIsClientCreateModalOpen(false)}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
-              >
-                Create Client
-              </button>
-            </div>
-          </form>
-        </div>
-        <form method="dialog" className="modal-backdrop">
-          <button onClick={() => setIsClientCreateModalOpen(false)}>
-            close
-          </button>
-        </form>
-      </dialog>
     </div>
   );
 }

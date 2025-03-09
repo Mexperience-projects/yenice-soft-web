@@ -1,12 +1,12 @@
-import type { visit_ae978bType } from "@/hooks/visit/ae978b";
+import { OperationType } from "@/lib/types";
 import { Calendar, User, Briefcase, Package, CreditCard } from "lucide-react";
 
 interface VisitProps {
-  data: visit_ae978bType;
+  data: OperationType;
 }
 
 export default function Visit_ae978b_read({ data }: VisitProps) {
-  const { client, service, items, datetime, payments } = data;
+  const { service, items, datetime, payments } = data;
 
   const formatDate = (dateString: Date) => {
     const date = new Date(dateString);
@@ -24,7 +24,6 @@ export default function Visit_ae978b_read({ data }: VisitProps) {
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">Client</p>
-                <p className="font-semibold text-gray-800">{client.name}</p>
               </div>
             </div>
 
@@ -34,7 +33,7 @@ export default function Visit_ae978b_read({ data }: VisitProps) {
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">Service</p>
-                <p className="font-semibold text-gray-800">{service}</p>
+                {/* <p className="font-semibold text-gray-800">{service}</p> */}
               </div>
             </div>
           </div>
@@ -59,7 +58,6 @@ export default function Visit_ae978b_read({ data }: VisitProps) {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">Items</p>
-                  <p className="font-semibold text-gray-800">{items}</p>
                 </div>
               </div>
             )}
@@ -71,7 +69,6 @@ export default function Visit_ae978b_read({ data }: VisitProps) {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">Payments</p>
-                  <p className="font-semibold text-gray-800">{payments}</p>
                 </div>
               </div>
             )}

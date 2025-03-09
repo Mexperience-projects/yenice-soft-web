@@ -17,13 +17,18 @@ export interface PersonelType {
   doctorExpense: number;
 }
 
+export interface OperationType {
+  id: number;
+  service: ServicesType[];
+  datetime: Date;
+  items: Visit_itemType[];
+  payments: PaymentsType[];
+}
+
 export interface VisitType {
   id: number;
   client: ClientType;
-  service: number[];
-  items: number;
-  datetime: Date;
-  payments: PaymentsType[];
+  operations: OperationType[];
 }
 
 export interface ClientType {
@@ -52,8 +57,8 @@ export interface Service_itemsType {
 export interface Visit_itemType {
   id: number;
   count: number;
-  item: number[];
-  visit: number[];
+  item: ItemsType;
+  visit: number;
 }
 
 export interface Visit_paymentType {
@@ -65,10 +70,11 @@ export interface Visit_paymentType {
 
 export interface PaymentsType {
   id: number;
-  personel_id: PersonelType["id"];
+  personel_id?: PersonelType["id"];
   price: number;
   date: Date;
   created_at: Date;
   paid: boolean;
-  visit: VisitType;
+  visit?: VisitType;
+  description: string;
 }

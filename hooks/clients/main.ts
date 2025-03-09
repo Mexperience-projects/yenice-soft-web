@@ -23,6 +23,7 @@ export function useClients() {
     get_clients_list_list();
     // set response of server on state
     loadingHandler(false);
+    return data;
   };
   const update_clients_data = async (formData: any) => {
     loadingHandler(true);

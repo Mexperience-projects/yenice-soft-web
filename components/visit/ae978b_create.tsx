@@ -23,41 +23,47 @@ import {
 } from "@/hooks/services/10cd39";
 import { type items_691d50Type, useItems_691d50 } from "@/hooks/items/691d50";
 import { useClients } from "@/hooks/clients/main";
-import { ClientType } from "@/lib/types";
+import {
+  ClientType,
+  ItemsType,
+  OperationType,
+  PaymentsType,
+  Service_itemsType,
+  ServicesType,
+  Visit_itemType,
+  Visit_paymentType,
+} from "@/lib/types";
+import { cn } from "@/lib/utils";
 
-interface SelectedItem {
-  id: string;
-  quantity: number;
+interface VisitProps {
+  initial: OperationType;
+  readonly?: boolean;
+  setFormData: (newValue: OperationType) => void;
 }
 
-interface Payment {
-  id: string;
-  date: string;
-  description: string;
-  price: number;
-  paid: boolean;
-}
-
-export default function VisitCreateForm(props: { openNewClient: () => void }) {
-  const [services, setServices] = useState<services_10cd39Type[]>([]);
-  const [items, setItems] = useState<items_691d50Type[]>([]);
-  const { get_clients_list_list, clients_list } = useClients();
-
-  const [formData, setFormData] = useState({
-    client: undefined as ClientType | undefined,
-    selectedServices: [] as string[],
-    selectedItems: [] as SelectedItem[],
-    datetime: "",
-    payments: [] as Payment[],
-  });
+export default function VisitCreateForm({
+  initial,
+  readonly,
+  setFormData: updateFormData,
+}: VisitProps) {
+  const [formData, setFormData] = useState(initial);
 
   // New payment form state
-  const [newPayment, setNewPayment] = useState<Omit<Payment, "id">>({
-    date: new Date().toISOString().split("T")[0],
+  const [newPayment, setNewPayment] = useState<Omit<PaymentsType, "id">>({
+    date: new Date(),
     description: "",
     price: 0,
     paid: false,
+    created_at: new Date(),
   });
+
+  useEffect(() => {
+    setFormData(initial);
+  }, [initial]);
+
+  useEffect(() => {
+    updateFormData(formData);
+  }, [formData]);
 
   // Edit payment state
   const [editingPaymentId, setEditingPaymentId] = useState<string | null>(null);
@@ -76,10 +82,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
   // Fetch services and items from server
   useEffect(() => {
     get_services_list_list();
-    setServices(services_list);
     get_items_list_list();
-    setItems(items_list);
-    get_clients_list_list();
   }, []);
 
   // Close dropdowns when clicking outside
@@ -126,52 +129,49 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
     }));
   };
 
-  const handleServiceSelect = (serviceId: string) => {
-    setFormData((prev) => {
-      const selectedServices = prev.selectedServices.includes(serviceId)
-        ? prev.selectedServices.filter((id) => id !== serviceId)
-        : [...prev.selectedServices, serviceId];
-
-      return { ...prev, selectedServices };
-    });
+  const handleServiceSelect = (serviceId: ServicesType["id"]) => {
+    // setFormData((prev) => {
+    //   const service = prev.service.includes(serviceId)
+    //     ? prev.service.filter((id) => id !== serviceId)
+    //     : [...prev.service, serviceId];
+    //   return { ...prev, service };
+    // });
   };
 
-  const handleItemSelect = (itemId: string) => {
-    setFormData((prev) => {
-      // Check if item is already selected
-      const existingItemIndex = prev.selectedItems.findIndex(
-        (item) => item.id === itemId
-      );
-
-      if (existingItemIndex !== -1) {
-        // Remove item if already selected
-        const updatedItems = [...prev.selectedItems];
-        updatedItems.splice(existingItemIndex, 1);
-        return { ...prev, selectedItems: updatedItems };
-      } else {
-        // Add item with default quantity of 1
-        return {
-          ...prev,
-          selectedItems: [...prev.selectedItems, { id: itemId, quantity: 1 }],
-        };
-      }
-    });
+  const handleItemSelect = (itemId: ItemsType["id"]) => {
+    // setFormData((prev) => {
+    //   // Check if item is already selected
+    //   const existingItemIndex = prev.service.findIndex(
+    //     (item) => item.id === itemId
+    //   );
+    //   if (existingItemIndex !== -1) {
+    //     // Remove item if already selected
+    //     const updatedItems = [...prev.service];
+    //     updatedItems.splice(existingItemIndex, 1);
+    //     return { ...prev, service: updatedItems };
+    //   } else {
+    //     // Add item with default quantity of 1
+    //     return {
+    //       ...prev,
+    //       service: [...prev.service, { id: itemId, quantity: 1 }],
+    //     };
+    //   }
+    // });
   };
 
-  const updateItemQuantity = (itemId: string, change: number) => {
-    setFormData((prev) => {
-      const updatedItems = prev.selectedItems.map((item) => {
-        if (item.id === itemId) {
-          return {
-            ...item,
-            quantity: Math.max(1, item.quantity + change),
-          };
-        }
-        return item;
-      });
-
-      return { ...prev, selectedItems: updatedItems };
-    });
+  const updateItemQuantity = (itemId: ItemsType["id"], change: number) => {
+    // setFormData((prev) => {
+    //   const updatedItems = prev.service.map((item) => {
+    //     if (item.id === itemId) {
+    //       return {
+    //         ...item,
+    //         quantity: Math.max(1, item.quantity + change),
+    //       };
+    //     }
+    //     return item;
+    //   });
+    //   return { ...prev, service: updatedItems };
+    // });
   };
 
   const addPayment = () => {
@@ -201,77 +201,76 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
 
       // Reset form
       setNewPayment({
-        date: new Date().toISOString().split("T")[0],
+        date: new Date(),
         description: "",
         price: 0,
         paid: false,
+        created_at: new Date(),
       });
 
       setEditingPaymentId(null);
     }
   };
 
-  const editPayment = (payment: Payment) => {
-    setNewPayment({
-      date: payment.date,
-      description: payment.description,
-      price: payment.price,
-      paid: payment.paid,
-    });
-
-    setEditingPaymentId(payment.id);
+  const editPayment = (payment: PaymentsType) => {
+    // setNewPayment({
+    //   date: payment.date,
+    //   description: payment.description,
+    //   price: payment.price,
+    //   paid: payment.paid,
+    // });
+    // setEditingPaymentId(payment.id);
   };
 
-  const deletePayment = (paymentId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      payments: prev.payments.filter((payment) => payment.id !== paymentId),
-    }));
-
-    if (editingPaymentId === paymentId) {
-      setEditingPaymentId(null);
-      setNewPayment({
-        date: new Date().toISOString().split("T")[0],
-        description: "",
-        price: 0,
-        paid: false,
-      });
-    }
+  const deletePayment = (paymentId: number) => {
+    // setFormData((prev) => ({
+    //   ...prev,
+    //   payments: prev.payments.filter((payment) => payment.id !== paymentId),
+    // }));
+    // if (editingPaymentId === paymentId) {
+    //   setEditingPaymentId(null);
+    //   setNewPayment({
+    //     date: new Date().toISOString().split("T")[0],
+    //     description: "",
+    //     price: 0,
+    //     paid: false,
+    //   });
+    // }
   };
 
-  const togglePaymentStatus = (paymentId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      payments: prev.payments.map((payment) =>
-        payment.id === paymentId ? { ...payment, paid: !payment.paid } : payment
-      ),
-    }));
+  const togglePaymentStatus = (paymentId: PaymentsType["id"]) => {
+    // setFormData((prev) => ({
+    //   ...prev,
+    //   payments: prev.payments.map((payment) =>
+    //     payment.id === paymentId ? { ...payment, paid: !payment.paid } : payment
+    //   ),
+    // }));
   };
 
-  const filteredServices = services.filter((service) =>
+  const filteredServices = services_list.filter((service) =>
     service.name.toLowerCase().includes(serviceSearch.toLowerCase())
   );
 
-  const filteredItems = items.filter((item) =>
+  const filteredItems = items_list.filter((item) =>
     item.name.toLowerCase().includes(itemSearch.toLowerCase())
   );
 
-  const removeService = (serviceId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      selectedServices: prev.selectedServices.filter((id) => id !== serviceId),
-    }));
+  const removeService = (serviceId: ServicesType["id"]) => {
+    // setFormData((prev) => ({
+    //   ...prev,
+    //   service: prev..filter((id) => id !== serviceId),
+    // }));
   };
 
-  const removeItem = (itemId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      selectedItems: prev.selectedItems.filter((item) => item.id !== itemId),
-    }));
+  const removeItem = (itemId: ItemsType["id"]) => {
+    // setFormData((prev) => ({
+    //   ...prev,
+    //   service: prev.service.filter((item) => item.id !== itemId),
+    // }));
   };
 
-  const isItemSelected = (itemId: string) => {
-    return formData.selectedItems.some((item) => item.id === itemId);
+  const isItemSelected = (itemId: ItemsType["id"]) => {
+    return formData.items.some((item) => item.id === itemId);
   };
 
   const calculateTotalPayment = () => {
@@ -285,58 +284,6 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
       <div className="p-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Client Field */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text flex items-center gap-2 text-gray-700 font-medium">
-                <div className="bg-primary/10 p-1 rounded-full">
-                  <User className="h-4 w-4 text-primary" />
-                </div>
-                Client
-              </span>
-            </label>
-
-            <div className="relative group">
-              <input
-                id="client"
-                type="char"
-                value={formData.client?.name}
-                onChange={handleChange}
-                placeholder="Enter client name"
-                className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
-                required
-              />
-
-              <div className="absolute z-30 bg-white shadow-lg rounded-lg w-full hidden group-hover:flex hover:flex flex-col border border-gray-100">
-                <div className="max-h-60 overflow-y-auto flex flex-col">
-                  {clients_list.map((client) => (
-                    <div
-                      key={client.id}
-                      className="p-2 hover:bg-gray-50 cursor-pointer"
-                      onClick={() => {
-                        setFormData((prev: any) => ({
-                          ...prev,
-                          client: client,
-                        }));
-                      }}
-                    >
-                      {client.name}
-                    </div>
-                  ))}
-                </div>
-                <div className="border-t border-gray-100 w-full p-2">
-                  <button
-                    type="button"
-                    className="btn bg-gradient-to-r from-primary/10 to-secondary/10 hover:from-primary/20 hover:to-secondary/20 border-0 text-secondary btn-sm w-full flex items-center justify-center gap-2"
-                    onClick={props.openNewClient}
-                  >
-                    <Plus className="h-4 w-4" /> Create New Client
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Services Field */}
           <div className="form-control" ref={serviceDropdownRef}>
             <label className="label">
@@ -349,12 +296,21 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
             </label>
             <div className="relative w-full">
               <div
-                className="input input-bordered flex justify-between items-center cursor-pointer w-full bg-gray-50 border-gray-200"
-                onClick={() => setShowServiceDropdown(true)}
+                className={cn(
+                  "input input-bordered flex justify-between items-center",
+                  "w-full bg-gray-50 border-gray-200",
+                  {
+                    "cursor-pointer": !readonly,
+                    "bg-gray-100 text-gray-500": readonly,
+                  }
+                )}
+                onClick={() => {
+                  if (!readonly) setShowServiceDropdown(true);
+                }}
               >
                 <span className="text-sm">
-                  {formData.selectedServices.length > 0
-                    ? `${formData.selectedServices.length} service(s) selected`
+                  {formData.service.length > 0
+                    ? `${formData.service.length} service(s) selected`
                     : "Select services"}
                 </span>
                 <Search className="h-4 w-4 opacity-50" />
@@ -366,6 +322,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                     <div className="flex items-center border-b border-gray-100 pb-2">
                       <Search className="h-4 w-4 mr-2 opacity-50" />
                       <input
+                        disabled={readonly}
                         type="text"
                         placeholder="Search services..."
                         className="input input-sm input-ghost w-full focus:outline-none"
@@ -384,26 +341,23 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                           <li key={service.id}>
                             <a
                               className={`flex items-center ${
-                                formData.selectedServices.includes(
-                                  service.id.toString()
-                                )
+                                formData.service.includes(service)
                                   ? "bg-primary/10 text-primary"
                                   : ""
                               }`}
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleServiceSelect(service.id.toString());
+                                handleServiceSelect(service.id);
                               }}
                             >
                               <div className="form-control">
                                 <label className="label cursor-pointer justify-start gap-2">
                                   <input
+                                    disabled={readonly}
                                     type="checkbox"
                                     className="checkbox checkbox-sm checkbox-primary"
-                                    checked={formData.selectedServices.includes(
-                                      service.id.toString()
-                                    )}
+                                    checked={formData.service.includes(service)}
                                     readOnly
                                   />
                                   <span>{service.name}</span>
@@ -419,25 +373,22 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
               )}
             </div>
 
-            {formData.selectedServices.length > 0 && (
+            {formData.service.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
-                {formData.selectedServices.map((id) => {
-                  const service = services.find((s) => s.id === Number(id));
-                  return service ? (
-                    <div
-                      key={id}
-                      className="badge bg-secondary/10 text-secondary gap-1 border-0"
+                {formData.service.map((service) => (
+                  <div
+                    key={service.id}
+                    className="badge bg-secondary/10 text-secondary gap-1 border-0"
+                  >
+                    {service.name}
+                    <button
+                      className="btn btn-ghost btn-xs btn-circle"
+                      onClick={() => removeService(service.id)}
                     >
-                      {service.name}
-                      <button
-                        className="btn btn-ghost btn-xs btn-circle"
-                        onClick={() => removeService(id)}
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ) : null;
-                })}
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -454,12 +405,21 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
             </label>
             <div className="relative w-full">
               <div
-                className="input input-bordered flex justify-between items-center cursor-pointer w-full bg-gray-50 border-gray-200"
-                onClick={() => setShowItemDropdown(true)}
+                className={cn(
+                  "input input-bordered flex justify-between items-center",
+                  "w-full bg-gray-50 border-gray-200",
+                  {
+                    "cursor-pointer": !readonly,
+                    "bg-gray-100 text-gray-500": readonly,
+                  }
+                )}
+                onClick={() => {
+                  if (!readonly) setShowItemDropdown(true);
+                }}
               >
                 <span className="text-sm">
-                  {formData.selectedItems.length > 0
-                    ? `${formData.selectedItems.length} item(s) selected`
+                  {formData.service.length > 0
+                    ? `${formData.service.length} item(s) selected`
                     : "Select items"}
                 </span>
                 <Search className="h-4 w-4 opacity-50" />
@@ -471,6 +431,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                     <div className="flex items-center border-b border-gray-100 pb-2">
                       <Search className="h-4 w-4 mr-2 opacity-50" />
                       <input
+                        disabled={readonly}
                         type="text"
                         placeholder="Search items..."
                         className="input input-sm input-ghost w-full focus:outline-none"
@@ -489,22 +450,23 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                           <li key={item.id}>
                             <a
                               className={`flex items-center ${
-                                isItemSelected(item.id.toString())
+                                isItemSelected(item.id)
                                   ? "bg-primary/10 text-primary"
                                   : ""
                               }`}
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleItemSelect(item.id.toString());
+                                handleItemSelect(item.id);
                               }}
                             >
                               <div className="form-control">
                                 <label className="label cursor-pointer justify-start gap-2">
                                   <input
+                                    disabled={readonly}
                                     type="checkbox"
                                     className="checkbox checkbox-sm checkbox-primary"
-                                    checked={isItemSelected(item.id.toString())}
+                                    checked={isItemSelected(item.id)}
                                     readOnly
                                   />
                                   <span>{item.name}</span>
@@ -520,51 +482,48 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
               )}
             </div>
 
-            {formData.selectedItems.length > 0 && (
+            {formData.items.length > 0 && (
               <div className="mt-2 space-y-2">
-                {formData.selectedItems.map((selectedItem) => {
-                  const item = items.find(
-                    (i) => i.id === Number(selectedItem.id)
-                  );
-                  return item ? (
-                    <div
-                      key={selectedItem.id}
-                      className="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-100"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{item.name}</span>
-                      </div>
+                {formData.items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-100"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{item.item.name}</span>
+                    </div>
+                    {readonly ? (
+                      <span className="text-center px-2">
+                        count: {item.count}
+                      </span>
+                    ) : (
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
                           className="btn btn-sm btn-circle bg-gray-100 hover:bg-gray-200 border-0"
-                          onClick={() =>
-                            updateItemQuantity(selectedItem.id, -1)
-                          }
+                          onClick={() => updateItemQuantity(item.id, -1)}
                         >
                           <Minus className="h-3 w-3" />
                         </button>
-                        <span className="w-8 text-center">
-                          {selectedItem.quantity}
-                        </span>
+                        <span className="w-8 text-center">{item.count}</span>
                         <button
                           type="button"
                           className="btn btn-sm btn-circle bg-gray-100 hover:bg-gray-200 border-0"
-                          onClick={() => updateItemQuantity(selectedItem.id, 1)}
+                          onClick={() => updateItemQuantity(item.id, 1)}
                         >
                           <Plus className="h-3 w-3" />
                         </button>
                         <button
                           type="button"
                           className="btn btn-sm btn-circle bg-red-50 hover:bg-red-100 border-0 text-red-500"
-                          onClick={() => removeItem(selectedItem.id)}
+                          onClick={() => removeItem(item.id)}
                         >
                           <X className="h-3 w-3" />
                         </button>
                       </div>
-                    </div>
-                  ) : null;
-                })}
+                    )}
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -580,10 +539,11 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
               </span>
             </label>
             <input
+              disabled={readonly}
               id="datetime"
               name="datetime"
-              type="datetime-local"
-              value={formData.datetime}
+              type="date"
+              value={formData.datetime.toString()}
               onChange={handleChange}
               className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-secondary focus:ring-secondary"
               required
@@ -608,74 +568,83 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
               </label>
 
               {/* Add/Edit Payment Form */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text text-gray-700">Date</span>
-                  </label>
-                  <input
-                    type="date"
-                    name="date"
-                    value={newPayment.date}
-                    onChange={handleNewPaymentChange}
-                    className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
-                  />
-                </div>
-
-                <div className="form-control md:col-span-2">
-                  <label className="label">
-                    <span className="label-text text-gray-700">
-                      Description
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    name="description"
-                    value={newPayment.description}
-                    onChange={handleNewPaymentChange}
-                    placeholder="Enter payment description"
-                    className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
-                  />
-                </div>
-
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text text-gray-700">Amount</span>
-                  </label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={newPayment.price}
-                    onChange={handleNewPaymentChange}
-                    min="0"
-                    className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
-                  />
-                </div>
-
-                <div className="form-control">
-                  <label className="label cursor-pointer">
-                    <span className="label-text text-gray-700">Paid</span>
+              {!readonly && (
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text text-gray-700">Date</span>
+                    </label>
                     <input
-                      type="checkbox"
-                      name="paid"
-                      checked={newPayment.paid}
-                      onChange={handleNewPaymentChange as any}
-                      className="checkbox checkbox-primary"
+                      disabled={readonly}
+                      type="date"
+                      name="date"
+                      value={newPayment.date.toString()}
+                      onChange={handleNewPaymentChange}
+                      className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
                     />
-                  </label>
-                </div>
+                  </div>
 
-                <div className="md:col-span-3 flex justify-end items-end">
-                  <button
-                    type="button"
-                    className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-0"
-                    onClick={addPayment}
-                    disabled={!newPayment.description || newPayment.price <= 0}
-                  >
-                    {editingPaymentId ? "Update Payment" : "Add Payment"}
-                  </button>
+                  <div className="form-control md:col-span-2">
+                    <label className="label">
+                      <span className="label-text text-gray-700">
+                        Description
+                      </span>
+                    </label>
+                    <input
+                      disabled={readonly}
+                      type="text"
+                      name="description"
+                      value={newPayment.description}
+                      onChange={handleNewPaymentChange}
+                      placeholder="Enter payment description"
+                      className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
+                    />
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text text-gray-700">Amount</span>
+                    </label>
+                    <input
+                      disabled={readonly}
+                      type="number"
+                      name="price"
+                      value={newPayment.price}
+                      onChange={handleNewPaymentChange}
+                      min="0"
+                      className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
+                    />
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label cursor-pointer">
+                      <span className="label-text text-gray-700">Paid</span>
+                      <input
+                        disabled={readonly}
+                        type="checkbox"
+                        name="paid"
+                        checked={newPayment.paid}
+                        onChange={handleNewPaymentChange as any}
+                        className="checkbox checkbox-primary"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="md:col-span-3 flex justify-end items-end">
+                    <button
+                      type="button"
+                      className="btn enabled:bg-gradient-to-r from-primary to-secondary disabled:bg-gray-200
+                      hover:from-primary/90 hover:to-secondary/90 text-white border-0"
+                      onClick={addPayment}
+                      disabled={
+                        !newPayment.description || newPayment.price <= 0
+                      }
+                    >
+                      {editingPaymentId ? "Update Payment" : "Add Payment"}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Payment List */}
               {formData.payments.length > 0 ? (
@@ -687,7 +656,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                         <th className="font-medium">Description</th>
                         <th className="font-medium">Amount</th>
                         <th className="font-medium">Status</th>
-                        <th className="font-medium">Actions</th>
+                        {!readonly && <th className="font-medium">Actions</th>}
                       </tr>
                     </thead>
                     <tbody>
@@ -698,18 +667,17 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                             payment.paid ? "bg-green-50" : "hover:bg-gray-50"
                           }
                         >
-                          <td>{payment.date}</td>
+                          <td>{new Date(payment.date).toLocaleDateString()}</td>
                           <td>{payment.description}</td>
                           <td>{payment.price}</td>
                           <td>
                             <div className="flex items-center gap-2">
-                              <button
+                              <div
                                 className={`btn btn-xs ${
                                   payment.paid
                                     ? "bg-green-100 hover:bg-green-200 text-green-700 border-0"
                                     : "bg-gray-100 hover:bg-gray-200 text-gray-700 border-0"
                                 }`}
-                                onClick={() => togglePaymentStatus(payment.id)}
                               >
                                 {payment.paid ? (
                                   <>
@@ -718,23 +686,25 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                                 ) : (
                                   "Unpaid"
                                 )}
-                              </button>
+                              </div>
                             </div>
                           </td>
-                          <td className="flex items-center gap-1">
-                            <button
-                              className="btn btn-xs bg-blue-50 hover:bg-blue-100 text-blue-600 border-0"
-                              onClick={() => editPayment(payment)}
-                            >
-                              <Edit className="h-3 w-3" />
-                            </button>
-                            <button
-                              className="btn btn-xs bg-red-50 hover:bg-red-100 text-red-500 border-0"
-                              onClick={() => deletePayment(payment.id)}
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </button>
-                          </td>
+                          {!readonly && (
+                            <td className="flex items-center gap-1">
+                              <button
+                                className="btn btn-xs bg-blue-50 hover:bg-blue-100 text-blue-600 border-0"
+                                onClick={() => editPayment(payment)}
+                              >
+                                <Edit className="h-3 w-3" />
+                              </button>
+                              <button
+                                className="btn btn-xs bg-red-50 hover:bg-red-100 text-red-500 border-0"
+                                onClick={() => deletePayment(payment.id)}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            </td>
+                          )}
                         </tr>
                       ))}
                     </tbody>
@@ -748,24 +718,22 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
             </div>
           </div>
           <input
+            disabled={readonly}
             type="hidden"
             name="payments"
             value={JSON.stringify(formData.payments)}
           />
           <input
+            disabled={readonly}
             type="hidden"
             name="services"
-            value={JSON.stringify(formData.selectedServices)}
+            value={JSON.stringify(formData.service)}
           />
           <input
+            disabled={readonly}
             type="hidden"
             name="items"
-            value={JSON.stringify(formData.selectedItems)}
-          />
-          <input
-            type="hidden"
-            name="client"
-            value={JSON.stringify(formData.client)}
+            value={JSON.stringify(formData.service)}
           />
         </div>
       </div>
