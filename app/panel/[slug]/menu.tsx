@@ -23,6 +23,8 @@ export default function LayoutMenu() {
     { href: "/panel/presonels", label: "Personnel", icon: Users },
     { href: "/panel/items", label: "Inventory", icon: Package },
     { href: "/panel/services", label: "Services", icon: HeartPulse },
+    { href: "/panel/payments", label: "Payments", icon: HeartPulse },
+    { href: "/panel/clients", label: "Clients", icon: HeartPulse },
   ];
 
   return (

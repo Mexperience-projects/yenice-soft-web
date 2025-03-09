@@ -11,6 +11,8 @@ interface _LayoutType {
   presonels: ReactNode;
   items: ReactNode;
   services: ReactNode;
+  clients: ReactNode;
+  payments: ReactNode;
 }
 
 export default function ({
@@ -20,6 +22,8 @@ export default function ({
   presonels,
   items,
   services,
+  clients,
+  payments,
 }: _LayoutType) {
   const params = useParams();
 
@@ -31,13 +35,14 @@ export default function ({
       presonels,
       items,
       services,
+      clients,
+      payments,
     })[params.slug as string];
 
   return (
     <div className="flex">
       <Menu />
       <main className="w-full">{renderContent()}</main>
-      {/* <main className="w-full">{}</main> */}
     </div>
   );
 }

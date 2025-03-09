@@ -62,3 +62,10 @@ export interface Visit_paymentType {
   price: number;
   paid: boolean;
 }
+
+export interface PaymentsType {
+  id: number;
+  personel_id: PersonelType["id"];
+  price: string;
+  date: Date;
+}
