@@ -22,7 +22,7 @@ export function useVisit_ae978b() {
     loadingHandler(true);
     // create backend form
     const data = Object.fromEntries(formData);
-    const response = await axiosUser.post("visit/ae978b/", data);
+    const response = await axiosUser.post("visit/", data);
     const serverData = response.data.visit;
     // set response of server on state
     loadingHandler(false);

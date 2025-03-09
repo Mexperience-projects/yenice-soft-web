@@ -172,7 +172,7 @@ export default function VisitCreateForm() {
 
   const addPayment = () => {
     if (newPayment.description && newPayment.amount > 0) {
-      const paymentId = editingPaymentId || `payment_${Date.now()}`;
+      const paymentId = editingPaymentId || formData.payments.length + 1;
 
       setFormData((prev) => {
         let updatedPayments;
@@ -692,13 +692,21 @@ export default function VisitCreateForm() {
               )}
             </div>
           </div>
-        </div>
-
-        {/* Submit Button */}
-        <div className="mt-6">
-          <button type="submit" className="btn btn-primary w-full">
-            Create Visit
-          </button>
+          <input
+            type="hidden"
+            name="payments"
+            value={JSON.stringify(formData.payments)}
+          />
+          <input
+            type="hidden"
+            name="services"
+            value={JSON.stringify(formData.selectedServices)}
+          />
+          <input
+            type="hidden"
+            name="items"
+            value={JSON.stringify(formData.selectedItems)}
+          />
         </div>
       </div>
     </div>

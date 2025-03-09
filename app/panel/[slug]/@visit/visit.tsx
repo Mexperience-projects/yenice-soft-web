@@ -56,7 +56,7 @@ export default function VisitManagement() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="container mx-auto px-4 py-6  container">
+      <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
             <div className="flex-1">
@@ -182,19 +182,6 @@ export default function VisitManagement() {
         </div>
       </div>
 
-      {/* Create Visit Modal */}
-      <Modal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-      >
-        <div className="p-6">
-          <h2 className="text-xl font-bold mb-4 text-gray-800">
-            Create New Visit
-          </h2>
-          <Visit_ae978b_create />
-        </div>
-      </Modal>
-
       {/* View Visit Modal */}
       <Modal isOpen={isViewModalOpen} onClose={() => setIsViewModalOpen(false)}>
         <div className="p-6">
@@ -215,13 +202,13 @@ export default function VisitManagement() {
 
       {/* Update Visit Modal */}
       <Modal
-        isOpen={isUpdateModalOpen}
-        onClose={() => setIsUpdateModalOpen(false)}
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
       >
         <div className="p-6">
           <h2 className="text-xl font-bold mb-4 text-gray-800">Update Visit</h2>
-          <form action={handleUpdateSubmit}>
-            {selectedVisit && <Visit_6b7e2d_update visit={selectedVisit} />}
+          <form action={create_visit_data}>
+            <Visit_ae978b_create />
             <div className="flex justify-end gap-2 mt-6">
               <button
                 type="button"
@@ -234,7 +221,7 @@ export default function VisitManagement() {
                 type="submit"
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
               >
-                Update Visit
+                Create Visit
               </button>
             </div>
           </form>
