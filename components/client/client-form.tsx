@@ -118,7 +118,7 @@ export default function ClientForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="space-y-6">
       <div className="card bg-base-100 shadow-sm">
         <div className="card-body">
           <h2 className="card-title text-lg flex items-center gap-2">
@@ -279,6 +279,6 @@ export default function ClientForm({
           {client ? "Update Client" : "Create Client"}
         </button>
       </div>
-    </form>
+    </div>
   );
 }

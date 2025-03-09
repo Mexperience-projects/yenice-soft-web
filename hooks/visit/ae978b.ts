@@ -28,5 +28,29 @@ export function useVisit_ae978b() {
     loadingHandler(false);
   };
 
-  return { loading, visit_list, get_visit_list_list, create_visit_data };
+  const update_visit_data = async (formData: any) => {
+    loadingHandler(true);
+    // create backend form
+    const data = Object.fromEntries(formData);
+    const response = await axiosUser.put("visit/", data);
+    const serverData = response.data.visit;
+    // set response of server on state
+    loadingHandler(false);
+  };
+  const delete_visit_data = async (visit_id: VisitType["id"]) => {
+    loadingHandler(true);
+    const response = await axiosUser.delete("visit/", { params: { visit_id } });
+    const serverData = response.data.visit;
+    // set response of server on state
+    loadingHandler(false);
+  };
+
+  return {
+    loading,
+    visit_list,
+    get_visit_list_list,
+    create_visit_data,
+    delete_visit_data,
+    update_visit_data,
+  };
 }

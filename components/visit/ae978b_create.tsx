@@ -33,17 +33,17 @@ interface Payment {
   id: string;
   date: string;
   description: string;
-  amount: number;
-  isPaid: boolean;
+  price: number;
+  paid: boolean;
 }
 
-export default function VisitCreateForm() {
+export default function VisitCreateForm(props: { openNewClient: () => void }) {
   const [services, setServices] = useState<services_10cd39Type[]>([]);
   const [items, setItems] = useState<items_691d50Type[]>([]);
   const { get_clients_list_list, clients_list } = useClients();
 
   const [formData, setFormData] = useState({
-    client: "",
+    client: undefined as ClientTypes | undefined,
     selectedServices: [] as string[],
     selectedItems: [] as SelectedItem[],
     datetime: "",
@@ -54,8 +54,8 @@ export default function VisitCreateForm() {
   const [newPayment, setNewPayment] = useState<Omit<Payment, "id">>({
     date: new Date().toISOString().split("T")[0],
     description: "",
-    amount: 0,
-    isPaid: false,
+    price: 0,
+    paid: false,
   });
 
   // Edit payment state
@@ -119,7 +119,7 @@ export default function VisitCreateForm() {
       [name]:
         type === "checkbox"
           ? (e.target as HTMLInputElement).checked
-          : name === "amount"
+          : name === "price"
           ? Number.parseFloat(value)
           : value,
     }));
@@ -174,7 +174,7 @@ export default function VisitCreateForm() {
   };
 
   const addPayment = () => {
-    if (newPayment.description && newPayment.amount > 0) {
+    if (newPayment.description && newPayment.price > 0) {
       const paymentId = editingPaymentId || formData.payments.length + 1;
 
       setFormData((prev) => {
@@ -202,8 +202,8 @@ export default function VisitCreateForm() {
       setNewPayment({
         date: new Date().toISOString().split("T")[0],
         description: "",
-        amount: 0,
-        isPaid: false,
+        price: 0,
+        paid: false,
       });
 
       setEditingPaymentId(null);
@@ -214,8 +214,8 @@ export default function VisitCreateForm() {
     setNewPayment({
       date: payment.date,
       description: payment.description,
-      amount: payment.amount,
-      isPaid: payment.isPaid,
+      price: payment.price,
+      paid: payment.paid,
     });
 
     setEditingPaymentId(payment.id);
@@ -232,8 +232,8 @@ export default function VisitCreateForm() {
       setNewPayment({
         date: new Date().toISOString().split("T")[0],
         description: "",
-        amount: 0,
-        isPaid: false,
+        price: 0,
+        paid: false,
       });
     }
   };
@@ -242,9 +242,7 @@ export default function VisitCreateForm() {
     setFormData((prev) => ({
       ...prev,
       payments: prev.payments.map((payment) =>
-        payment.id === paymentId
-          ? { ...payment, isPaid: !payment.isPaid }
-          : payment
+        payment.id === paymentId ? { ...payment, paid: !payment.paid } : payment
       ),
     }));
   };
@@ -277,7 +275,7 @@ export default function VisitCreateForm() {
 
   const calculateTotalPayment = () => {
     return formData.payments.reduce(
-      (total, payment) => total + payment.amount,
+      (total, payment) => total + payment.price,
       0
     );
   };
@@ -297,8 +295,8 @@ export default function VisitCreateForm() {
             <div className="relative group">
               <input
                 id="client"
-                name="client"
-                value={formData.client}
+                type="char"
+                value={formData.client?.name}
                 onChange={handleChange}
                 placeholder="Enter client name"
                 className="input input-bordered w-full"
@@ -309,8 +307,8 @@ export default function VisitCreateForm() {
                 // }
               />
 
-              <div className="absolute z-30 bg-base-100 shadow-lg rounded-box w-full hidden group-hover:flex hover:flex">
-                <div className="max-h-60 overflow-y-auto">
+              <div className="absolute z-30 bg-base-100 shadow-lg rounded-box w-full hidden group-hover:flex hover:flex flex-col">
+                <div className="max-h-60 overflow-y-auto flex flex-col">
                   {clients_list.map((client) => (
                     <div
                       key={client.id}
@@ -318,7 +316,7 @@ export default function VisitCreateForm() {
                       onClick={() => {
                         setFormData((prev) => ({
                           ...prev,
-                          client: client.name,
+                          client: client,
                         }));
                       }}
                     >
@@ -330,10 +328,7 @@ export default function VisitCreateForm() {
                   <button
                     type="button"
                     className="btn btn-ghost btn-sm w-full text-primary flex items-center justify-center gap-2"
-                    onClick={() => {
-                      // Handle create new client action
-                      console.log("Create new client clicked");
-                    }}
+                    onClick={props.openNewClient}
                   >
                     <Plus className="h-4 w-4" /> Create New Client
                   </button>
@@ -632,8 +627,8 @@ export default function VisitCreateForm() {
                   </label>
                   <input
                     type="number"
-                    name="amount"
-                    value={newPayment.amount}
+                    name="price"
+                    value={newPayment.price}
                     onChange={handleNewPaymentChange}
                     min="0"
                     className="input input-bordered w-full"
@@ -645,8 +640,8 @@ export default function VisitCreateForm() {
                     <span className="label-text">Paid</span>
                     <input
                       type="checkbox"
-                      name="isPaid"
-                      checked={newPayment.isPaid}
+                      name="paid"
+                      checked={newPayment.paid}
                       onChange={handleNewPaymentChange as any}
                       className="checkbox"
                     />
@@ -658,7 +653,7 @@ export default function VisitCreateForm() {
                     type="button"
                     className="btn btn-primary"
                     onClick={addPayment}
-                    disabled={!newPayment.description || newPayment.amount <= 0}
+                    disabled={!newPayment.description || newPayment.price <= 0}
                   >
                     {editingPaymentId ? "Update Payment" : "Add Payment"}
                   </button>
@@ -683,21 +678,21 @@ export default function VisitCreateForm() {
                         <tr
                           key={payment.id}
                           className={
-                            payment.isPaid ? "bg-success bg-opacity-10" : ""
+                            payment.paid ? "bg-success bg-opacity-10" : ""
                           }
                         >
                           <td>{payment.date}</td>
                           <td>{payment.description}</td>
-                          <td>{payment.amount}</td>
+                          <td>{payment.price}</td>
                           <td>
                             <div className="flex items-center gap-2">
                               <button
                                 className={`btn btn-xs ${
-                                  payment.isPaid ? "btn-success" : "btn-ghost"
+                                  payment.paid ? "btn-success" : "btn-ghost"
                                 }`}
                                 onClick={() => togglePaymentStatus(payment.id)}
                               >
-                                {payment.isPaid ? (
+                                {payment.paid ? (
                                   <>
                                     <Check className="h-3 w-3 mr-1" /> Paid
                                   </>
@@ -747,6 +742,11 @@ export default function VisitCreateForm() {
             type="hidden"
             name="items"
             value={JSON.stringify(formData.selectedItems)}
+          />
+          <input
+            type="hidden"
+            name="client"
+            value={JSON.stringify(formData.client)}
           />
         </div>
       </div>

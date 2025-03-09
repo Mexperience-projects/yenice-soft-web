@@ -14,15 +14,24 @@ import {
   RefreshCw,
   Plus,
 } from "lucide-react";
+import ClientForm from "@/components/client/client-form";
+import { useClients } from "@/hooks/clients/main";
 
 export default function VisitManagement() {
-  const { get_visit_list_list, create_visit_data, visit_list } =
-    useVisit_ae978b();
+  const {
+    get_visit_list_list,
+    create_visit_data,
+    visit_list,
+    delete_visit_data,
+    update_visit_data,
+  } = useVisit_ae978b();
+  const { create_clients_data } = useClients();
 
   const [selectedVisit, setSelectedVisit] = useState<
     visit_ae978bType | undefined
   >();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isClientCreateModalOpen, setIsClientCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -31,18 +40,9 @@ export default function VisitManagement() {
     get_visit_list_list();
   }, []);
 
-  const handleUpdateSubmit = async (formData: FormData) => {
-    if (selectedVisit) {
-      // await update_visit_data(formData);
-      setIsUpdateModalOpen(false);
-      setSelectedVisit(undefined);
-      get_visit_list_list(); // Refresh the list
-    }
-  };
-
   const handleDeleteSubmit = async (formData: FormData) => {
     if (selectedVisit) {
-      //   await delete_visit_data(formData as any)
+      delete_visit_data(selectedVisit.id);
       setIsDeleteModalOpen(false);
       setSelectedVisit(undefined);
       get_visit_list_list(); // Refresh the list
@@ -134,7 +134,7 @@ export default function VisitManagement() {
                       key={index}
                       className="bg-white border-b hover:bg-gray-50"
                     >
-                      <td className="px-6 py-4">{visit.client}</td>
+                      <td className="px-6 py-4">{visit.client.name}</td>
                       <td className="px-6 py-4">{visit.service}</td>
                       <td className="px-6 py-4">
                         {formatDate(visit.datetime)}
@@ -202,13 +202,25 @@ export default function VisitManagement() {
 
       {/* Update Visit Modal */}
       <Modal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        isOpen={isCreateModalOpen || isUpdateModalOpen}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setIsUpdateModalOpen(false);
+        }}
       >
         <div className="p-6">
           <h2 className="text-xl font-bold mb-4 text-gray-800">Update Visit</h2>
-          <form action={create_visit_data}>
-            <Visit_ae978b_create />
+          <form
+            action={
+              selectedVisit === undefined
+                ? update_visit_data
+                : create_visit_data
+            }
+          >
+            <input name="id" type="hidden" value={selectedVisit?.id} />
+            <Visit_ae978b_create
+              openNewClient={() => setIsClientCreateModalOpen(true)}
+            />
             <div className="flex justify-end gap-2 mt-6">
               <button
                 type="button"
@@ -254,6 +266,41 @@ export default function VisitManagement() {
           </form>
         </div>
       </Modal>
+
+      {/* Create Client Modal */}
+      <dialog
+        className={`modal ${isClientCreateModalOpen ? "modal-open" : ""}`}
+      >
+        <div className="modal-box max-w-2xl">
+          <form method="dialog">
+            <button
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+              onClick={() => setIsClientCreateModalOpen(false)}
+            >
+              ✕
+            </button>
+          </form>
+          <h3 className="font-bold text-lg">Add New Client</h3>
+          <p className="py-2 text-base-content opacity-70">
+            Enter the client's information below to create a new record.
+          </p>
+
+          <form
+            action={(form_) => {
+              create_clients_data(form_);
+              setIsClientCreateModalOpen(false);
+            }}
+            className="mt-4"
+          >
+            <ClientForm />
+          </form>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button onClick={() => setIsClientCreateModalOpen(false)}>
+            close
+          </button>
+        </form>
+      </dialog>
     </div>
   );
 }

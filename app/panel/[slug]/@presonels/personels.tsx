@@ -2,19 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { usePersonel_e02ed2 } from "@/hooks/personel/e02ed2";
-import Personel_e02ed2_create from "@/components/personel/e02ed2_create";
-import {
-  Plus,
-  Users,
-  RefreshCw,
-  Edit,
-  Trash,
-  Phone,
-  Mail,
-  Calendar,
-  Menu,
-  Search,
-} from "lucide-react";
+import { Plus, Users, RefreshCw, Edit, Trash } from "lucide-react";
 import type { PersonelType } from "@/lib/types";
 
 export default function PersonnelPage() {
