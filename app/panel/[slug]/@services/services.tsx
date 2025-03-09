@@ -3,10 +3,17 @@
 import { useServices_10cd39 } from "@/hooks/services/10cd39";
 import { useEffect, useState } from "react";
 import type { ServicesType } from "@/lib/types";
-import { Edit, Plus, RefreshCw, Search, Trash2, Users } from "lucide-react";
+import {
+  Edit,
+  Plus,
+  RefreshCw,
+  Search,
+  Trash2,
+  Briefcase,
+  AlertCircle,
+} from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import Services_10cd39_create from "@/components/services/10cd39_create";
-import Services_10cd39_update from "@/components/services/10cd39_update";
 import { usePersonel_e02ed2 } from "@/hooks/personel/e02ed2";
 
 export default function ServicesPage() {
@@ -25,6 +32,8 @@ export default function ServicesPage() {
     null
   );
   const [searchQuery, setSearchQuery] = useState("");
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [serviceToDelete, setServiceToDelete] = useState<number | null>(null);
 
   useEffect(() => {
     get_services_list_list();
@@ -38,8 +47,15 @@ export default function ServicesPage() {
   };
 
   const handleDelete = async (serviceId: number) => {
-    if (confirm("Are you sure you want to delete this service?")) {
-      await delete_services_data(serviceId);
+    setServiceToDelete(serviceId);
+    setDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (serviceToDelete !== null) {
+      await delete_services_data(serviceToDelete);
+      setDeleteModal(false);
+      setServiceToDelete(null);
     }
   };
 
@@ -56,83 +72,135 @@ export default function ServicesPage() {
   );
 
   return (
-    <div className="bg-gray-50 min-h-screen p-4 ">
-      <div className="container">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
-            <div>
-              <div className="text-gray-600 text-sm">Total Services</div>
-              <div className="text-indigo-600 text-4xl font-bold">
-                {services_list.length}
-              </div>
-              <div className="text-gray-500 text-xs">
-                Active service offerings
-              </div>
-            </div>
-            <div className="bg-indigo-100 p-3 rounded-full text-indigo-600">
-              <Users className="h-6 w-6" />
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
-            <div>
-              <div className="text-gray-600 text-sm">Last Updated</div>
-              <div className="text-teal-500 text-4xl font-bold">Just now</div>
-              <div className="text-gray-500 text-xs">
-                Services data is up to date
-              </div>
-            </div>
-            <button
-              onClick={get_services_list_list}
-              className="bg-teal-100 p-3 rounded-full text-teal-500 hover:bg-teal-200 transition-colors"
-            >
-              <RefreshCw className="h-6 w-6" />
-            </button>
-          </div>
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+      <div className="container mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-800 flex items-center">
+            <span className="inline-block w-2 h-8 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></span>
+            Services Management
+          </h1>
+          <p className="text-gray-600 ml-5">Manage your service offerings</p>
         </div>
 
-        {/* Services List */}
-        <div className="bg-white rounded-lg shadow-sm p-4">
-          <div className="flex flex-row justify-between">
-            <h2 className="text-lg md:text-xl font-bold text-primary mb-3 md:mb-4">
-              Services List
-            </h2>
-            <div className="flex items-center">
-              <span className="mr-2 text-gray-600">View:</span>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">
+                  Total Services
+                </h2>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold text-secondary">
+                    {services_list.length}
+                  </p>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Active service offerings
+                </p>
+              </div>
+              <div className="flex items-center justify-center bg-secondary/10 rounded-full p-3">
+                <Briefcase className="h-6 w-6 text-secondary" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">
+                  Last Updated
+                </h2>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold text-gray-700">Just now</p>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Services data is up to date
+                </p>
+              </div>
               <button
-                onClick={handleAddNew}
-                className="btn btn-primary btn-sm gap-1"
+                onClick={get_services_list_list}
+                className="flex items-center justify-center bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full p-3 hover:from-primary/20 hover:to-secondary/20 transition-all duration-300"
               >
-                <Plus className="h-4 w-4 mr-1" />
-                Add New
+                <RefreshCw className="h-6 w-6 text-secondary" />
               </button>
             </div>
           </div>
+        </div>
 
+        {/* Main Content */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          {/* Table Header */}
+          <div className="p-5 border-b border-gray-100">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+                <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
+                Services List
+              </h2>
+
+              <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <Search className="w-4 h-4 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pl-10 p-2.5"
+                    placeholder="Search services..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+
+                <button
+                  onClick={handleAddNew}
+                  className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Add New Service</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Services Table */}
           {filteredServices.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500 mb-4">No services found</p>
+            <div className="p-8 text-center">
+              <div className="bg-gray-50 p-6 rounded-lg inline-block mb-4">
+                <Briefcase className="h-12 w-12 text-gray-400 mx-auto" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-800 mb-2">
+                No Services Found
+              </h3>
+              <p className="text-gray-500 max-w-md mx-auto mb-6">
+                {searchQuery
+                  ? "No services match your search criteria. Try a different search term or clear your search."
+                  : "No services have been added yet. Add your first service to get started!"}
+              </p>
               <button
                 onClick={handleAddNew}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-4 py-2 flex items-center mx-auto"
+                className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 mx-auto"
               >
-                <Plus className="h-4 w-4 mr-1" />
-                Add New Service
+                <Plus className="h-4 w-4" />
+                <span>Add New Service</span>
               </button>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-6 py-4 font-medium">
                       Name
                     </th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">
+                    <th scope="col" className="px-6 py-4 font-medium">
                       Description
                     </th>
-                    <th className="text-right py-3 px-4 font-semibold text-gray-600">
+                    <th
+                      scope="col"
+                      className="px-6 py-4 font-medium text-right"
+                    >
                       Actions
                     </th>
                   </tr>
@@ -141,31 +209,33 @@ export default function ServicesPage() {
                   {filteredServices.map((service, i) => (
                     <tr
                       key={i}
-                      className={`border-b border-gray-100 hover:bg-gray-50 ${
+                      className={`bg-white border-b hover:bg-gray-50 transition-colors duration-150 ${
                         i % 2 === 1 ? "bg-gray-50" : ""
                       }`}
                     >
-                      <td className="py-3 px-4 text-gray-800">
+                      <td className="px-6 py-4 font-medium text-gray-900">
                         {service.name}
                       </td>
-                      <td className="py-3 px-4 text-gray-600 max-w-md truncate">
+                      <td className="px-6 py-4 text-gray-700 max-w-md truncate">
                         {service.description}
                       </td>
-                      <td className="py-3 px-4 text-right">
-                        <button
-                          onClick={() => handleEdit(service)}
-                          className="bg-indigo-600 text-white px-3 py-1 rounded-md text-sm mr-2 hover:bg-indigo-700"
-                        >
-                          <Edit className="h-4 w-4 inline mr-1" />
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(service.id || 0)}
-                          className="bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600"
-                        >
-                          <Trash2 className="h-4 w-4 inline mr-1" />
-                          Delete
-                        </button>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex gap-2 justify-end">
+                          <button
+                            onClick={() => handleEdit(service)}
+                            className="px-3 py-1.5 bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-lg transition-colors flex items-center gap-1"
+                          >
+                            <Edit className="h-3.5 w-3.5" />
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(service.id || 0)}
+                            className="px-3 py-1.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-colors flex items-center gap-1"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -173,15 +243,28 @@ export default function ServicesPage() {
               </table>
             </div>
           )}
+
+          {/* Table Footer */}
+          {filteredServices.length > 0 && (
+            <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
+              <div className="text-sm text-gray-500">
+                Showing{" "}
+                <span className="font-medium">{filteredServices.length}</span>{" "}
+                of <span className="font-medium">{services_list.length}</span>{" "}
+                services
+              </div>
+            </div>
+          )}
         </div>
       </div>
-      {/* Modal */}
+
+      {/* Create/Update Modal */}
       <Modal isOpen={servicesModal} onClose={() => setServicesModal(false)}>
         <div className="p-6">
-          <h2 className="text-2xl font-bold mb-6">
+          <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
+            <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
             {modalMode === "create" ? "Add New Service" : "Edit Service"}
-          </h2>
-
+          </h3>
           <form
             action={(formData) => {
               if (selectedService) update_services_data(formData);
@@ -191,22 +274,56 @@ export default function ServicesPage() {
           >
             <input type="hidden" name="id" value={selectedService?.id} />
             <Services_10cd39_create />
-            <div className="flex justify-end mt-6 gap-2">
+            <div className="flex justify-end gap-3 mt-6">
               <button
                 type="button"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                 onClick={() => setServicesModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
               >
-                Create Service
+                {modalMode === "create" ? "Create Service" : "Update Service"}
               </button>
             </div>
           </form>
+        </div>
+      </Modal>
+
+      {/* Delete Modal */}
+      <Modal isOpen={deleteModal} onClose={() => setDeleteModal(false)}>
+        <div className="p-6">
+          <div className="flex items-center justify-center mb-4 text-red-500">
+            <div className="bg-red-100 p-3 rounded-full">
+              <AlertCircle className="h-6 w-6" />
+            </div>
+          </div>
+          <h3 className="text-xl font-bold mb-2 text-gray-800 text-center">
+            Delete Service
+          </h3>
+          <p className="text-gray-600 text-center mb-6">
+            Are you sure you want to delete this service? This action cannot be
+            undone.
+          </p>
+          <div className="flex justify-center gap-3 mt-6">
+            <button
+              type="button"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
+              onClick={() => setDeleteModal(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all duration-300"
+              onClick={confirmDelete}
+            >
+              Delete Service
+            </button>
+          </div>
         </div>
       </Modal>
     </div>

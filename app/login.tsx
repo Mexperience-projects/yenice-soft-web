@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useState } from "react";
-import { Mail, Lock, User } from "lucide-react";
+import { Lock, User } from "lucide-react";
 import { useLogin } from "@/hooks/login/UseLogin";
 import { Toaster } from "react-hot-toast";
 
@@ -10,7 +10,7 @@ export default function Login() {
   const [modalOpen, setModalOpen] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useLogin();
+  const { login, loading } = useLogin();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,106 +36,93 @@ export default function Login() {
 
   return (
     <section className="w-full max-w-md mx-auto">
-      <Toaster />
-      <div className="modal-box p-0 max-w-md bg-white shadow-xl overflow-hidden">
-        <div className="card w-full border-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg"></div>
-          <div className="card-body relative z-10">
-            <div className="flex flex-col items-center mb-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center mb-2">
-                <Lock className="h-8 w-8 text-white" />
+      <Toaster position="top-center" />
+      <div className="card bg-base-100/90 backdrop-blur-sm shadow-xl border border-primary/20">
+        <div className="card-body p-8">
+          <div className="flex flex-col items-center mb-6">
+            <div className="avatar placeholder mb-4">
+              <div className="bg-gradient-to-r from-primary to-secondary text-white rounded-full w-20 h-20">
+                <Lock className="h-10 w-10" />
               </div>
-              <h2 className="card-title text-2xl font-bold text-center text-primary">
-                Sign In
-              </h2>
-              <p className="text-center text-sm opacity-70">
-                Enter your credentials to access your account
-              </p>
             </div>
-
-            <form onSubmit={handleLogin}>
-              <div className="space-y-4">
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text text-primary font-medium">
-                      Username
-                    </span>
-                  </label>
-                  <div className="relative ">
-                    <User className="absolute left-3 top-4 h-4 w-4 text-secondary" />
-                    <input
-                      type="text"
-                      placeholder="usename"
-                      className="input w-full pl-10 border-secondary/30 focus:border-secondary"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="form-control">
-                  <div className="flex items-center justify-between">
-                    <label className="label">
-                      <span className="label-text text-primary font-medium">
-                        Password
-                      </span>
-                    </label>
-                    {/* <button
-                      type="button"
-                      className="btn btn-link btn-xs text-secondary p-0 h-auto"
-                    >
-                      Forgot password?
-                    </button> */}
-                  </div>
-                  <div className="relative flex items-center justify-center">
-                    <Lock className="absolute left-3 top-4 h-4 w-4 text-secondary" />
-                    <input
-                      type="password"
-                      placeholder="password"
-                      className="input  w-full pl-10 border-secondary/30 focus:border-secondary"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="form-control">
-                  <label className="label cursor-pointer justify-start gap-2">
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-primary"
-                    />
-                    <span className="label-text">Remember me</span>
-                  </label>
-                </div>
-
-                <div className="form-control mt-6">
-                  <button
-                    type="submit"
-                    className="btn btn-block bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white font-semibold border-none"
-                  >
-                    Sign In
-                  </button>
-                </div>
-
-                {/* <div className="text-center text-sm mt-4">
-                  Don't have an account?{" "}
-                  <button
-                    type="button"
-                    className="btn btn-link btn-xs text-secondary p-0 h-auto font-medium"
-                  >
-                    Sign up
-                  </button>
-                </div> */}
-              </div>
-            </form>
+            <h2 className="card-title text-3xl font-bold text-center mb-2 text-secondary">
+              Sign In
+            </h2>
+            <p className="text-center text-sm opacity-70 max-w-xs">
+              Enter your credentials to access your account
+            </p>
           </div>
+
+          <form onSubmit={handleLogin} className="mt-2">
+            <div className="space-y-5">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium text-secondary">
+                    Username
+                  </span>
+                </label>
+                <label className="input input-bordered flex items-center gap-2 focus-within:border-primary">
+                  <User className="h-5 w-5 text-primary" />
+                  <input
+                    type="text"
+                    className="grow"
+                    placeholder="Enter your username"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </label>
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium text-secondary">
+                    Password
+                  </span>
+                </label>
+                <label className="input input-bordered flex items-center gap-2 focus-within:border-primary">
+                  <Lock className="h-5 w-5 text-primary" />
+                  <input
+                    type="password"
+                    className="grow"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </label>
+              </div>
+
+              <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-3">
+                  <input
+                    type="checkbox"
+                    className="checkbox checkbox-primary"
+                  />
+                  <span className="label-text">Remember me</span>
+                </label>
+              </div>
+
+              <div className="form-control mt-8">
+                <button
+                  type="submit"
+                  className={`btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none btn-block ${
+                    loading ? "" : ""
+                  }`}
+                  disabled={loading}
+                >
+                  {loading ? <span className="loading"></span> : null}
+                  Sign In
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button onClick={closeModal}>close</button>
+        <button onClick={closeModal} className="hidden">
+          close
+        </button>
       </form>
     </section>
   );

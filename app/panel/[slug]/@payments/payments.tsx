@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import {
-  PlusCircle,
   FileEdit,
   Trash2,
   RefreshCw,
@@ -10,15 +9,17 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
-  Eye,
   Filter,
   Check,
   X,
+  AlertCircle,
+  DollarSign,
+  Calendar,
 } from "lucide-react";
-import { ClientType, PaymentsType, VisitType } from "@/lib/types";
+import type { PaymentsType } from "@/lib/types";
 import { usePayments } from "@/hooks/payments/main";
-import { useVisit_6b7e2d } from "@/hooks/visit/6b7e2d";
 import { useVisit_ae978b } from "@/hooks/visit/ae978b";
+import { Modal } from "@/components/ui/modal";
 
 export default function PaymentsManagement() {
   // State for payments data
@@ -197,128 +198,151 @@ export default function PaymentsManagement() {
     setIsFilterOpen(false);
   };
 
+  // Calculate stats
+  const paidPayments = payments_list.filter((p) => p.paid).length;
+  const unpaidPayments = payments_list.length - paidPayments;
+  const paidPercentage =
+    payments_list.length > 0
+      ? Math.round((paidPayments / payments_list.length) * 100)
+      : 0;
+  const unpaidPercentage =
+    payments_list.length > 0
+      ? Math.round((unpaidPayments / payments_list.length) * 100)
+      : 0;
+
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="container mx-auto">
-        {/* Page Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-primary">
-              Payments Management
-            </h1>
-            <p className="text-base-content/70">
-              Manage all your payment transactions
-            </p>
-          </div>
-          <button className="btn btn-primary mt-4 md:mt-0" disabled>
-            New visits create automaticly payments
-          </button>
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+      <div className="container mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-800 flex items-center">
+            <span className="inline-block w-2 h-8 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></span>
+            Payments Management
+          </h1>
+          <p className="text-gray-600 ml-5">
+            Manage all your payment transactions
+          </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="stats shadow">
-            <div className="stat">
-              <div className="stat-figure text-primary">
-                <CreditCard className="h-8 w-8" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">
+                  Total Payments
+                </h2>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold text-secondary">
+                    {payments_list.length}
+                  </p>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  All payment records
+                </p>
               </div>
-              <div className="stat-title">Total Payments</div>
-              <div className="stat-value text-primary">
-                {payments_list.length}
-              </div>
-              <div className="stat-desc">All payment records</div>
-            </div>
-          </div>
-
-          <div className="stats shadow">
-            <div className="stat">
-              <div className="stat-figure text-success">
-                <Check className="h-8 w-8" />
-              </div>
-              <div className="stat-title">Paid Payments</div>
-              <div className="stat-value text-success">
-                {/* {payments.filter((p) => p.paid).length} */}
-              </div>
-              <div className="stat-desc">
-                {/* {(
-                  (payments.filter((p) => p.paid).length / payments.length) *
-                  100
-                ).toFixed(0)} */}
-                % of total
+              <div className="flex items-center justify-center bg-secondary/10 rounded-full p-3">
+                <CreditCard className="h-6 w-6 text-secondary" />
               </div>
             </div>
           </div>
 
-          <div className="stats shadow">
-            <div className="stat">
-              <div className="stat-figure text-error">
-                <X className="h-8 w-8" />
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">
+                  Paid Payments
+                </h2>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold text-green-600">
+                    {paidPayments}
+                  </p>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {paidPercentage}% of total
+                </p>
               </div>
-              <div className="stat-title">Unpaid Payments</div>
-              <div className="stat-value text-error">
-                {/* {payments.filter((p) => !p.paid).length} */}
+              <div className="flex items-center justify-center bg-green-100 rounded-full p-3">
+                <Check className="h-6 w-6 text-green-600" />
               </div>
-              <div className="stat-desc">
-                {/* {(
-                  (payments.filter((p) => !p.paid).length / payments.length) *
-                  100
-                ).toFixed(0)} */}
-                % of total
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">
+                  Unpaid Payments
+                </h2>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold text-red-500">
+                    {unpaidPayments}
+                  </p>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {unpaidPercentage}% of total
+                </p>
+              </div>
+              <div className="flex items-center justify-center bg-red-100 rounded-full p-3">
+                <X className="h-6 w-6 text-red-500" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Search and Filter */}
-        <div className="bg-base-100 rounded-box p-4 mb-6 shadow-sm">
-          <div className="flex flex-col md:flex-row gap-4 items-center">
-            <div className="form-control w-full md:w-1/3">
-              <div className="input-group">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+          <div className="p-5 border-b border-gray-100">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div className="relative w-full md:w-1/3">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <Search className="w-4 h-4 text-gray-400" />
+                </div>
                 <input
                   type="text"
                   placeholder="Search payments..."
-                  className="input input-bordered w-full"
+                  className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pl-10 p-2.5"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <button className="btn btn-square">
-                  <Search className="h-5 w-5" />
+              </div>
+
+              <div className="flex gap-2 w-full md:w-auto">
+                <button
+                  className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
+                    Object.keys(filters).length > 0
+                      ? "bg-secondary/10 text-secondary hover:bg-secondary/20"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  } transition-colors`}
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
+                >
+                  <Filter className="h-4 w-4" />
+                  Filters{" "}
+                  {Object.keys(filters).length > 0 &&
+                    `(${Object.keys(filters).length})`}
+                </button>
+
+                <button
+                  className="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg flex items-center gap-2 transition-colors"
+                  onClick={get_payments_list_list}
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Refresh
                 </button>
               </div>
-            </div>
-            <div className="flex-1"></div>
-            <div className="flex gap-2">
-              <button
-                className={`btn ${
-                  Object.keys(filters).length > 0 ? "btn-accent" : "btn-outline"
-                }`}
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-              >
-                <Filter className="h-5 w-5 mr-2" />
-                Filters{" "}
-                {Object.keys(filters).length > 0 &&
-                  `(${Object.keys(filters).length})`}
-              </button>
-              <button
-                className="btn btn-outline"
-                onClick={get_payments_list_list}
-              >
-                <RefreshCw className="h-5 w-5 mr-2" />
-                Refresh
-              </button>
             </div>
           </div>
 
           {/* Filter Panel */}
           {isFilterOpen && (
-            <div className="mt-4 p-4 border border-base-300 rounded-lg">
+            <div className="p-5 border-t border-gray-100 bg-gray-50">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Payment Status</span>
+                  <label className="text-sm font-medium text-gray-700 mb-1">
+                    Payment Status
                   </label>
                   <select
-                    className="select select-bordered w-full"
+                    className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
                     value={
                       filters.paid === undefined
                         ? ""
@@ -345,11 +369,11 @@ export default function PaymentsManagement() {
                 </div>
 
                 <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Visit</span>
+                  <label className="text-sm font-medium text-gray-700 mb-1">
+                    Visit
                   </label>
                   <select
-                    className="select select-bordered w-full"
+                    className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
                     value={filters.visit_id || ""}
                     onChange={(e) => {
                       if (e.target.value === "") {
@@ -374,11 +398,11 @@ export default function PaymentsManagement() {
                 </div>
 
                 <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Author</span>
+                  <label className="text-sm font-medium text-gray-700 mb-1">
+                    Author
                   </label>
                   <select
-                    className="select select-bordered w-full"
+                    className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
                     value={filters.author_id || ""}
                     onChange={(e) => {
                       if (e.target.value === "") {
@@ -404,12 +428,12 @@ export default function PaymentsManagement() {
                 </div>
 
                 <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Min Price</span>
+                  <label className="text-sm font-medium text-gray-700 mb-1">
+                    Min Price
                   </label>
                   <input
                     type="number"
-                    className="input input-bordered w-full"
+                    className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
                     placeholder="Min price"
                     value={filters.min_price || ""}
                     onChange={(e) => {
@@ -427,12 +451,12 @@ export default function PaymentsManagement() {
                 </div>
 
                 <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Max Price</span>
+                  <label className="text-sm font-medium text-gray-700 mb-1">
+                    Max Price
                   </label>
                   <input
                     type="number"
-                    className="input input-bordered w-full"
+                    className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
                     placeholder="Max price"
                     value={filters.max_price || ""}
                     onChange={(e) => {
@@ -450,13 +474,13 @@ export default function PaymentsManagement() {
                 </div>
 
                 <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Date Range</span>
+                  <label className="text-sm font-medium text-gray-700 mb-1">
+                    Date Range
                   </label>
                   <div className="flex gap-2">
                     <input
                       type="date"
-                      className="input input-bordered w-full"
+                      className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
                       value={
                         filters.date_from
                           ? new Date(filters.date_from)
@@ -476,10 +500,10 @@ export default function PaymentsManagement() {
                         }
                       }}
                     />
-                    <span className="self-center">to</span>
+                    <span className="self-center text-gray-500">to</span>
                     <input
                       type="date"
-                      className="input input-bordered w-full"
+                      className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
                       value={
                         filters.date_to
                           ? new Date(filters.date_to)
@@ -504,11 +528,14 @@ export default function PaymentsManagement() {
               </div>
 
               <div className="flex justify-end mt-4 gap-2">
-                <button className="btn btn-outline" onClick={resetFilters}>
+                <button
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
+                  onClick={resetFilters}
+                >
                   Clear Filters
                 </button>
                 <button
-                  className="btn btn-primary"
+                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
                   onClick={() => setIsFilterOpen(false)}
                 >
                   Apply Filters
@@ -519,22 +546,29 @@ export default function PaymentsManagement() {
         </div>
 
         {/* Payments Table */}
-        <div className="bg-base-100 rounded-box shadow-sm overflow-x-auto">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           {loading ? (
             <div className="flex justify-center items-center p-12">
-              <span className="loading loading-spinner loading-lg text-primary"></span>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
           ) : filteredPayments.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-12 text-center">
-              <CreditCard className="h-16 w-16 text-base-content/30 mb-4" />
-              <h3 className="text-lg font-semibold">No payments found</h3>
-              <p className="text-base-content/70 mt-2 max-w-md">
+              <div className="bg-gray-100 p-6 rounded-full mb-4">
+                <CreditCard className="h-12 w-12 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-800 mb-2">
+                No payments found
+              </h3>
+              <p className="text-gray-600 max-w-md">
                 {Object.keys(filters).length > 0 || searchTerm
                   ? "Try adjusting your filters or search term."
                   : "There are no payment records in the system."}
               </p>
               {Object.keys(filters).length > 0 || searchTerm ? (
-                <button className="btn btn-outline mt-6" onClick={resetFilters}>
+                <button
+                  className="mt-6 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
+                  onClick={resetFilters}
+                >
                   Clear Filters
                 </button>
               ) : (
@@ -543,67 +577,103 @@ export default function PaymentsManagement() {
             </div>
           ) : (
             <div>
-              <table className="table table-zebra w-full">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Visit</th>
-                    <th>Patient</th>
-                    <th>Price</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedPayments.map((payment) => (
-                    <tr key={payment.id} className="hover">
-                      <td className="font-mono">{payment.id}</td>
-                      <td>#{payment.visit.id}</td>
-                      <td>{payment.visit.client.name}</td>
-                      <td className="font-semibold">
-                        {formatCurrency(payment.price)}
-                      </td>
-                      <td>
-                        <div
-                          className={`badge ${
-                            payment.paid ? "badge-success" : "badge-error"
-                          }`}
-                        >
-                          {payment.paid ? "Paid" : "Unpaid"}
-                        </div>
-                      </td>
-                      <td>{formatDate(payment.date)}</td>
-                      <td>
-                        <div className="flex gap-2">
-                          <button
-                            className="btn btn-ghost btn-xs"
-                            onClick={() => openVisitModal(payment.visit)}
-                          >
-                            <FileEdit className="h-4 w-4" />
-                          </button>
-                          <button
-                            className="btn btn-ghost btn-xs text-error"
-                            onClick={() => {
-                              setSelectedPayment(payment);
-                              setIsDeleteModalOpen(true);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                      <th scope="col" className="px-6 py-4 font-medium">
+                        ID
+                      </th>
+                      <th scope="col" className="px-6 py-4 font-medium">
+                        Visit
+                      </th>
+                      <th scope="col" className="px-6 py-4 font-medium">
+                        Patient
+                      </th>
+                      <th scope="col" className="px-6 py-4 font-medium">
+                        Price
+                      </th>
+                      <th scope="col" className="px-6 py-4 font-medium">
+                        Status
+                      </th>
+                      <th scope="col" className="px-6 py-4 font-medium">
+                        Date
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-4 font-medium text-right"
+                      >
+                        Actions
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {paginatedPayments.map((payment, index) => (
+                      <tr
+                        key={payment.id}
+                        className={`bg-white border-b hover:bg-gray-50 transition-colors duration-150 ${
+                          index % 2 === 1 ? "bg-gray-50" : ""
+                        }`}
+                      >
+                        <td className="px-6 py-4 font-mono text-gray-700">
+                          {payment.id}
+                        </td>
+                        <td className="px-6 py-4 text-gray-700">
+                          #{payment.visit.id}
+                        </td>
+                        <td className="px-6 py-4 font-medium text-gray-900">
+                          {payment.visit.client.name}
+                        </td>
+                        <td className="px-6 py-4 font-semibold text-gray-900">
+                          {formatCurrency(payment.price)}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              payment.paid
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {payment.paid ? "Paid" : "Unpaid"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-gray-700">
+                          {formatDate(payment.date)}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex gap-2 justify-end">
+                            <button
+                              className="p-1.5 bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-lg transition-colors"
+                              onClick={() => openVisitModal(payment)}
+                              title="Edit Payment"
+                            >
+                              <FileEdit className="h-4 w-4" />
+                            </button>
+                            <button
+                              className="p-1.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-colors"
+                              onClick={() => {
+                                setSelectedPayment(payment);
+                                setIsDeleteModalOpen(true);
+                              }}
+                              title="Delete Payment"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex justify-center py-4">
-                  <div className="join">
+                <div className="px-6 py-4 border-t border-gray-100 flex justify-center">
+                  <div className="flex items-center gap-1">
                     <button
-                      className="join-item btn"
+                      className="p-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:pointer-events-none"
                       onClick={() =>
                         setCurrentPage((prev) => Math.max(prev - 1, 1))
                       }
@@ -611,12 +681,15 @@ export default function PaymentsManagement() {
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </button>
+
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                       (page) => (
                         <button
                           key={page}
-                          className={`join-item btn ${
-                            currentPage === page ? "btn-active" : ""
+                          className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                            currentPage === page
+                              ? "bg-gradient-to-r from-primary to-secondary text-white"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                           }`}
                           onClick={() => setCurrentPage(page)}
                         >
@@ -624,8 +697,9 @@ export default function PaymentsManagement() {
                         </button>
                       )
                     )}
+
                     <button
-                      className="join-item btn"
+                      className="p-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:pointer-events-none"
                       onClick={() =>
                         setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                       }
@@ -642,120 +716,128 @@ export default function PaymentsManagement() {
       </div>
 
       {/* Create Payment Modal */}
-      {isCreateModalOpen && (
-        <div className="modal modal-open">
-          <div className="modal-box max-w-2xl">
-            <h3 className="font-bold text-lg">Create New Payment</h3>
-            <div className="py-4">
-              <div className="form-control mb-4">
-                <label className="label">
-                  <span className="label-text">Visit</span>
-                </label>
-                <select
-                  className="select select-bordered w-full"
-                  value={formData.visit_id}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      visit_id: Number.parseInt(e.target.value),
-                    })
-                  }
-                  required
-                >
-                  <option value={0} disabled>
-                    Select a visit
+      <Modal
+        isOpen={isCreateModalOpen}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          resetForm();
+        }}
+      >
+        <div className="p-6">
+          <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
+            <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
+            Create New Payment
+          </h3>
+          <div className="space-y-4">
+            <div className="form-control">
+              <label className="text-sm font-medium text-gray-700 mb-1">
+                Visit
+              </label>
+              <select
+                className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
+                value={formData.visit_id}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    visit_id: Number.parseInt(e.target.value),
+                  })
+                }
+                required
+              >
+                <option value={0} disabled>
+                  Select a visit
+                </option>
+                {visit_list.map((visit) => (
+                  <option key={visit.id} value={visit.id}>
+                    {visit.client.name} -{" "}
+                    {new Date(visit.datetime).toLocaleDateString()}
                   </option>
-                  {mockVisits.map((visit) => (
-                    <option key={visit.id} value={visit.id}>
-                      {/* {visit.patient_name} -{" "}
-                      {new Date(visit.date).toLocaleDateString()} */}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                ))}
+              </select>
+            </div>
 
-              <div className="form-control mb-4">
-                <label className="label">
-                  <span className="label-text">Price</span>
-                </label>
+            <div className="form-control">
+              <label className="text-sm font-medium text-gray-700 mb-1">
+                Price
+              </label>
+              <input
+                type="number"
+                className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
+                placeholder="Enter price"
+                value={formData.price}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    price: Number.parseInt(e.target.value),
+                  })
+                }
+                required
+                min="0"
+              />
+            </div>
+
+            <div className="form-control flex items-center gap-2">
+              <label className="relative inline-flex items-center cursor-pointer">
                 <input
-                  type="number"
-                  className="input input-bordered w-full"
-                  placeholder="Enter price"
-                  value={formData.price}
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={formData.paid}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      price: Number.parseInt(e.target.value),
-                    })
+                    setFormData({ ...formData, paid: e.target.checked })
                   }
-                  required
-                  min="0"
                 />
-              </div>
-
-              <div className="form-control">
-                <label className="label cursor-pointer">
-                  <span className="label-text">Payment Status</span>
-                  <input
-                    type="checkbox"
-                    className="toggle toggle-success"
-                    checked={formData.paid}
-                    onChange={(e) =>
-                      setFormData({ ...formData, paid: e.target.checked })
-                    }
-                  />
-                </label>
-                <span className="text-sm text-base-content/70 mt-1">
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                <span className="ml-3 text-sm font-medium text-gray-700">
                   {formData.paid ? "Marked as paid" : "Marked as unpaid"}
                 </span>
-              </div>
-            </div>
-            <div className="modal-action">
-              <button
-                type="button"
-                className="btn"
-                onClick={() => {
-                  setIsCreateModalOpen(false);
-                  resetForm();
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={handleCreatePayment}
-                disabled={formData.visit_id === 0 || formData.price <= 0}
-              >
-                Create Payment
-              </button>
+              </label>
             </div>
           </div>
-          <div
-            className="modal-backdrop"
-            onClick={() => {
-              setIsCreateModalOpen(false);
-              resetForm();
-            }}
-          ></div>
+          <div className="flex justify-end gap-3 mt-6">
+            <button
+              type="button"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
+              onClick={() => {
+                setIsCreateModalOpen(false);
+                resetForm();
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
+              onClick={handleCreatePayment}
+              disabled={formData.visit_id === 0 || formData.price <= 0}
+            >
+              Create Payment
+            </button>
+          </div>
         </div>
-      )}
+      </Modal>
 
       {/* Update Payment Modal */}
-      {isUpdateModalOpen && selectedPayment && (
-        <div className="modal modal-open">
-          <div className="modal-box max-w-2xl">
-            <h3 className="font-bold text-lg">
+      {selectedPayment && (
+        <Modal
+          isOpen={isUpdateModalOpen}
+          onClose={() => {
+            setIsUpdateModalOpen(false);
+            setSelectedPayment(null);
+            resetForm();
+          }}
+        >
+          <div className="p-6">
+            <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
+              <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
               Update Payment #{selectedPayment.id}
             </h3>
-            <div className="py-4">
-              <div className="form-control mb-4">
-                <label className="label">
-                  <span className="label-text">Visit</span>
+            <div className="space-y-4">
+              <div className="form-control">
+                <label className="text-sm font-medium text-gray-700 mb-1">
+                  Visit
                 </label>
                 <select
-                  className="select select-bordered w-full"
+                  className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
                   value={formData.visit_id}
                   onChange={(e) =>
                     setFormData({
@@ -768,22 +850,22 @@ export default function PaymentsManagement() {
                   <option value={0} disabled>
                     Select a visit
                   </option>
-                  {mockVisits.map((visit) => (
+                  {visit_list.map((visit) => (
                     <option key={visit.id} value={visit.id}>
-                      {/* {visit.patient_name} -{" "}
-                      {new Date(visit.date).toLocaleDateString()} */}
+                      {visit.client.name} -{" "}
+                      {new Date(visit.datetime).toLocaleDateString()}
                     </option>
                   ))}
                 </select>
               </div>
 
-              <div className="form-control mb-4">
-                <label className="label">
-                  <span className="label-text">Price</span>
+              <div className="form-control">
+                <label className="text-sm font-medium text-gray-700 mb-1">
+                  Price
                 </label>
                 <input
                   type="number"
-                  className="input input-bordered w-full"
+                  className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
                   placeholder="Enter price"
                   value={formData.price}
                   onChange={(e) =>
@@ -797,27 +879,27 @@ export default function PaymentsManagement() {
                 />
               </div>
 
-              <div className="form-control">
-                <label className="label cursor-pointer">
-                  <span className="label-text">Payment Status</span>
+              <div className="form-control flex items-center gap-2">
+                <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
-                    className="toggle toggle-success"
+                    className="sr-only peer"
                     checked={formData.paid}
                     onChange={(e) =>
                       setFormData({ ...formData, paid: e.target.checked })
                     }
                   />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <span className="ml-3 text-sm font-medium text-gray-700">
+                    {formData.paid ? "Marked as paid" : "Marked as unpaid"}
+                  </span>
                 </label>
-                <span className="text-sm text-base-content/70 mt-1">
-                  {formData.paid ? "Marked as paid" : "Marked as unpaid"}
-                </span>
               </div>
             </div>
-            <div className="modal-action">
+            <div className="flex justify-end gap-3 mt-6">
               <button
                 type="button"
-                className="btn"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                 onClick={() => {
                   setIsUpdateModalOpen(false);
                   setSelectedPayment(null);
@@ -828,7 +910,7 @@ export default function PaymentsManagement() {
               </button>
               <button
                 type="button"
-                className="btn btn-primary"
+                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
                 onClick={handleUpdatePayment}
                 disabled={formData.visit_id === 0 || formData.price <= 0}
               >
@@ -836,107 +918,94 @@ export default function PaymentsManagement() {
               </button>
             </div>
           </div>
-          <div
-            className="modal-backdrop"
-            onClick={() => {
-              setIsUpdateModalOpen(false);
-              setSelectedPayment(null);
-              resetForm();
-            }}
-          ></div>
-        </div>
+        </Modal>
       )}
 
       {/* View Payment Modal */}
-      {isViewModalOpen && selectedPayment && (
-        <div className="modal modal-open">
-          <div className="modal-box max-w-2xl">
-            <h3 className="font-bold text-lg">Payment Details</h3>
-            <div className="py-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-base-200 p-4 rounded-lg">
-                  <h4 className="font-semibold mb-2">Payment Information</h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-base-content/70">ID:</span>
-                      <span className="font-mono">{selectedPayment.id}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-base-content/70">Amount:</span>
-                      <span className="font-semibold">
-                        {formatCurrency(selectedPayment.price)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-base-content/70">Status:</span>
-                      <span
-                        className={`badge ${
-                          selectedPayment.paid ? "badge-success" : "badge-error"
-                        }`}
-                      >
-                        {selectedPayment.paid ? "Paid" : "Unpaid"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-base-content/70">Created:</span>
-                      <span>{formatDate(selectedPayment.created_at)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-base-content/70">Updated:</span>
-                    </div>
+      {selectedPayment && (
+        <Modal
+          isOpen={isViewModalOpen}
+          onClose={() => {
+            setIsViewModalOpen(false);
+            setSelectedPayment(null);
+          }}
+        >
+          <div className="p-6">
+            <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
+              <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
+              Payment Details
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-primary" />
+                  Payment Information
+                </h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">ID:</span>
+                    <span className="font-mono text-gray-800">
+                      {selectedPayment.id}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Amount:</span>
+                    <span className="font-semibold text-gray-800">
+                      {formatCurrency(selectedPayment.price)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Status:</span>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        selectedPayment.paid
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {selectedPayment.paid ? "Paid" : "Unpaid"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Created:</span>
+                    <span className="text-gray-800">
+                      {formatDate(selectedPayment.created_at)}
+                    </span>
                   </div>
                 </div>
+              </div>
 
-                <div className="bg-base-200 p-4 rounded-lg">
-                  <h4 className="font-semibold mb-2">Visit Information</h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-base-content/70">Visit ID:</span>
-                      <span className="font-mono">
-                        #{selectedPayment.visit.id}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-base-content/70">Patient:</span>
-                      {/* <span>{selectedPayment.visit.patient_name}</span> */}
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-base-content/70">Date:</span>
-                      {/* <span>{formatDate(selectedPayment.visit.date)}</span> */}
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-base-content/70">Status:</span>
-                      <span className="badge">
-                        {/* {selectedPayment.visit.status} */}
-                      </span>
-                    </div>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-secondary" />
+                  Visit Information
+                </h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Visit ID:</span>
+                    <span className="font-mono text-gray-800">
+                      #{selectedPayment.visit.id}
+                    </span>
                   </div>
-                </div>
-
-                <div className="bg-base-200 p-4 rounded-lg">
-                  <h4 className="font-semibold mb-2">Author Information</h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-base-content/70">Name:</span>
-                      {/* <span>
-                        {selectedPayment.author.first_name}{" "}
-                        {selectedPayment.author.last_name}
-                      </span> */}
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-base-content/70">Username:</span>
-                      <span className="font-mono">
-                        {/* {selectedPayment.author.username} */}
-                      </span>
-                    </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Patient:</span>
+                    <span className="text-gray-800">
+                      {selectedPayment.visit.client.name}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Date:</span>
+                    <span className="text-gray-800">
+                      {formatDate(selectedPayment.visit.datetime)}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="modal-action">
+            <div className="flex justify-end gap-3 mt-6">
               <button
                 type="button"
-                className="btn"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                 onClick={() => {
                   setIsViewModalOpen(false);
                   setSelectedPayment(null);
@@ -946,40 +1015,46 @@ export default function PaymentsManagement() {
               </button>
               <button
                 type="button"
-                className="btn btn-outline"
+                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
                 onClick={() => {
                   setIsViewModalOpen(false);
                   openVisitModal(selectedPayment);
                 }}
               >
-                <FileEdit className="h-4 w-4 mr-2" />
+                <FileEdit className="h-4 w-4 mr-2 inline" />
                 Edit
               </button>
             </div>
           </div>
-          <div
-            className="modal-backdrop"
-            onClick={() => {
-              setIsViewModalOpen(false);
-              setSelectedPayment(null);
-            }}
-          ></div>
-        </div>
+        </Modal>
       )}
 
       {/* Delete Payment Modal */}
-      {isDeleteModalOpen && selectedPayment && (
-        <div className="modal modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Confirm Deletion</h3>
-            <p className="py-4">
+      {selectedPayment && (
+        <Modal
+          isOpen={isDeleteModalOpen}
+          onClose={() => {
+            setIsDeleteModalOpen(false);
+            setSelectedPayment(null);
+          }}
+        >
+          <div className="p-6">
+            <div className="flex items-center justify-center mb-4 text-red-500">
+              <div className="bg-red-100 p-3 rounded-full">
+                <AlertCircle className="h-6 w-6" />
+              </div>
+            </div>
+            <h3 className="text-xl font-bold mb-2 text-gray-800 text-center">
+              Confirm Deletion
+            </h3>
+            <p className="text-gray-600 text-center mb-6">
               Are you sure you want to delete payment #{selectedPayment.id} for{" "}
               {selectedPayment.visit.client.name}? This action cannot be undone.
             </p>
-            <div className="modal-action">
+            <div className="flex justify-center gap-3 mt-6">
               <button
                 type="button"
-                className="btn"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                 onClick={() => {
                   setIsDeleteModalOpen(false);
                   setSelectedPayment(null);
@@ -989,21 +1064,14 @@ export default function PaymentsManagement() {
               </button>
               <button
                 type="button"
-                className="btn btn-error"
+                className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all duration-300"
                 onClick={handleDeletePayment}
               >
                 Delete
               </button>
             </div>
           </div>
-          <div
-            className="modal-backdrop"
-            onClick={() => {
-              setIsDeleteModalOpen(false);
-              setSelectedPayment(null);
-            }}
-          ></div>
-        </div>
+        </Modal>
       )}
     </div>
   );

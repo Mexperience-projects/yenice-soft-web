@@ -9,22 +9,25 @@ module.exports = {
     "*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
     extend: {
       colors: {
-        primary: "#3746EF",
-        secondary: "#27DEBF",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+          light: "#7EEEE0", // Lighter version of primary
+          dark: "#1AB09A", // Darker version of primary
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+          light: "#6B76F0", // Lighter version of secondary
+          dark: "#2A37BC", // Darker version of secondary
+        },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
@@ -51,30 +54,32 @@ module.exports = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      backgroundImage: {
+        "grid-pattern":
+          "linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px)",
+      },
+      backgroundSize: {
+        grid: "20px 20px",
+      },
       keyframes: {
-        "accordion-down": {
-          from: { height: 0 },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: 0 },
+        "gradient-slow": {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
         },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+        "gradient-slow": "gradient-slow 15s ease infinite",
       },
     },
   },
-  plugins: [require("daisyui")],
+  plugins: [require("tailwindcss-animate"), require("daisyui")],
   daisyui: {
     themes: [
       {
         mytheme: {
-          primary: "#3746EF",
-          secondary: "#27DEBF",
-          accent: "#1dcdbc",
+          primary: "#26DEBF",
+          secondary: "#3948EB",
+          accent: "#26DEBF",
           neutral: "#2b3440",
           "base-100": "#ffffff",
           info: "#3abff8",

@@ -24,6 +24,7 @@ export function useVisit_ae978b() {
     const data = Object.fromEntries(formData);
     const response = await axiosUser.post("visit/", data);
     const serverData = response.data.visit;
+    get_visit_list_list();
     // set response of server on state
     loadingHandler(false);
   };

@@ -1,8 +1,16 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { usePersonel_e02ed2 } from "@/hooks/personel/e02ed2";
-import { Plus, Users, RefreshCw, Edit, Trash } from "lucide-react";
+import {
+  Plus,
+  Users,
+  RefreshCw,
+  Edit,
+  Trash,
+  UserPlus,
+  UserCheck,
+} from "lucide-react";
 import type { PersonelType } from "@/lib/types";
 
 export default function PersonnelPage() {
@@ -56,95 +64,154 @@ export default function PersonnelPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-50">
-      <div className="mx-auto p-2 md:p-4 container">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
-            <div className="flex-1">
-              <h2 className="text-sm font-medium text-gray-500">
-                Total Visits
-              </h2>
-              <div className="mt-2 flex items-baseline">
-                <p className="text-3xl font-bold text-blue-600">
-                  {personel_list.length}
+    <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="mx-auto p-2 md:p-6 container">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-800 flex items-center">
+            <span className="inline-block w-2 h-8 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></span>
+            Personnel Management
+          </h1>
+          <p className="text-gray-600 ml-5">
+            Manage your staff and team members
+          </p>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">
+                  Total Personnel
+                </h2>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold text-secondary">
+                    {personel_list.length}
+                  </p>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Active team members
                 </p>
               </div>
-              <p className="text-xs text-gray-500 mt-1">Active visit records</p>
-            </div>
-            <div className="flex items-center justify-center bg-blue-100 rounded-full p-3">
-              <Users className="h-6 w-6 text-blue-600" />
+              <div className="flex items-center justify-center bg-secondary/10 rounded-full p-3">
+                <Users className="h-6 w-6 text-secondary" />
+              </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
-            <div>
-              <div className="text-gray-600 text-sm">Last Updated</div>
-              <div className="text-teal-500 text-4xl font-bold">Just now</div>
-              <div className="text-gray-500 text-xs">
-                Services data is up to date
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">
+                  Available Staff
+                </h2>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold text-primary">
+                    {personel_list.length}
+                  </p>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Ready for assignment
+                </p>
+              </div>
+              <div className="flex items-center justify-center bg-primary/10 rounded-full p-3">
+                <UserCheck className="h-6 w-6 text-primary" />
               </div>
             </div>
-            <button className="bg-teal-100 p-3 rounded-full text-teal-500 hover:bg-teal-200 transition-colors">
-              <RefreshCw className="h-6 w-6" />
-            </button>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">
+                  Last Updated
+                </h2>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold text-gray-700">Just now</p>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Personnel data is up to date
+                </p>
+              </div>
+              <button
+                onClick={() => get_personel_list_list()}
+                className="flex items-center justify-center bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full p-3 hover:from-primary/20 hover:to-secondary/20 transition-all duration-300"
+              >
+                <RefreshCw className="h-6 w-6 text-secondary" />
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Table View */}
-        <div className="bg-base-100 rounded-lg shadow-md p-3 md:p-4">
-          <div className="flex flex-row justify-between">
-            <h2 className="text-lg md:text-xl font-bold text-primary mb-3 md:mb-4">
-              Personnel List
-            </h2>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium hidden md:inline">
-                View:
-              </span>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          {/* Table Header */}
+          <div className="p-5 border-b border-gray-100">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+                <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
+                Personnel Records
+              </h2>
+
               <button
                 onClick={() => {
                   setActiveTab("create");
                   openModal();
                 }}
-                className="btn btn-primary btn-sm gap-1"
+                className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300"
               >
                 <Plus className="h-4 w-4" />
-                <span className="hidden md:inline">Add New</span>
+                <span>Add New Personnel</span>
               </button>
             </div>
           </div>
 
           {/* Desktop Table - Hidden on small screens */}
           <div className="hidden md:block overflow-x-auto">
-            <table className="table table-zebra w-full">
-              <thead>
+            <table className="w-full text-sm text-left">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
-                  <th>Name</th>
-                  <th>description</th>
-                  <th>Actions</th>
+                  <th scope="col" className="px-6 py-4 font-medium">
+                    Name
+                  </th>
+                  <th scope="col" className="px-6 py-4 font-medium">
+                    Description
+                  </th>
+                  <th scope="col" className="px-6 py-4 font-medium text-right">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {personel_list.map((personnel, i) => (
-                  <tr key={i} className="hover">
-                    <td className="font-medium">{personnel.name}</td>
-                    <td>{personnel.description}</td>
-                    <td>
-                      <div className="flex gap-2">
+                  <tr
+                    key={i}
+                    className="bg-white border-b hover:bg-gray-50 transition-colors duration-150"
+                  >
+                    <td className="px-6 py-4 font-medium text-gray-900">
+                      {personnel.name}
+                    </td>
+                    <td className="px-6 py-4 text-gray-700">
+                      {personnel.description}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex gap-2 justify-end">
                         <button
-                          className="btn btn-primary btn-xs"
+                          className="px-3 py-1.5 bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-lg transition-colors flex items-center gap-1"
                           onClick={() => {
                             handlePersonnelSelect(personnel);
                             openModal();
                           }}
                         >
-                          <Edit className="h-3 w-3 mr-1" />
+                          <Edit className="h-3.5 w-3.5" />
                           Edit
                         </button>
                         <button
-                          className="btn btn-error btn-xs"
+                          className="px-3 py-1.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-colors flex items-center gap-1"
                           onClick={() => handleDeletePersonnel(personnel)}
                         >
-                          <Trash className="h-3 w-3 mr-1" />
+                          <Trash className="h-3.5 w-3.5" />
                           Delete
                         </button>
                       </div>
@@ -158,165 +225,189 @@ export default function PersonnelPage() {
           {/* Mobile Table Alternative - Visible only on small screens */}
           <div className="md:hidden">
             {personel_list.map((personnel, i) => (
-              <div
-                key={i}
-                className="card bg-base-100 border border-base-300 mb-3"
-              >
-                <div className="card-body p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-bold text-primary">
-                        {personnel.name}
-                      </h3>
-                    </div>
-                    <div className="dropdown dropdown-end">
-                      <label tabIndex={0} className="btn btn-ghost btn-xs">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          className="inline-block w-5 h-5 stroke-current"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-                          ></path>
-                        </svg>
-                      </label>
-                      <ul
-                        tabIndex={0}
-                        className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-                      >
-                        <li>
-                          <a
-                            onClick={() => {
-                              handlePersonnelSelect(personnel);
-                              openModal();
-                            }}
-                          >
-                            <Edit className="h-4 w-4" /> Edit
-                          </a>
-                        </li>
-                        <li>
-                          <a
-                            onClick={() => handleDeletePersonnel(personnel)}
-                            className="text-error"
-                          >
-                            <Trash className="h-4 w-4" /> Delete
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
+              <div key={i} className="border-b border-gray-100 p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-medium text-gray-900">
+                      {personnel.name}
+                    </h3>
+                    <p className="text-gray-600 text-sm mt-1">
+                      {personnel.description}
+                    </p>
                   </div>
-
-                  <div className="divider my-1"></div>
-                  <p>{personnel.description}</p>
+                  <div className="dropdown dropdown-end">
+                    <label
+                      tabIndex={0}
+                      className="btn btn-ghost btn-sm rounded-lg"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        className="inline-block w-5 h-5 stroke-current"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+                        ></path>
+                      </svg>
+                    </label>
+                    <ul
+                      tabIndex={0}
+                      className="dropdown-content z-[1] menu p-2 shadow bg-white rounded-lg w-52 border border-gray-100"
+                    >
+                      <li>
+                        <a
+                          onClick={() => {
+                            handlePersonnelSelect(personnel);
+                            openModal();
+                          }}
+                          className="flex items-center gap-2 text-secondary hover:bg-secondary/10"
+                        >
+                          <Edit className="h-4 w-4" /> Edit
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          onClick={() => handleDeletePersonnel(personnel)}
+                          className="flex items-center gap-2 text-red-500 hover:bg-red-50"
+                        >
+                          <Trash className="h-4 w-4" /> Delete
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
 
           {personel_list.length === 0 && (
-            <div className="alert alert-info mt-4">
-              <div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  className="stroke-current flex-shrink-0 w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  ></path>
-                </svg>
-                <span>
-                  No personnel records found. Add your first personnel record!
-                </span>
+            <div className="p-8 text-center">
+              <div className="bg-gray-50 p-6 rounded-lg inline-block mb-4">
+                <UserPlus className="h-12 w-12 text-gray-400 mx-auto" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-800 mb-2">
+                No Personnel Records
+              </h3>
+              <p className="text-gray-500 max-w-md mx-auto mb-6">
+                No personnel records found. Add your first team member to get
+                started!
+              </p>
+              <button
+                onClick={() => {
+                  setActiveTab("create");
+                  openModal();
+                }}
+                className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 mx-auto"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Add First Personnel</span>
+              </button>
+            </div>
+          )}
+
+          {/* Table Footer */}
+          {personel_list.length > 0 && (
+            <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
+              <div className="text-sm text-gray-500">
+                Showing{" "}
+                <span className="font-medium">{personel_list.length}</span>{" "}
+                personnel records
               </div>
             </div>
           )}
         </div>
 
-        <div className="fixed bottom-6 right-6">
+        <div className="fixed bottom-6 right-6 md:hidden">
           <button
             onClick={() => {
               setActiveTab("create");
               openModal();
             }}
-            className="btn btn-primary btn-circle btn-lg shadow-lg"
+            className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none h-14 w-14 rounded-full shadow-lg flex items-center justify-center"
           >
             <Plus className="h-6 w-6" />
           </button>
         </div>
 
         <dialog id="personnel_modal" className="modal">
-          <div className="modal-box max-w-4xl">
+          <div className="modal-box max-w-4xl bg-white rounded-xl shadow-lg border border-gray-100">
             <form method="dialog">
               <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
                 ✕
               </button>
             </form>
 
-            <div className="bg-base-100 rounded-lg">
-              <form
-                action={
-                  selectedPersonnel === undefined
-                    ? create_personel_data
-                    : update_personel_data
-                }
-                className="space-y-4"
-              >
-                <input type="hidden" name="id" value={selectedPersonnel?.id} />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="form-control w-full">
-                    <label className="label">
-                      <span className="label-text">Full Name</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      placeholder="Enter full name"
-                      className="input input-bordered w-full"
-                      required
-                    />
-                  </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+              <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
+              {activeTab === "create" ? "Add New Personnel" : "Edit Personnel"}
+            </h3>
 
-                  <div className="form-control w-full">
-                    <label className="label">
-                      <span className="label-text">Description</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="description"
-                      placeholder="Enter position"
-                      className="input input-bordered w-full"
-                      required
-                    />
-                  </div>
+            <form
+              action={
+                activeTab === "create"
+                  ? create_personel_data
+                  : update_personel_data
+              }
+              className="space-y-4"
+            >
+              <input type="hidden" name="id" value={selectedPersonnel?.id} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text text-gray-700 font-medium">
+                      Full Name
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Enter full name"
+                    className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
+                    defaultValue={selectedPersonnel?.name}
+                    required
+                  />
                 </div>
-                <div className="modal-action">
-                  <button
-                    type="button"
-                    className="btn"
-                    onClick={() => setActiveTab("list")}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    onClick={closeModal}
-                    className="btn btn-primary"
-                  >
-                    Save Personnel
-                  </button>
+
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text text-gray-700 font-medium">
+                      Description
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    name="description"
+                    placeholder="Enter position or role"
+                    className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
+                    defaultValue={selectedPersonnel?.description}
+                    required
+                  />
                 </div>
-              </form>
-            </div>
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
+                  onClick={() => {
+                    setActiveTab("list");
+                    closeModal();
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  onClick={closeModal}
+                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
+                >
+                  {activeTab === "create" ? "Add Personnel" : "Save Changes"}
+                </button>
+              </div>
+            </form>
           </div>
           <form method="dialog" className="modal-backdrop">
             <button>close</button>

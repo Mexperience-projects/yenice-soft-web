@@ -1,12 +1,19 @@
 "use client";
 
-import { items_691d50Type, useItems_691d50 } from "@/hooks/items/691d50";
+import { type items_691d50Type, useItems_691d50 } from "@/hooks/items/691d50";
 import Items_691d50_create from "@/components/items/691d50_create";
 import Items_691d50_update from "@/components/items/691d50_update";
 import { Modal } from "@/components/ui/modal";
 import { useEffect, useState } from "react";
-import type { ItemsType } from "@/lib/types";
-import { Plus, RefreshCw, User } from "lucide-react";
+import {
+  Plus,
+  RefreshCw,
+  Package,
+  ShoppingCart,
+  AlertCircle,
+  Edit,
+  Trash2,
+} from "lucide-react";
 
 export default function ItemsPage() {
   const {
@@ -70,121 +77,231 @@ export default function ItemsPage() {
   };
 
   return (
-    <div className="bg-gray-50 mx-auto p-4 min-h-screen">
-      <div className="container">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 ">
-          <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
-            <div className="flex-1">
-              <h2 className="text-sm font-medium text-gray-500">
-                Total Visits
-              </h2>
-              <div className="mt-2 flex items-baseline">
-                <p className="text-3xl font-bold text-blue-600">0</p>
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+      <div className="container mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-800 flex items-center">
+            <span className="inline-block w-2 h-8 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></span>
+            Inventory Management
+          </h1>
+          <p className="text-gray-600 ml-5">Manage your items and inventory</p>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">
+                  Total Items
+                </h2>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold text-secondary">
+                    {items_list.length}
+                  </p>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Items in inventory</p>
               </div>
-              <p className="text-xs text-gray-500 mt-1">Active visit records</p>
-            </div>
-            <div className="flex items-center justify-center bg-blue-100 rounded-full p-3">
-              <User className="h-6 w-6 text-blue-600" />
+              <div className="flex items-center justify-center bg-secondary/10 rounded-full p-3">
+                <Package className="h-6 w-6 text-secondary" />
+              </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
-            <div>
-              <div className="text-gray-600 text-sm">Last Updated</div>
-              <div className="text-teal-500 text-4xl font-bold">Just now</div>
-              <div className="text-gray-500 text-xs">
-                Services data is up to date
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">
+                  Total Value
+                </h2>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold text-primary">
+                    $
+                    {items_list
+                      .reduce(
+                        (total, item) => total + item.price * item.count,
+                        0
+                      )
+                      .toFixed(2)}
+                  </p>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Inventory value</p>
+              </div>
+              <div className="flex items-center justify-center bg-primary/10 rounded-full p-3">
+                <ShoppingCart className="h-6 w-6 text-primary" />
               </div>
             </div>
-            <button className="bg-teal-100 p-3 rounded-full text-teal-500 hover:bg-teal-200 transition-colors">
-              <RefreshCw className="h-6 w-6" />
-            </button>
           </div>
-        </div>
-        <div className="bg-base-100 rounded-lg shadow-md p-3 md:p-4">
-          <div className="flex flex-row justify-between">
-            <h1 className="text-lg md:text-xl font-bold text-primary mb-3 md:mb-4">
-              Items Management
-            </h1>
-            <div className="flex items-center gap-2">
-              <span className="mr-2 text-gray-600">View:</span>
+
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">
+                  Last Updated
+                </h2>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold text-gray-700">Just now</p>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Inventory data is up to date
+                </p>
+              </div>
               <button
-                onClick={() => setCreateModal(true)}
-                className="btn btn-primary btn-sm"
+                onClick={loadItems}
+                className="flex items-center justify-center bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full p-3 hover:from-primary/20 hover:to-secondary/20 transition-all duration-300"
               >
-                <Plus className="h-4 w-4" />
-                Add New
+                <RefreshCw className="h-6 w-6 text-secondary" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Items List */}
-        <div className="overflow-x-auto bg-base-100 shadow-md">
-          <table className="table table-zebra w-full">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Count</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items_list.length === 0 ? (
+        {/* Main Content */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          {/* Table Header */}
+          <div className="p-5 border-b border-gray-100">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+                <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
+                Inventory Items
+              </h2>
+
+              <button
+                onClick={() => setCreateModal(true)}
+                className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Add New Item</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Items Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
-                  <td colSpan={4} className="text-center py-4">
-                    {isLoading ? (
-                      <span className="loading loading-spinner loading-md"></span>
-                    ) : (
-                      "No items found. Add a new item to get started."
-                    )}
-                  </td>
+                  <th scope="col" className="px-6 py-4 font-medium">
+                    Name
+                  </th>
+                  <th scope="col" className="px-6 py-4 font-medium">
+                    Price
+                  </th>
+                  <th scope="col" className="px-6 py-4 font-medium">
+                    Count
+                  </th>
+                  <th scope="col" className="px-6 py-4 font-medium text-right">
+                    Actions
+                  </th>
                 </tr>
-              ) : (
-                items_list.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.name}</td>
-                    <td>${item.price.toFixed(2)}</td>
-                    <td>{item.count}</td>
-                    <td>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleUpdateClick(item)}
-                          className="btn btn-sm btn-info"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(item)}
-                          className="btn btn-sm btn-error"
-                        >
-                          Delete
-                        </button>
-                      </div>
+              </thead>
+              <tbody>
+                {items_list.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-8 text-center">
+                      {isLoading ? (
+                        <div className="flex justify-center items-center">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center">
+                          <div className="bg-gray-100 p-3 rounded-full mb-3">
+                            <Package className="h-6 w-6 text-gray-400" />
+                          </div>
+                          <p className="text-gray-500 font-medium">
+                            No items found
+                          </p>
+                          <p className="text-gray-400 text-sm mt-1">
+                            Add a new item to get started
+                          </p>
+                        </div>
+                      )}
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  items_list.map((item, index) => (
+                    <tr
+                      key={index}
+                      className="bg-white border-b hover:bg-gray-50 transition-colors duration-150"
+                    >
+                      <td className="px-6 py-4 font-medium text-gray-900">
+                        {item.name}
+                      </td>
+                      <td className="px-6 py-4 text-gray-700">
+                        ${item.price.toFixed(2)}
+                      </td>
+                      <td className="px-6 py-4 text-gray-700">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            item.count > 10
+                              ? "bg-green-100 text-green-800"
+                              : item.count > 0
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {item.count}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex gap-2 justify-end">
+                          <button
+                            onClick={() => handleUpdateClick(item)}
+                            className="px-3 py-1.5 bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-lg transition-colors flex items-center gap-1"
+                          >
+                            <Edit className="h-3.5 w-3.5" />
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(item)}
+                            className="px-3 py-1.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-colors flex items-center gap-1"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Table Footer */}
+          {items_list.length > 0 && (
+            <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
+              <div className="text-sm text-gray-500">
+                Showing <span className="font-medium">{items_list.length}</span>{" "}
+                items
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
       {/* Create Modal */}
       <Modal isOpen={createModal} onClose={() => setCreateModal(false)}>
-        <div className="p-4">
-          <h3 className="font-bold text-lg mb-4">Add New Item</h3>
+        <div className="p-6">
+          <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
+            <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
+            Add New Item
+          </h3>
           <form action={handleCreateSubmit}>
             <Items_691d50_create />
-            <div className="modal-action mt-6">
+            <div className="flex justify-end gap-3 mt-6">
               <button
                 type="button"
-                className="btn btn-ghost"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                 onClick={() => setCreateModal(false)}
               >
                 Cancel
               </button>
-              <button type="submit" className="btn btn-primary">
+              <button
+                type="submit"
+                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
+              >
                 Save Item
               </button>
             </div>
@@ -195,21 +312,25 @@ export default function ItemsPage() {
       {/* Update Modal */}
       {selectedItem && (
         <Modal isOpen={updateModal} onClose={() => setUpdateModal(false)}>
-          <div className="p-4">
-            <h3 className="font-bold text-lg mb-4">
+          <div className="p-6">
+            <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
+              <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
               Edit Item: {selectedItem.name}
             </h3>
             <form action={handleUpdateSubmit}>
               <Items_691d50_update item={selectedItem} />
-              <div className="modal-action mt-6">
+              <div className="flex justify-end gap-3 mt-6">
                 <button
                   type="button"
-                  className="btn btn-ghost"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
                   onClick={() => setUpdateModal(false)}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary">
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
+                >
                   Update Item
                 </button>
               </div>
@@ -221,21 +342,30 @@ export default function ItemsPage() {
       {/* Delete Modal */}
       {selectedItem && (
         <Modal isOpen={deleteModal} onClose={() => setDeleteModal(false)}>
-          <div className="p-4">
-            <h3 className="font-bold text-lg mb-4">Delete Item</h3>
-            <div className="modal-action mt-6">
+          <div className="p-6">
+            <div className="flex items-center justify-center mb-4 text-red-500">
+              <div className="bg-red-100 p-3 rounded-full">
+                <AlertCircle className="h-6 w-6" />
+              </div>
+            </div>
+            <h3 className="text-xl font-bold mb-2 text-gray-800 text-center">
+              Delete Item
+            </h3>
+            <p className="text-gray-600 text-center mb-6">
+              Are you sure you want to delete "{selectedItem.name}"? This action
+              cannot be undone.
+            </p>
+            <div className="flex justify-center gap-3 mt-6">
               <button
                 type="button"
-                className="btn btn-ghost"
-                onClick={() => {
-                  setDeleteModal(false);
-                }}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
+                onClick={() => setDeleteModal(false)}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="btn btn-error"
+                className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all duration-300"
                 onClick={handleDeleteSubmit}
               >
                 Delete Item

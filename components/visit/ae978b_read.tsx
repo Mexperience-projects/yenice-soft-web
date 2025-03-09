@@ -14,52 +14,64 @@ export default function Visit_ae978b_read({ data }: VisitProps) {
   };
 
   return (
-    <div className="card bg-base-100">
-      <div className="card-body p-4">
+    <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+      <div className="p-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <User className="h-5 w-5 text-primary" />
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/10 p-2 rounded-full">
+                <User className="h-5 w-5 text-primary" />
+              </div>
               <div>
-                <p className="text-sm font-medium text-muted">Client</p>
-                <p className="font-semibold">{client}</p>
+                <p className="text-sm font-medium text-gray-500">Client</p>
+                <p className="font-semibold text-gray-800">{client.name}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-5 w-5 text-primary" />
+            <div className="flex items-center gap-3">
+              <div className="bg-secondary/10 p-2 rounded-full">
+                <Briefcase className="h-5 w-5 text-secondary" />
+              </div>
               <div>
-                <p className="text-sm font-medium text-muted">Service</p>
-                <p className="font-semibold">{service}</p>
+                <p className="text-sm font-medium text-gray-500">Service</p>
+                <p className="font-semibold text-gray-800">{service}</p>
               </div>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-primary" />
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/10 p-2 rounded-full">
+                <Calendar className="h-5 w-5 text-primary" />
+              </div>
               <div>
-                <p className="text-sm font-medium text-muted">Date & Time</p>
-                <p className="font-semibold">{formatDate(datetime)}</p>
+                <p className="text-sm font-medium text-gray-500">Date & Time</p>
+                <p className="font-semibold text-gray-800">
+                  {formatDate(datetime)}
+                </p>
               </div>
             </div>
 
             {items && (
-              <div className="flex items-center gap-2">
-                <Package className="h-5 w-5 text-primary" />
+              <div className="flex items-center gap-3">
+                <div className="bg-secondary/10 p-2 rounded-full">
+                  <Package className="h-5 w-5 text-secondary" />
+                </div>
                 <div>
-                  <p className="text-sm font-medium text-muted">Items</p>
-                  <p className="font-semibold">{items}</p>
+                  <p className="text-sm font-medium text-gray-500">Items</p>
+                  <p className="font-semibold text-gray-800">{items}</p>
                 </div>
               </div>
             )}
 
             {payments && (
-              <div className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5 text-primary" />
+              <div className="flex items-center gap-3">
+                <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-2 rounded-full">
+                  <CreditCard className="h-5 w-5 text-secondary" />
+                </div>
                 <div>
-                  <p className="text-sm font-medium text-muted">Payments</p>
-                  <p className="font-semibold">{payments}</p>
+                  <p className="text-sm font-medium text-gray-500">Payments</p>
+                  <p className="font-semibold text-gray-800">{payments}</p>
                 </div>
               </div>
             )}

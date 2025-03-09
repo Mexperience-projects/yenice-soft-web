@@ -31,9 +31,11 @@ export function useLogin() {
   };
 
   const logout = () => {
+    loadingHandler(true);
     localStorage.removeItem("token");
     localStorage.removeItem("refresh");
     router.push("/");
+    loadingHandler(false);
   };
 
   return { loading, login, logout };

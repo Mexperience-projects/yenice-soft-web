@@ -23,6 +23,7 @@ import {
 } from "@/hooks/services/10cd39";
 import { type items_691d50Type, useItems_691d50 } from "@/hooks/items/691d50";
 import { useClients } from "@/hooks/clients/main";
+import { ClientType } from "@/lib/types";
 
 interface SelectedItem {
   id: string;
@@ -43,7 +44,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
   const { get_clients_list_list, clients_list } = useClients();
 
   const [formData, setFormData] = useState({
-    client: undefined as ClientTypes | undefined,
+    client: undefined as ClientType | undefined,
     selectedServices: [] as string[],
     selectedItems: [] as SelectedItem[],
     datetime: "",
@@ -177,12 +178,12 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
     if (newPayment.description && newPayment.price > 0) {
       const paymentId = editingPaymentId || formData.payments.length + 1;
 
-      setFormData((prev) => {
+      setFormData((prev: any) => {
         let updatedPayments;
 
         if (editingPaymentId) {
           // Update existing payment
-          updatedPayments = prev.payments.map((payment) =>
+          updatedPayments = prev.payments.map((payment: any) =>
             payment.id === editingPaymentId
               ? { ...newPayment, id: paymentId }
               : payment
@@ -281,14 +282,17 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
   };
 
   return (
-    <div className="card bg-base-100">
-      <div className="card-body">
+    <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+      <div className="p-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Client Field */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text flex items-center gap-2">
-                <User className="h-4 w-4" /> Client
+              <span className="label-text flex items-center gap-2 text-gray-700 font-medium">
+                <div className="bg-primary/10 p-1 rounded-full">
+                  <User className="h-4 w-4 text-primary" />
+                </div>
+                Client
               </span>
             </label>
 
@@ -299,22 +303,18 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                 value={formData.client?.name}
                 onChange={handleChange}
                 placeholder="Enter client name"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
                 required
-                // onFocus={() => setIsClientFieldFocused(true)}
-                // onBlur={() =>
-                //   setTimeout(() => setIsClientFieldFocused(false), 200)
-                // }
               />
 
-              <div className="absolute z-30 bg-base-100 shadow-lg rounded-box w-full hidden group-hover:flex hover:flex flex-col">
+              <div className="absolute z-30 bg-white shadow-lg rounded-lg w-full hidden group-hover:flex hover:flex flex-col border border-gray-100">
                 <div className="max-h-60 overflow-y-auto flex flex-col">
                   {clients_list.map((client) => (
                     <div
                       key={client.id}
-                      className="p-2 hover:bg-base-200 cursor-pointer"
+                      className="p-2 hover:bg-gray-50 cursor-pointer"
                       onClick={() => {
-                        setFormData((prev) => ({
+                        setFormData((prev: any) => ({
                           ...prev,
                           client: client,
                         }));
@@ -324,10 +324,10 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                     </div>
                   ))}
                 </div>
-                <div className="border-t border-base-300 w-full p-2">
+                <div className="border-t border-gray-100 w-full p-2">
                   <button
                     type="button"
-                    className="btn btn-ghost btn-sm w-full text-primary flex items-center justify-center gap-2"
+                    className="btn bg-gradient-to-r from-primary/10 to-secondary/10 hover:from-primary/20 hover:to-secondary/20 border-0 text-secondary btn-sm w-full flex items-center justify-center gap-2"
                     onClick={props.openNewClient}
                   >
                     <Plus className="h-4 w-4" /> Create New Client
@@ -340,13 +340,16 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
           {/* Services Field */}
           <div className="form-control" ref={serviceDropdownRef}>
             <label className="label">
-              <span className="label-text flex items-center gap-2">
-                <Briefcase className="h-4 w-4" /> Services
+              <span className="label-text flex items-center gap-2 text-gray-700 font-medium">
+                <div className="bg-secondary/10 p-1 rounded-full">
+                  <Briefcase className="h-4 w-4 text-secondary" />
+                </div>
+                Services
               </span>
             </label>
             <div className="relative w-full">
               <div
-                className="input input-bordered flex justify-between items-center cursor-pointer w-full"
+                className="input input-bordered flex justify-between items-center cursor-pointer w-full bg-gray-50 border-gray-200"
                 onClick={() => setShowServiceDropdown(true)}
               >
                 <span className="text-sm">
@@ -358,9 +361,9 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
               </div>
 
               {showServiceDropdown && (
-                <div className="absolute z-30 bg-base-100 shadow-lg rounded-box w-full mt-1">
+                <div className="absolute z-30 bg-white shadow-lg rounded-lg w-full mt-1 border border-gray-100">
                   <div className="p-2">
-                    <div className="flex items-center border-b border-base-300 pb-2">
+                    <div className="flex items-center border-b border-gray-100 pb-2">
                       <Search className="h-4 w-4 mr-2 opacity-50" />
                       <input
                         type="text"
@@ -384,7 +387,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                                 formData.selectedServices.includes(
                                   service.id.toString()
                                 )
-                                  ? "active"
+                                  ? "bg-primary/10 text-primary"
                                   : ""
                               }`}
                               onClick={(e) => {
@@ -397,7 +400,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                                 <label className="label cursor-pointer justify-start gap-2">
                                   <input
                                     type="checkbox"
-                                    className="checkbox checkbox-sm"
+                                    className="checkbox checkbox-sm checkbox-primary"
                                     checked={formData.selectedServices.includes(
                                       service.id.toString()
                                     )}
@@ -421,7 +424,10 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                 {formData.selectedServices.map((id) => {
                   const service = services.find((s) => s.id === Number(id));
                   return service ? (
-                    <div key={id} className="badge badge-secondary gap-1">
+                    <div
+                      key={id}
+                      className="badge bg-secondary/10 text-secondary gap-1 border-0"
+                    >
                       {service.name}
                       <button
                         className="btn btn-ghost btn-xs btn-circle"
@@ -439,13 +445,16 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
           {/* Items Field */}
           <div className="form-control" ref={itemDropdownRef}>
             <label className="label">
-              <span className="label-text flex items-center gap-2">
-                <Package className="h-4 w-4" /> Items
+              <span className="label-text flex items-center gap-2 text-gray-700 font-medium">
+                <div className="bg-primary/10 p-1 rounded-full">
+                  <Package className="h-4 w-4 text-primary" />
+                </div>
+                Items
               </span>
             </label>
             <div className="relative w-full">
               <div
-                className="input input-bordered flex justify-between items-center cursor-pointer w-full"
+                className="input input-bordered flex justify-between items-center cursor-pointer w-full bg-gray-50 border-gray-200"
                 onClick={() => setShowItemDropdown(true)}
               >
                 <span className="text-sm">
@@ -457,9 +466,9 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
               </div>
 
               {showItemDropdown && (
-                <div className="absolute z-30 bg-base-100 shadow-lg rounded-box w-full mt-1">
+                <div className="absolute z-30 bg-white shadow-lg rounded-lg w-full mt-1 border border-gray-100">
                   <div className="p-2">
-                    <div className="flex items-center border-b border-base-300 pb-2">
+                    <div className="flex items-center border-b border-gray-100 pb-2">
                       <Search className="h-4 w-4 mr-2 opacity-50" />
                       <input
                         type="text"
@@ -481,7 +490,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                             <a
                               className={`flex items-center ${
                                 isItemSelected(item.id.toString())
-                                  ? "active"
+                                  ? "bg-primary/10 text-primary"
                                   : ""
                               }`}
                               onClick={(e) => {
@@ -494,7 +503,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                                 <label className="label cursor-pointer justify-start gap-2">
                                   <input
                                     type="checkbox"
-                                    className="checkbox checkbox-sm"
+                                    className="checkbox checkbox-sm checkbox-primary"
                                     checked={isItemSelected(item.id.toString())}
                                     readOnly
                                   />
@@ -520,7 +529,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                   return item ? (
                     <div
                       key={selectedItem.id}
-                      className="flex items-center justify-between bg-base-200 p-2 rounded-lg"
+                      className="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-100"
                     >
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{item.name}</span>
@@ -528,7 +537,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
-                          className="btn btn-sm btn-circle btn-ghost"
+                          className="btn btn-sm btn-circle bg-gray-100 hover:bg-gray-200 border-0"
                           onClick={() =>
                             updateItemQuantity(selectedItem.id, -1)
                           }
@@ -540,14 +549,14 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                         </span>
                         <button
                           type="button"
-                          className="btn btn-sm btn-circle btn-ghost"
+                          className="btn btn-sm btn-circle bg-gray-100 hover:bg-gray-200 border-0"
                           onClick={() => updateItemQuantity(selectedItem.id, 1)}
                         >
                           <Plus className="h-3 w-3" />
                         </button>
                         <button
                           type="button"
-                          className="btn btn-sm btn-circle btn-ghost text-error"
+                          className="btn btn-sm btn-circle bg-red-50 hover:bg-red-100 border-0 text-red-500"
                           onClick={() => removeItem(selectedItem.id)}
                         >
                           <X className="h-3 w-3" />
@@ -563,8 +572,11 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
           {/* Date & Time Field */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text flex items-center gap-2">
-                <Calendar className="h-4 w-4" /> Date & Time
+              <span className="label-text flex items-center gap-2 text-gray-700 font-medium">
+                <div className="bg-secondary/10 p-1 rounded-full">
+                  <Calendar className="h-4 w-4 text-secondary" />
+                </div>
+                Date & Time
               </span>
             </label>
             <input
@@ -573,7 +585,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
               type="datetime-local"
               value={formData.datetime}
               onChange={handleChange}
-              className="input input-bordered w-full"
+              className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-secondary focus:ring-secondary"
               required
             />
           </div>
@@ -582,10 +594,13 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
           <div className="col-span-1 md:col-span-2">
             <div className="form-control">
               <label className="label">
-                <span className="label-text flex items-center gap-2">
-                  <CreditCard className="h-4 w-4" /> Payments
+                <span className="label-text flex items-center gap-2 text-gray-700 font-medium">
+                  <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-1 rounded-full">
+                    <CreditCard className="h-4 w-4 text-secondary" />
+                  </div>
+                  Payments
                 </span>
-                <span className="label-text-alt">
+                <span className="label-text-alt text-gray-500">
                   Total: {calculateTotalPayment()}{" "}
                   {formData.payments.length > 0 &&
                     `(${formData.payments.length} entries)`}
@@ -593,23 +608,25 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
               </label>
 
               {/* Add/Edit Payment Form */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Date</span>
+                    <span className="label-text text-gray-700">Date</span>
                   </label>
                   <input
                     type="date"
                     name="date"
                     value={newPayment.date}
                     onChange={handleNewPaymentChange}
-                    className="input input-bordered w-full"
+                    className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
                   />
                 </div>
 
                 <div className="form-control md:col-span-2">
                   <label className="label">
-                    <span className="label-text">Description</span>
+                    <span className="label-text text-gray-700">
+                      Description
+                    </span>
                   </label>
                   <input
                     type="text"
@@ -617,13 +634,13 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                     value={newPayment.description}
                     onChange={handleNewPaymentChange}
                     placeholder="Enter payment description"
-                    className="input input-bordered w-full"
+                    className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
                   />
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Amount</span>
+                    <span className="label-text text-gray-700">Amount</span>
                   </label>
                   <input
                     type="number"
@@ -631,19 +648,19 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                     value={newPayment.price}
                     onChange={handleNewPaymentChange}
                     min="0"
-                    className="input input-bordered w-full"
+                    className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
                   />
                 </div>
 
                 <div className="form-control">
                   <label className="label cursor-pointer">
-                    <span className="label-text">Paid</span>
+                    <span className="label-text text-gray-700">Paid</span>
                     <input
                       type="checkbox"
                       name="paid"
                       checked={newPayment.paid}
                       onChange={handleNewPaymentChange as any}
-                      className="checkbox"
+                      className="checkbox checkbox-primary"
                     />
                   </label>
                 </div>
@@ -651,7 +668,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                 <div className="md:col-span-3 flex justify-end items-end">
                   <button
                     type="button"
-                    className="btn btn-primary"
+                    className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-0"
                     onClick={addPayment}
                     disabled={!newPayment.description || newPayment.price <= 0}
                   >
@@ -662,15 +679,15 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
 
               {/* Payment List */}
               {formData.payments.length > 0 ? (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto border border-gray-100 rounded-lg">
                   <table className="table table-compact w-full">
-                    <thead>
+                    <thead className="bg-gray-50 text-gray-700">
                       <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th className="font-medium">Date</th>
+                        <th className="font-medium">Description</th>
+                        <th className="font-medium">Amount</th>
+                        <th className="font-medium">Status</th>
+                        <th className="font-medium">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -678,7 +695,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                         <tr
                           key={payment.id}
                           className={
-                            payment.paid ? "bg-success bg-opacity-10" : ""
+                            payment.paid ? "bg-green-50" : "hover:bg-gray-50"
                           }
                         >
                           <td>{payment.date}</td>
@@ -688,7 +705,9 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                             <div className="flex items-center gap-2">
                               <button
                                 className={`btn btn-xs ${
-                                  payment.paid ? "btn-success" : "btn-ghost"
+                                  payment.paid
+                                    ? "bg-green-100 hover:bg-green-200 text-green-700 border-0"
+                                    : "bg-gray-100 hover:bg-gray-200 text-gray-700 border-0"
                                 }`}
                                 onClick={() => togglePaymentStatus(payment.id)}
                               >
@@ -704,13 +723,13 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                           </td>
                           <td className="flex items-center gap-1">
                             <button
-                              className="btn btn-ghost btn-xs"
+                              className="btn btn-xs bg-blue-50 hover:bg-blue-100 text-blue-600 border-0"
                               onClick={() => editPayment(payment)}
                             >
                               <Edit className="h-3 w-3" />
                             </button>
                             <button
-                              className="btn btn-ghost btn-xs text-error"
+                              className="btn btn-xs bg-red-50 hover:bg-red-100 text-red-500 border-0"
                               onClick={() => deletePayment(payment.id)}
                             >
                               <Trash2 className="h-3 w-3" />
@@ -722,7 +741,7 @@ export default function VisitCreateForm(props: { openNewClient: () => void }) {
                   </table>
                 </div>
               ) : (
-                <div className="text-center py-4 text-base-content opacity-60">
+                <div className="text-center py-6 text-gray-500 bg-gray-50 rounded-lg border border-gray-100">
                   No payments added yet
                 </div>
               )}
