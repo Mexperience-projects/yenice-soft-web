@@ -31,10 +31,7 @@ export default function PersonnelPage() {
   const [selectedPersonnel, setSelectedPersonnel] =
     useState<PersonelType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
-  console.log(personel_list);
   useEffect(() => {
     get_personel_list_list();
   }, []);
@@ -77,7 +74,7 @@ export default function PersonnelPage() {
 
   return (
     <div className="min-h-screen w-full bg-gray-50">
-      <div className="mx-auto p-2 md:p-4">
+      <div className="mx-auto p-2 md:p-4 container">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
             <div className="flex-1">

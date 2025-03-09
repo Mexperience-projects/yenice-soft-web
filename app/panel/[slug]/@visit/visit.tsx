@@ -31,12 +31,6 @@ export default function VisitManagement() {
     get_visit_list_list();
   }, []);
 
-  const handleCreateSubmit = async (formData: FormData) => {
-    await create_visit_data(formData);
-    setIsCreateModalOpen(false);
-    get_visit_list_list(); // Refresh the list
-  };
-
   const handleUpdateSubmit = async (formData: FormData) => {
     if (selectedVisit) {
       // await update_visit_data(formData);
@@ -62,7 +56,7 @@ export default function VisitManagement() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6  container">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
             <div className="flex-1">
