@@ -44,9 +44,11 @@ export function usePersonel_e02ed2() {
     get_personel_list_list();
     loadingHandler(false);
   };
-  const delete_personel_data = async () => {
+  const delete_personel_data = async (personel_id: PersonelType["id"]) => {
     loadingHandler(true);
-    const response = await axiosUser.delete("/personel/");
+    const response = await axiosUser.delete("/personel/", {
+      params: { personel_id },
+    });
     const serverData = response.data.personel;
     // set response of server on state
     get_personel_list_list();

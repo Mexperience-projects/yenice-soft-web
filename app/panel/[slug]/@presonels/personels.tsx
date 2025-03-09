@@ -22,6 +22,7 @@ export default function PersonnelPage() {
     get_personel_list_list,
     create_personel_data,
     update_personel_data,
+    delete_personel_data,
     personel_list,
   } = usePersonel_e02ed2();
 
@@ -57,17 +58,11 @@ export default function PersonnelPage() {
     setActiveTab("update");
   };
 
-  const handleUpdateSubmit = async (
-    e: FormEvent<HTMLFormElement>
+  const handleDeletePersonnel = async (
+    personel: PersonelType
   ): Promise<void> => {
-    e.preventDefault();
-    await update_personel_data(new FormData(e.currentTarget));
-    setActiveTab("list");
-  };
-
-  const handleDeletePersonnel = async (id: string): Promise<void> => {
     if (window.confirm("Are you sure you want to delete this personnel?")) {
-      // await delete_personel_data({ id });
+      delete_personel_data(personel.id);
       setActiveTab("list");
     }
   };
@@ -150,7 +145,7 @@ export default function PersonnelPage() {
                         <button
                           className="btn btn-primary btn-xs"
                           onClick={() => {
-                            // handlePersonnelSelect(personnel);
+                            handlePersonnelSelect(personnel);
                             openModal();
                           }}
                         >
@@ -159,7 +154,7 @@ export default function PersonnelPage() {
                         </button>
                         <button
                           className="btn btn-error btn-xs"
-                          // onClick={() => handleDeletePersonnel(personnel.id)}
+                          onClick={() => handleDeletePersonnel(personnel)}
                         >
                           <Trash className="h-3 w-3 mr-1" />
                           Delete
@@ -209,7 +204,7 @@ export default function PersonnelPage() {
                         <li>
                           <a
                             onClick={() => {
-                              // handlePersonnelSelect(personnel);
+                              handlePersonnelSelect(personnel);
                               openModal();
                             }}
                           >
@@ -218,7 +213,7 @@ export default function PersonnelPage() {
                         </li>
                         <li>
                           <a
-                            // onClick={() => handleDeletePersonnel(personnel)}
+                            onClick={() => handleDeletePersonnel(personnel)}
                             className="text-error"
                           >
                             <Trash className="h-4 w-4" /> Delete
@@ -279,83 +274,61 @@ export default function PersonnelPage() {
               </button>
             </form>
 
-            <h3 className="font-bold text-xl mb-6 text-primary">
-              {activeTab === "create" && "Add New Personnel"}
-            </h3>
-
-            {activeTab === "list" && (
-              <div className="overflow-x-auto">
-                <table className="table table-zebra w-full">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Description</th>
-                    </tr>
-                  </thead>
-                </table>
-
-                {personel_list.length === 0 && (
-                  <div className="alert alert-info">
-                    <div>
-                      <span>
-                        No personnel records found. Add your first personnel
-                        record!
-                      </span>
-                    </div>
+            <div className="bg-base-100 rounded-lg">
+              <form
+                action={
+                  selectedPersonnel === undefined
+                    ? create_personel_data
+                    : update_personel_data
+                }
+                className="space-y-4"
+              >
+                <input type="hidden" name="id" value={selectedPersonnel?.id} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="form-control w-full">
+                    <label className="label">
+                      <span className="label-text">Full Name</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Enter full name"
+                      className="input input-bordered w-full"
+                      required
+                    />
                   </div>
-                )}
-              </div>
-            )}
 
-            {activeTab === "create" && (
-              <div className="bg-base-100 rounded-lg">
-                <form action={create_personel_data} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="form-control w-full">
-                      <label className="label">
-                        <span className="label-text">Full Name</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        placeholder="Enter full name"
-                        className="input input-bordered w-full"
-                        required
-                      />
-                    </div>
-
-                    <div className="form-control w-full">
-                      <label className="label">
-                        <span className="label-text">Description</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="description"
-                        placeholder="Enter position"
-                        className="input input-bordered w-full"
-                        required
-                      />
-                    </div>
+                  <div className="form-control w-full">
+                    <label className="label">
+                      <span className="label-text">Description</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="description"
+                      placeholder="Enter position"
+                      className="input input-bordered w-full"
+                      required
+                    />
                   </div>
-                  <div className="modal-action">
-                    <button
-                      type="button"
-                      className="btn"
-                      onClick={() => setActiveTab("list")}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      onClick={closeModal}
-                      className="btn btn-primary"
-                    >
-                      Save Personnel
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
+                </div>
+                <div className="modal-action">
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => setActiveTab("list")}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    onClick={closeModal}
+                    className="btn btn-primary"
+                  >
+                    Save Personnel
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
           <form method="dialog" className="modal-backdrop">
             <button>close</button>
