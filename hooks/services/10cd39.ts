@@ -1,6 +1,8 @@
 import { ServicesType } from "@/lib/types";
 import { useState } from "react";
 import { axiosUser } from "@/lib/axios/noUser";
+import { useAppDispatch, useAppSelector } from "@/store/HOCs";
+import { setServices } from "@/store/slice/services";
 
 export type services_10cd39Type = Pick<
   ServicesType,
@@ -16,15 +18,15 @@ export type services_10cd39Type = Pick<
 
 export function useServices_10cd39() {
   const [loading, loadingHandler] = useState(false);
-  const [services_list, services_listHandler] = useState<services_10cd39Type[]>(
-    []
-  );
+  const services_list = useAppSelector((store) => store.services);
+  const dispatch = useAppDispatch();
+
   const get_services_list_list = async () => {
     loadingHandler(true);
     const response = await axiosUser.get("services/");
     const serverData = response.data.services;
     // set response of server on state
-    services_listHandler(serverData);
+    dispatch(setServices(serverData));
     loadingHandler(false);
   };
   const create_services_data = async (formData: any) => {
@@ -34,6 +36,7 @@ export function useServices_10cd39() {
     const response = await axiosUser.post("services/", data);
     const serverData = response.data.services;
     // set response of server on state
+    get_services_list_list();
     loadingHandler(false);
   };
   const update_services_data = async (formData: any) => {
@@ -43,6 +46,7 @@ export function useServices_10cd39() {
     const response = await axiosUser.put("services/", data);
     const serverData = response.data.services;
     // set response of server on state
+    get_services_list_list();
     loadingHandler(false);
   };
   const delete_services_data = async (id: number) => {
@@ -51,6 +55,7 @@ export function useServices_10cd39() {
       params: { id: id },
     });
     const serverData = response.data.services;
+    get_services_list_list();
     // set response of server on state
     loadingHandler(false);
   };

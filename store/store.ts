@@ -6,12 +6,14 @@ import {
 
 import personels from "./slice/personels";
 import items from "./slice/items";
+import services from "./slice/services";
 import core from "./core/slice";
 
 export const store = configureStore({
   reducer: {
     core,
     personels,
+    services,
     items,
   },
 });

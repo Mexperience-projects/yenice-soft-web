@@ -55,10 +55,6 @@ export default function ServicesPage() {
       service.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const refreshData = () => {
-    get_services_list_list();
-  };
-
   return (
     <div className="bg-gray-50 min-h-screen p-4 ">
       <div className="container">
@@ -88,7 +84,7 @@ export default function ServicesPage() {
               </div>
             </div>
             <button
-              onClick={refreshData}
+              onClick={get_services_list_list}
               className="bg-teal-100 p-3 rounded-full text-teal-500 hover:bg-teal-200 transition-colors"
             >
               <RefreshCw className="h-6 w-6" />
@@ -186,60 +182,31 @@ export default function ServicesPage() {
             {modalMode === "create" ? "Add New Service" : "Edit Service"}
           </h2>
 
-          {modalMode === "create" ? (
-            <form
-              action={async (formData) => {
-                await create_services_data(formData);
-                setServicesModal(false);
-              }}
-            >
-              <Services_10cd39_create />
-              <div className="flex justify-end mt-6 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setServicesModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                >
-                  Create Service
-                </button>
-              </div>
-            </form>
-          ) : (
-            <form
-              action={async (formData) => {
-                await update_services_data(formData);
-                setServicesModal(false);
-              }}
-            >
-              {selectedService && (
-                <>
-                  <input type="hidden" name="id" value={selectedService.id} />
-                  <Services_10cd39_update initialData={selectedService} />
-                  <div className="flex justify-end mt-6 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setServicesModal(false)}
-                      className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                    >
-                      Update Service
-                    </button>
-                  </div>
-                </>
-              )}
-            </form>
-          )}
+          <form
+            action={(formData) => {
+              if (selectedService) update_services_data(formData);
+              else create_services_data(formData);
+              setServicesModal(false);
+            }}
+          >
+            <input type="hidden" name="id" value={selectedService?.id} />
+            <Services_10cd39_create />
+            <div className="flex justify-end mt-6 gap-2">
+              <button
+                type="button"
+                onClick={() => setServicesModal(false)}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              >
+                Create Service
+              </button>
+            </div>
+          </form>
         </div>
       </Modal>
     </div>

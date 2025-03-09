@@ -24,7 +24,6 @@ export function usePersonel_e02ed2() {
     loadingHandler(false);
   };
 
-  console.log(personel_list);
   const create_personel_data = async (formData: any) => {
     loadingHandler(true);
     // create backend form
