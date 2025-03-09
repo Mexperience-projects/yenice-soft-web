@@ -7,12 +7,7 @@ import {
   personel_e02ed2Type,
   usePersonel_e02ed2,
 } from "@/hooks/personel/e02ed2";
-
-// Assuming there's a hook for personnel similar to the services/items hooks
-interface PersonnelType {
-  id: number;
-  name: string;
-}
+import { useAppDispatch } from "@/store/HOCs";
 
 // Mock data for personnel - replace with actual API call
 
@@ -21,7 +16,6 @@ interface ServicesProps {
 }
 
 export default function ServicesUpdateForm({ initialData }: ServicesProps) {
-  const [personnel, setPersonnel] = useState<personel_e02ed2Type[]>([]);
   const [selectedPersonnel, setSelectedPersonnel] = useState<number | null>(
     initialData?.personel && initialData.personel.length > 0
       ? initialData.personel[0]
@@ -30,13 +24,7 @@ export default function ServicesUpdateForm({ initialData }: ServicesProps) {
   const [personnelSearch, setPersonnelSearch] = useState("");
   const [showPersonnelDropdown, setShowPersonnelDropdown] = useState(false);
   const personnelDropdownRef = useRef<HTMLDivElement>(null);
-  const { get_personel_list_list, personel_list } = usePersonel_e02ed2();
-
-  // Fetch personnel from server
-  useEffect(() => {
-    get_personel_list_list();
-    setPersonnel(personel_list);
-  }, []);
+  const { personel_list } = usePersonel_e02ed2();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -60,14 +48,14 @@ export default function ServicesUpdateForm({ initialData }: ServicesProps) {
     setShowPersonnelDropdown(false);
   };
 
-  const filteredPersonnel = personnel.filter((person) =>
+  const filteredPersonnel = personel_list.filter((person) =>
     person.name.toLowerCase().includes(personnelSearch.toLowerCase())
   );
 
   // Get personnel name for display
   const getSelectedPersonnelName = () => {
     if (!selectedPersonnel) return "";
-    const person = personnel.find((p) => p.id === selectedPersonnel);
+    const person = personel_list.find((p) => p.id === selectedPersonnel);
     return person ? person.name : `Personnel ${selectedPersonnel}`;
   };
 
@@ -249,4 +237,7 @@ export default function ServicesUpdateForm({ initialData }: ServicesProps) {
       </div>
     </div>
   );
+}
+function setPersonnel(personel_list: personel_e02ed2Type[]): any {
+  throw new Error("Function not implemented.");
 }

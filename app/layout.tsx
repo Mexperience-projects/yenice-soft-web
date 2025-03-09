@@ -1,4 +1,5 @@
 import "./globals.css";
+import Gaurd from "./guard";
 
 export default function RootLayout({
   children,
@@ -7,7 +8,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="EN">
-      <body>{children}</body>
+      <body>
+        <Gaurd>{children}</Gaurd>
+      </body>
     </html>
   );
 }

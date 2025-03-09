@@ -7,6 +7,7 @@ import { Edit, Plus, RefreshCw, Search, Trash2, Users } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import Services_10cd39_create from "@/components/services/10cd39_create";
 import Services_10cd39_update from "@/components/services/10cd39_update";
+import { usePersonel_e02ed2 } from "@/hooks/personel/e02ed2";
 
 export default function ServicesPage() {
   const {
@@ -16,6 +17,7 @@ export default function ServicesPage() {
     delete_services_data,
     services_list,
   } = useServices_10cd39();
+  const { get_personel_list_list } = usePersonel_e02ed2();
 
   const [servicesModal, setServicesModal] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "update">("create");
@@ -26,6 +28,7 @@ export default function ServicesPage() {
 
   useEffect(() => {
     get_services_list_list();
+    get_personel_list_list();
   }, []);
 
   const handleEdit = (service: ServicesType) => {

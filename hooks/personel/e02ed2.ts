@@ -1,6 +1,8 @@
 import { PersonelType } from "@/lib/types";
 import { useState } from "react";
 import { axiosUser } from "@/lib/axios/noUser";
+import { useAppDispatch, useAppSelector } from "@/store/HOCs";
+import { setPersonels } from "@/store/slice/personels";
 
 export type personel_e02ed2Type = Pick<
   PersonelType,
@@ -8,20 +10,21 @@ export type personel_e02ed2Type = Pick<
 >;
 
 export function usePersonel_e02ed2() {
+  const dispatch = useAppDispatch();
   const [loading, loadingHandler] = useState(false);
-  const [personel_list, personel_listHandler] = useState<personel_e02ed2Type[]>(
-    []
-  );
+  const personel_list = useAppSelector((store) => store.personels);
+
   const get_personel_list_list = async () => {
     loadingHandler(true);
     const response = await axiosUser.get("/personel/");
     const serverData = response.data.personel;
     // set response of server on state
+    dispatch(setPersonels(serverData));
 
-    personel_listHandler(serverData);
     loadingHandler(false);
   };
 
+  console.log(personel_list);
   const create_personel_data = async (formData: any) => {
     loadingHandler(true);
     // create backend form
