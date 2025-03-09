@@ -197,7 +197,7 @@ export default function VisitManagement() {
                 </tr>
               </thead>
               <tbody>
-                {filteredVisits.length === 0 ? (
+                {visit_list.length === 0 ? (
                   <tr className="bg-white">
                     <td colSpan={5} className="px-6 py-8 text-center">
                       <div className="flex flex-col items-center justify-center">
@@ -224,7 +224,7 @@ export default function VisitManagement() {
                     </td>
                   </tr>
                 ) : (
-                  filteredVisits.map((visit, index) => {
+                  visit_list.map((visit, index) => {
                     const visitDate = new Date(visit.datetime);
                     const isPast = visitDate < new Date();
 
@@ -301,12 +301,12 @@ export default function VisitManagement() {
           </div>
 
           {/* Table Footer */}
-          {filteredVisits.length > 0 && (
+          {visit_list.length > 0 && (
             <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
               <div className="text-sm text-gray-500">
-                Showing{" "}
-                <span className="font-medium">{filteredVisits.length}</span> of{" "}
-                <span className="font-medium">{visit_list.length}</span> visits
+                Showing <span className="font-medium">{visit_list.length}</span>{" "}
+                of <span className="font-medium">{visit_list.length}</span>{" "}
+                visits
               </div>
               <div className="flex items-center gap-2">
                 <button className="px-3 py-1 text-sm text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200">
