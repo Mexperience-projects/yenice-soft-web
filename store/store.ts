@@ -9,11 +9,11 @@ import items from "./slice/items";
 import services from "./slice/services";
 import payments from "./slice/payments";
 import clients from "./slice/clients";
-import core from "./core/slice";
+// import core from "./core/slice";
 
 export const store = configureStore({
   reducer: {
-    core,
+    // core,
     personels,
     services,
     items,

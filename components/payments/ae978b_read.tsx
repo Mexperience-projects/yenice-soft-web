@@ -22,7 +22,7 @@ export default function Visit_ae978b_read({ data }: VisitProps) {
               <User className="h-5 w-5 text-primary" />
               <div>
                 <p className="text-sm font-medium text-muted">Client</p>
-                <p className="font-semibold">{client}</p>
+                <p className="font-semibold">{client.name}</p>
               </div>
             </div>
 
@@ -59,7 +59,7 @@ export default function Visit_ae978b_read({ data }: VisitProps) {
                 <CreditCard className="h-5 w-5 text-primary" />
                 <div>
                   <p className="text-sm font-medium text-muted">Payments</p>
-                  <p className="font-semibold">{payments}</p>
+                  {/* <p className="font-semibold">{payments}</p> */}
                 </div>
               </div>
             )}

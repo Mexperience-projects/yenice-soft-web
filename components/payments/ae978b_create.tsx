@@ -174,12 +174,12 @@ export default function VisitCreateForm() {
     if (newPayment.description && newPayment.amount > 0) {
       const paymentId = editingPaymentId || formData.payments.length + 1;
 
-      setFormData((prev) => {
+      setFormData((prev: any) => {
         let updatedPayments;
 
         if (editingPaymentId) {
           // Update existing payment
-          updatedPayments = prev.payments.map((payment) =>
+          updatedPayments = prev.payments.map((payment: any) =>
             payment.id === editingPaymentId
               ? { ...newPayment, id: paymentId }
               : payment

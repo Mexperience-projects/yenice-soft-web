@@ -71,7 +71,7 @@ export default function Visit_ae978b_read({ data }: VisitProps) {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">Payments</p>
-                  <p className="font-semibold text-gray-800">{payments}</p>
+                  {/* <p className="font-semibold text-gray-800">{payments}</p> */}
                 </div>
               </div>
             )}
