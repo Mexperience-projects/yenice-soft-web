@@ -16,6 +16,7 @@ export function usePayments() {
     dispatch(setPayments(serverData));
     loadingHandler(false);
   };
+
   const create_payments_data = async (formData: any) => {
     loadingHandler(true);
     // create backend form
@@ -26,6 +27,7 @@ export function usePayments() {
     // set response of server on state
     loadingHandler(false);
   };
+
   const update_payments_data = async (formData: any) => {
     loadingHandler(true);
     // create backend form
@@ -36,6 +38,7 @@ export function usePayments() {
     // set response of server on state
     loadingHandler(false);
   };
+
   const delete_payments_data = async (id: number) => {
     loadingHandler(true);
     const response = await axiosUser.delete("payments/", { params: { id } });

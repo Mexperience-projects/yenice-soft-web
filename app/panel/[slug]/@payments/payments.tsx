@@ -23,7 +23,12 @@ import { useVisit_ae978b } from "@/hooks/visit/ae978b";
 export default function PaymentsManagement() {
   // State for payments data
   const [filteredPayments, setFilteredPayments] = useState<PaymentsType[]>([]);
-  const { get_payments_list_list, payments_list, loading } = usePayments();
+  const {
+    get_payments_list_list,
+    payments_list,
+    loading,
+    delete_payments_data,
+  } = usePayments();
   const { get_visit_list_list, visit_list } = useVisit_ae978b();
 
   // State for CRUD operations
@@ -138,7 +143,6 @@ export default function PaymentsManagement() {
 
   const handleUpdatePayment = () => {
     if (!selectedPayment) return;
-
     // setPayments(updatedPayments);
     setIsUpdateModalOpen(false);
     setSelectedPayment(null);
@@ -147,11 +151,7 @@ export default function PaymentsManagement() {
 
   const handleDeletePayment = () => {
     if (!selectedPayment) return;
-
-    // In a real app, you would make an API call
-    const updatedPayments = payments_list.filter(
-      (payment) => payment.id !== selectedPayment.id
-    );
+    delete_payments_data(selectedPayment.id);
     setIsDeleteModalOpen(false);
     setSelectedPayment(null);
   };
@@ -164,13 +164,8 @@ export default function PaymentsManagement() {
     });
   };
 
-  const handleEditClick = (payment: PaymentsType) => {
+  const openVisitModal = (payment: PaymentsType) => {
     setSelectedPayment(payment);
-    // setFormData({
-    //   visit_id: payment.visit.id,
-    //   price: payment.price,
-    //   paid: payment.paid,
-    // });
     setIsUpdateModalOpen(true);
   };
 
@@ -215,12 +210,8 @@ export default function PaymentsManagement() {
               Manage all your payment transactions
             </p>
           </div>
-          <button
-            className="btn btn-primary mt-4 md:mt-0"
-            onClick={() => setIsCreateModalOpen(true)}
-          >
-            <PlusCircle className="h-5 w-5 mr-2" />
-            New Payment
+          <button className="btn btn-primary mt-4 md:mt-0" disabled>
+            New visits create automaticly payments
           </button>
         </div>
 
@@ -560,7 +551,6 @@ export default function PaymentsManagement() {
                     <th>Patient</th>
                     <th>Price</th>
                     <th>Status</th>
-                    <th>Author</th>
                     <th>Date</th>
                     <th>Actions</th>
                   </tr>
@@ -572,7 +562,7 @@ export default function PaymentsManagement() {
                       <td>#{payment.visit.id}</td>
                       <td>{payment.visit.client.name}</td>
                       <td className="font-semibold">
-                        {/* {formatCurrency(payment.price)} */}
+                        {formatCurrency(payment.price)}
                       </td>
                       <td>
                         <div
@@ -583,21 +573,12 @@ export default function PaymentsManagement() {
                           {payment.paid ? "Paid" : "Unpaid"}
                         </div>
                       </td>
-                      <td>{formatDate(payment.created_at)}</td>
+                      <td>{formatDate(payment.date)}</td>
                       <td>
                         <div className="flex gap-2">
                           <button
                             className="btn btn-ghost btn-xs"
-                            onClick={() => {
-                              setSelectedPayment(payment);
-                              setIsViewModalOpen(true);
-                            }}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </button>
-                          <button
-                            className="btn btn-ghost btn-xs"
-                            onClick={() => handleEditClick(payment)}
+                            onClick={() => openVisitModal(payment.visit)}
                           >
                             <FileEdit className="h-4 w-4" />
                           </button>
@@ -968,7 +949,7 @@ export default function PaymentsManagement() {
                 className="btn btn-outline"
                 onClick={() => {
                   setIsViewModalOpen(false);
-                  handleEditClick(selectedPayment);
+                  openVisitModal(selectedPayment);
                 }}
               >
                 <FileEdit className="h-4 w-4 mr-2" />
