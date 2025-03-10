@@ -3,7 +3,7 @@ export interface ServicesType {
   name: string;
   price: number;
   description: string;
-  personel: number[];
+  personel?: PersonelType;
   items: number;
   personel_fixed_fee: number;
   personel_precent_fee: number;
