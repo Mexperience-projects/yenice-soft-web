@@ -1,7 +1,7 @@
 "use client";
 
 import { useVisits } from "@/hooks/visit/ae978b";
-import Visit_ae978b_read from "@/components/visit/ae978b_read";
+// import Visit_ae978b_read from "@/components/visit/ae978b_read";
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/modal";
 import {
@@ -334,7 +334,7 @@ export default function VisitManagement() {
             <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
             {t("visits.visitDetails")}
           </h2>
-          {selectedVisit && <Visit_ae978b_read data={selectedVisit} />}
+          {/* {selectedVisit && <Visit_ae978b_read data={selectedVisit} />} */}
           <div className="flex justify-end mt-6">
             <button
               className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
