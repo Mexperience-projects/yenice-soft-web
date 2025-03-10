@@ -29,6 +29,26 @@
     "confirmDelete": "Bunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
     "warning": "Uyarı!"
   },
+  "menu": {
+    "adminPanel": "Yönetim Paneli",
+    "dashboard": "Gösterge Paneli",
+    "visits": "Ziyaretler",
+    "personnel": "Personel",
+    "inventory": "Envanter",
+    "services": "Hizmetler",
+    "payments": "Ödemeler",
+    "clients": "Müşteriler",
+    "logout": "Çıkış Yap",
+    "language": "Dil",
+    "english": "İngilizce",
+    "turkish": "Türkçe",
+    "profile": "Profil",
+    "settings": "Ayarlar",
+    "notifications": "Bildirimler",
+    "administrator": "Yönetici",
+    "main": "Ana",
+    "management": "Yönetim"
+  },
   "nav": {
     "dashboard": "Gösterge Paneli",
     "clients": "Müşteriler",

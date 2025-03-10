@@ -29,6 +29,26 @@
     "confirmDelete": "Are you sure you want to delete this? This action cannot be undone.",
     "warning": "Warning!"
   },
+  "menu": {
+    "adminPanel": "Admin Panel",
+    "dashboard": "Dashboard",
+    "visits": "Visits",
+    "personnel": "Personnel",
+    "inventory": "Inventory",
+    "services": "Services",
+    "payments": "Payments",
+    "clients": "Clients",
+    "logout": "Log Out",
+    "language": "Language",
+    "english": "English",
+    "turkish": "Turkish",
+    "profile": "Profile",
+    "settings": "Settings",
+    "notifications": "Notifications",
+    "administrator": "Administrator",
+    "main": "Main",
+    "management": "Management"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "clients": "Clients",
