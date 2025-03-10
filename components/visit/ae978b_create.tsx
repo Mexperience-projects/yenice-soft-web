@@ -4,7 +4,6 @@ import type React from "react";
 
 import { useState, useEffect, useRef } from "react";
 import {
-  User,
   Briefcase,
   Package,
   Calendar,
@@ -24,19 +23,15 @@ import {
 import { type items_691d50Type, useItems_691d50 } from "@/hooks/items/691d50";
 import { useClients } from "@/hooks/clients/main";
 import {
-  ClientType,
   ItemsType,
   OperationType,
   PaymentsType,
-  Service_itemsType,
   ServicesType,
-  Visit_itemType,
-  Visit_paymentType,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface VisitProps {
-  initial: OperationType;
+  initial?: OperationType;
   readonly?: boolean;
   setFormData: (newValue: OperationType) => void;
 }
@@ -54,19 +49,22 @@ export default function VisitCreateForm({
     description: "",
     price: 0,
     paid: false,
-    created_at: new Date(),
   });
 
   useEffect(() => {
     setFormData(initial);
+    console.log(initial);
   }, [initial]);
 
   useEffect(() => {
+    if (!formData) return;
     updateFormData(formData);
   }, [formData]);
 
   // Edit payment state
-  const [editingPaymentId, setEditingPaymentId] = useState<string | null>(null);
+  const [editingPayment, setEditingPayment] = useState<PaymentsType | null>(
+    null
+  );
 
   const [serviceSearch, setServiceSearch] = useState("");
   const [itemSearch, setItemSearch] = useState("");
@@ -76,14 +74,8 @@ export default function VisitCreateForm({
 
   const serviceDropdownRef = useRef<HTMLDivElement>(null);
   const itemDropdownRef = useRef<HTMLDivElement>(null);
-  const { get_services_list_list, services_list } = useServices_10cd39();
-  const { get_items_list_list, items_list } = useItems_691d50();
-
-  // Fetch services and items from server
-  useEffect(() => {
-    get_services_list_list();
-    get_items_list_list();
-  }, []);
+  const { services_list } = useServices_10cd39();
+  const { items_list } = useItems_691d50();
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -110,7 +102,13 @@ export default function VisitCreateForm({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (!formData) return;
+    if (["date", "datetime"].includes(name))
+      setFormData({
+        ...formData,
+        [name]: new Date(value).toLocaleString("en-CA"),
+      });
+    else setFormData({ ...formData, [name]: value });
   };
 
   const handleNewPaymentChange = (
@@ -129,62 +127,86 @@ export default function VisitCreateForm({
     }));
   };
 
-  const handleServiceSelect = (serviceId: ServicesType["id"]) => {
-    // setFormData((prev) => {
-    //   const service = prev.service.includes(serviceId)
-    //     ? prev.service.filter((id) => id !== serviceId)
-    //     : [...prev.service, serviceId];
-    //   return { ...prev, service };
-    // });
+  const handleServiceSelect = (service: ServicesType) => {
+    setFormData((prev) => {
+      if (!prev) return;
+      if (prev.service.includes(service))
+        return {
+          ...prev,
+          service: [
+            ...prev.service.filter((preService) => preService !== service),
+          ],
+        };
+      return {
+        ...prev,
+        service: [
+          ...prev.service.filter((preService) => preService !== service),
+          service,
+        ],
+      };
+    });
   };
 
-  const handleItemSelect = (itemId: ItemsType["id"]) => {
-    // setFormData((prev) => {
-    //   // Check if item is already selected
-    //   const existingItemIndex = prev.service.findIndex(
-    //     (item) => item.id === itemId
-    //   );
-    //   if (existingItemIndex !== -1) {
-    //     // Remove item if already selected
-    //     const updatedItems = [...prev.service];
-    //     updatedItems.splice(existingItemIndex, 1);
-    //     return { ...prev, service: updatedItems };
-    //   } else {
-    //     // Add item with default quantity of 1
-    //     return {
-    //       ...prev,
-    //       service: [...prev.service, { id: itemId, quantity: 1 }],
-    //     };
-    //   }
-    // });
+  const handleItemSelect = (itemId: ItemsType) => {
+    if (!formData) return;
+    setFormData((prev) => {
+      if (!prev) return;
+      // Check if item is already selected
+      const existingItemIndex = prev.items.findIndex(
+        (item) => item.item.id === itemId.id
+      );
+      if (existingItemIndex !== -1) {
+        // Remove item if already selected
+        const updatedItems = [...prev.items];
+        updatedItems.splice(existingItemIndex, 1);
+        return { ...prev, items: updatedItems };
+      } else {
+        // Add item with default quantity of 1
+        return {
+          ...prev,
+          items: [
+            ...prev.items,
+            {
+              id: (prev.items.length + 1) * -1,
+              count: 1,
+              visit: -1,
+              item: itemId,
+            },
+          ],
+        };
+      }
+    });
   };
 
   const updateItemQuantity = (itemId: ItemsType["id"], change: number) => {
-    // setFormData((prev) => {
-    //   const updatedItems = prev.service.map((item) => {
-    //     if (item.id === itemId) {
-    //       return {
-    //         ...item,
-    //         quantity: Math.max(1, item.quantity + change),
-    //       };
-    //     }
-    //     return item;
-    //   });
-    //   return { ...prev, service: updatedItems };
-    // });
+    if (!formData) return;
+    setFormData((prev) => {
+      if (!prev) return;
+      const updatedItems = prev.items.map((item) => {
+        if (item.id === itemId) {
+          return {
+            ...item,
+            count: Math.max(1, item.count + change),
+          };
+        }
+        return item;
+      });
+      return { ...prev, items: updatedItems };
+    });
   };
 
   const addPayment = () => {
+    if (!formData) return;
     if (newPayment.description && newPayment.price > 0) {
-      const paymentId = editingPaymentId || formData.payments.length + 1;
+      const paymentId = editingPayment || formData.payments.length + 1;
 
       setFormData((prev: any) => {
         let updatedPayments;
 
-        if (editingPaymentId) {
+        if (editingPayment) {
           // Update existing payment
           updatedPayments = prev.payments.map((payment: any) =>
-            payment.id === editingPaymentId
+            payment.id === editingPayment
               ? { ...newPayment, id: paymentId }
               : payment
           );
@@ -205,75 +227,69 @@ export default function VisitCreateForm({
         description: "",
         price: 0,
         paid: false,
-        created_at: new Date(),
       });
 
-      setEditingPaymentId(null);
+      setEditingPayment(null);
     }
   };
 
   const editPayment = (payment: PaymentsType) => {
-    // setNewPayment({
-    //   date: payment.date,
-    //   description: payment.description,
-    //   price: payment.price,
-    //   paid: payment.paid,
-    // });
-    // setEditingPaymentId(payment.id);
+    setNewPayment({
+      date: payment.date,
+      description: payment.description,
+      price: payment.price,
+      paid: payment.paid,
+    });
+    setEditingPayment(payment);
   };
 
   const deletePayment = (paymentId: number) => {
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   payments: prev.payments.filter((payment) => payment.id !== paymentId),
-    // }));
-    // if (editingPaymentId === paymentId) {
-    //   setEditingPaymentId(null);
-    //   setNewPayment({
-    //     date: new Date().toISOString().split("T")[0],
-    //     description: "",
-    //     price: 0,
-    //     paid: false,
-    //   });
-    // }
+    if (!formData) return;
+    setFormData({
+      ...formData,
+      payments: formData.payments.filter((payment) => payment.id !== paymentId),
+    });
+
+    if (editingPayment?.id === paymentId) {
+      setEditingPayment(null);
+      setNewPayment({
+        date: new Date(),
+        description: "",
+        price: 0,
+        paid: false,
+      });
+    }
   };
 
-  const togglePaymentStatus = (paymentId: PaymentsType["id"]) => {
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   payments: prev.payments.map((payment) =>
-    //     payment.id === paymentId ? { ...payment, paid: !payment.paid } : payment
-    //   ),
-    // }));
-  };
-
-  const filteredServices = services_list.filter((service) =>
-    service.name.toLowerCase().includes(serviceSearch.toLowerCase())
-  );
+  const filteredServices = services_list.filter((service) => service.name);
 
   const filteredItems = items_list.filter((item) =>
     item.name.toLowerCase().includes(itemSearch.toLowerCase())
   );
 
-  const removeService = (serviceId: ServicesType["id"]) => {
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   service: prev..filter((id) => id !== serviceId),
-    // }));
+  const removeService = (service: ServicesType) => {
+    if (!formData) return;
+    setFormData({
+      ...formData,
+      service: formData.service.filter((preService) => preService !== service),
+    });
   };
 
   const removeItem = (itemId: ItemsType["id"]) => {
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   service: prev.service.filter((item) => item.id !== itemId),
-    // }));
+    if (!formData) return;
+    setFormData({
+      ...formData,
+      items: formData.items.filter((item) => item.id !== itemId),
+    });
   };
 
   const isItemSelected = (itemId: ItemsType["id"]) => {
-    return formData.items.some((item) => item.id === itemId);
+    if (!formData) return;
+    return formData.items.some((item) => item.item.id === itemId);
   };
 
   const calculateTotalPayment = () => {
+    if (!formData) return;
     return formData.payments.reduce(
       (total, payment) => total + payment.price,
       0
@@ -309,8 +325,8 @@ export default function VisitCreateForm({
                 }}
               >
                 <span className="text-sm">
-                  {formData.service.length > 0
-                    ? `${formData.service.length} service(s) selected`
+                  {(formData?.service.length || 0) > 0
+                    ? `${(formData?.service || []).length} service(s) selected`
                     : "Select services"}
                 </span>
                 <Search className="h-4 w-4 opacity-50" />
@@ -341,14 +357,14 @@ export default function VisitCreateForm({
                           <li key={service.id}>
                             <a
                               className={`flex items-center ${
-                                formData.service.includes(service)
+                                (formData?.service || []).includes(service)
                                   ? "bg-primary/10 text-primary"
                                   : ""
                               }`}
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleServiceSelect(service.id);
+                                handleServiceSelect(service);
                               }}
                             >
                               <div className="form-control">
@@ -357,7 +373,9 @@ export default function VisitCreateForm({
                                     disabled={readonly}
                                     type="checkbox"
                                     className="checkbox checkbox-sm checkbox-primary"
-                                    checked={formData.service.includes(service)}
+                                    checked={(formData?.service || []).includes(
+                                      service
+                                    )}
                                     readOnly
                                   />
                                   <span>{service.name}</span>
@@ -373,7 +391,7 @@ export default function VisitCreateForm({
               )}
             </div>
 
-            {formData.service.length > 0 && (
+            {formData && formData.service.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {formData.service.map((service) => (
                   <div
@@ -383,7 +401,7 @@ export default function VisitCreateForm({
                     {service.name}
                     <button
                       className="btn btn-ghost btn-xs btn-circle"
-                      onClick={() => removeService(service.id)}
+                      onClick={() => removeService(service)}
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -418,7 +436,7 @@ export default function VisitCreateForm({
                 }}
               >
                 <span className="text-sm">
-                  {formData.service.length > 0
+                  {formData && formData.service.length > 0
                     ? `${formData.service.length} item(s) selected`
                     : "Select items"}
                 </span>
@@ -457,7 +475,7 @@ export default function VisitCreateForm({
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleItemSelect(item.id);
+                                handleItemSelect(item);
                               }}
                             >
                               <div className="form-control">
@@ -482,7 +500,7 @@ export default function VisitCreateForm({
               )}
             </div>
 
-            {formData.items.length > 0 && (
+            {formData && formData.items.length > 0 && (
               <div className="mt-2 space-y-2">
                 {formData.items.map((item) => (
                   <div
@@ -535,15 +553,17 @@ export default function VisitCreateForm({
                 <div className="bg-secondary/10 p-1 rounded-full">
                   <Calendar className="h-4 w-4 text-secondary" />
                 </div>
-                Date & Time
+                Date
               </span>
             </label>
             <input
               disabled={readonly}
               id="datetime"
-              name="date"
+              name="datetime"
               type="date"
-              value={formData.datetime.toString()}
+              value={new Date(
+                formData?.datetime || Date.now()
+              ).toLocaleDateString("en-CA")}
               onChange={handleChange}
               className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-secondary focus:ring-secondary"
               required
@@ -562,7 +582,8 @@ export default function VisitCreateForm({
                 </span>
                 <span className="label-text-alt text-gray-500">
                   Total: {calculateTotalPayment()}{" "}
-                  {formData.payments.length > 0 &&
+                  {formData &&
+                    formData.payments.length > 0 &&
                     `(${formData.payments.length} entries)`}
                 </span>
               </label>
@@ -640,14 +661,14 @@ export default function VisitCreateForm({
                         !newPayment.description || newPayment.price <= 0
                       }
                     >
-                      {editingPaymentId ? "Update Payment" : "Add Payment"}
+                      {editingPayment ? "Update Payment" : "Add Payment"}
                     </button>
                   </div>
                 </div>
               )}
 
               {/* Payment List */}
-              {formData.payments.length > 0 ? (
+              {formData && formData.payments.length > 0 ? (
                 <div className="overflow-x-auto border border-gray-100 rounded-lg">
                   <table className="table table-compact w-full">
                     <thead className="bg-gray-50 text-gray-700">
@@ -717,24 +738,6 @@ export default function VisitCreateForm({
               )}
             </div>
           </div>
-          <input
-            disabled={readonly}
-            type="hidden"
-            name="payments"
-            value={JSON.stringify(formData.payments)}
-          />
-          <input
-            disabled={readonly}
-            type="hidden"
-            name="services"
-            value={JSON.stringify(formData.service)}
-          />
-          <input
-            disabled={readonly}
-            type="hidden"
-            name="items"
-            value={JSON.stringify(formData.service)}
-          />
         </div>
       </div>
     </div>

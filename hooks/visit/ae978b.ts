@@ -16,6 +16,8 @@ export function useVisits() {
   };
   const create_visit_data = async (data: any) => {
     // create backend form
+    console.log("send data to server -> ", data);
+
     const response = await axiosUser.post("visit/", data);
     get_visit_list_list();
   };

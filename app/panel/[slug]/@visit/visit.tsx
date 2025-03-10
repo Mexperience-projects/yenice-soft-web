@@ -1,6 +1,6 @@
 "use client";
 
-import { useVisits, type visit_ae978bType } from "@/hooks/visit/ae978b";
+import { useVisits } from "@/hooks/visit/ae978b";
 import Visit_ae978b_read from "@/components/visit/ae978b_read";
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/modal";
@@ -18,14 +18,13 @@ import {
 } from "lucide-react";
 import VisitForm from "./(modals)/visitForm";
 import { useTranslation } from "react-i18next";
+import { VisitType } from "@/lib/types";
 
 export default function VisitManagement() {
   const { t } = useTranslation();
   const { get_visit_list_list, visit_list, delete_visit_data } = useVisits();
 
-  const [selectedVisit, setSelectedVisit] = useState<
-    visit_ae978bType | undefined
-  >();
+  const [selectedVisit, setSelectedVisit] = useState<VisitType | undefined>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -41,19 +40,8 @@ export default function VisitManagement() {
       delete_visit_data(selectedVisit.id);
       setIsDeleteModalOpen(false);
       setSelectedVisit(undefined);
-      get_visit_list_list(); // Refresh the list
     }
   };
-
-  const formatDate = (dateString: Date) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
-  };
-
-  // Filter visits based on search term
-  const filteredVisits = visit_list.filter((visit) =>
-    visit.client.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
@@ -100,7 +88,10 @@ export default function VisitManagement() {
                   <p className="text-3xl font-bold text-primary">
                     {
                       visit_list.filter(
-                        (v) => new Date(v.datetime) > new Date()
+                        (v) =>
+                          v.operations.filter(
+                            (o) => new Date(o.datetime) > new Date()
+                          ).length > 0
                       ).length
                     }
                   </p>
@@ -165,7 +156,9 @@ export default function VisitManagement() {
                 </div>
 
                 <button
-                  onClick={() => setIsCreateModalOpen(true)}
+                  onClick={() => {
+                    setIsCreateModalOpen(true);
+                  }}
                   className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300"
                 >
                   <Plus className="h-4 w-4" />
@@ -226,8 +219,13 @@ export default function VisitManagement() {
                   </tr>
                 ) : (
                   visit_list.map((visit, index) => {
-                    const visitDate = new Date(visit.datetime);
-                    const isPast = visitDate < new Date();
+                    const isPast =
+                      visit_list.filter(
+                        (v) =>
+                          v.operations.filter(
+                            (o) => new Date(o.datetime) > new Date()
+                          ).length > 0
+                      ).length == 0;
 
                     return (
                       <tr
@@ -238,12 +236,14 @@ export default function VisitManagement() {
                           {visit.client.name}
                         </td>
                         <td className="px-6 py-4 text-gray-700">
-                          {visit.service}
+                          {visit.operations.map((o) =>
+                            o.service.map((s) => <p>{s.name}</p>)
+                          )}
                         </td>
                         <td className="px-6 py-4 text-gray-700">
                           <div className="flex items-center">
                             <Clock className="h-4 w-4 text-gray-400 mr-2" />
-                            {formatDate(visit.datetime)}
+                            {visit.operations.length} operation
                           </div>
                         </td>
                         <td className="px-6 py-4">

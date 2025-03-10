@@ -73,7 +73,6 @@ export interface PaymentsType {
   personel_id?: PersonelType["id"];
   price: number;
   date: Date;
-  created_at: Date;
   paid: boolean;
   visit?: VisitType;
   description: string;

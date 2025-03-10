@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useVisits } from "@/hooks/visit/ae978b";
 import { useTranslation } from "react-i18next";
 import CreateClient from "../../@clients/(modals)/createClient";
+import { useServices_10cd39 } from "@/hooks/services/10cd39";
 
 interface VisitFormProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export default function VisitForm({
   const { create_clients_data, clients_list, get_clients_list_list } =
     useClients();
   const { create_visit_data } = useVisits();
+  const { get_services_list_list } = useServices_10cd39();
   const [isClientCreateModalOpen, setIsClientCreateModalOpen] = useState(false);
   const [editMode, editModeHandler] = useState(false);
   const [openDeleteModal, openDeleteModalHandler] = useState(false);
@@ -48,6 +50,9 @@ export default function VisitForm({
     if (selectedVisit) {
       setFormData(selectedVisit);
       menuHandler(selectedVisit.operations[0]);
+    } else {
+      setFormData(emptyForm);
+      menuHandler(emptyForm.operations[0]);
     }
   }, [selectedVisit]);
 
@@ -63,6 +68,7 @@ export default function VisitForm({
 
   useEffect(() => {
     get_clients_list_list();
+    get_services_list_list();
   }, []);
 
   return (
@@ -163,7 +169,7 @@ export default function VisitForm({
               <h2 className="text-xl font-bold text-gray-800 flex">
                 <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
                 {t("visits.operation")}{" "}
-                {new Date(menu.datetime).toLocaleDateString()}
+                {new Date(menu?.datetime).toLocaleDateString()}
               </h2>
               <div className="flex flex-rowitems-center justify-center space-x-2">
                 <button
@@ -213,13 +219,16 @@ export default function VisitForm({
               </button>
               <button
                 onClick={() => {
-                  console.log("OKOKOK");
-
                   create_visit_data(formData);
                 }}
-                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
+                className="px-4 py-2 text-sm font-medium text-white enabled:bg-gradient-to-r from-primary disabled:bg-gray-400
+                to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 group relative"
+                disabled={formData.client === undefined}
               >
                 {t("visits.saveData")}
+                <p className="absolute text-red-700 bg-white/80 rounded-xl w-40 p-2 right-5 top-0 group-disabled:group-hover:flex hidden">
+                  please select client first
+                </p>
               </button>
             </div>
           </div>
