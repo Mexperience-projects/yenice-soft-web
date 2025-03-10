@@ -22,48 +22,42 @@ import {
   useServices_10cd39,
 } from "@/hooks/services/10cd39";
 import { type items_691d50Type, useItems_691d50 } from "@/hooks/items/691d50";
-import { useClients } from "@/hooks/clients/main";
-import {
-  ClientType,
-  ItemsType,
-  OperationType,
-  PaymentsType,
-  Service_itemsType,
-  ServicesType,
-  Visit_itemType,
-  Visit_paymentType,
-} from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
-interface VisitProps {
-  initial: OperationType;
-  readonly?: boolean;
-  setFormData: (newValue: OperationType) => void;
+interface SelectedItem {
+  id: string;
+  quantity: number;
 }
 
-export default function VisitCreateForm({
-  initial,
-  readonly,
-  setFormData: updateFormData,
-}: VisitProps) {
-  const [formData, setFormData] = useState(initial);
+interface Payment {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  isPaid: boolean;
+}
 
-  // New payment form state
-  const [newPayment, setNewPayment] = useState<Omit<PaymentsType, "id">>({
-    date: new Date(),
-    description: "",
-    price: 0,
-    paid: false,
-    created_at: new Date(),
+export default function VisitCreateForm() {
+  const { t } = useTranslation();
+
+  const [services, setServices] = useState<services_10cd39Type[]>([]);
+  const [items, setItems] = useState<items_691d50Type[]>([]);
+
+  const [formData, setFormData] = useState({
+    client: "",
+    selectedServices: [] as string[],
+    selectedItems: [] as SelectedItem[],
+    datetime: "",
+    payments: [] as Payment[],
   });
 
-  useEffect(() => {
-    setFormData(initial);
-  }, [initial]);
-
-  useEffect(() => {
-    updateFormData(formData);
-  }, [formData]);
+  // New payment form state
+  const [newPayment, setNewPayment] = useState<Omit<Payment, "id">>({
+    date: new Date().toISOString().split("T")[0],
+    description: "",
+    amount: 0,
+    isPaid: false,
+  });
 
   // Edit payment state
   const [editingPaymentId, setEditingPaymentId] = useState<string | null>(null);
@@ -82,7 +76,9 @@ export default function VisitCreateForm({
   // Fetch services and items from server
   useEffect(() => {
     get_services_list_list();
+    setServices(services_list);
     get_items_list_list();
+    setItems(items_list);
   }, []);
 
   // Close dropdowns when clicking outside
@@ -123,59 +119,62 @@ export default function VisitCreateForm({
       [name]:
         type === "checkbox"
           ? (e.target as HTMLInputElement).checked
-          : name === "price"
+          : name === "amount"
           ? Number.parseFloat(value)
           : value,
     }));
   };
 
-  const handleServiceSelect = (serviceId: ServicesType["id"]) => {
-    // setFormData((prev) => {
-    //   const service = prev.service.includes(serviceId)
-    //     ? prev.service.filter((id) => id !== serviceId)
-    //     : [...prev.service, serviceId];
-    //   return { ...prev, service };
-    // });
+  const handleServiceSelect = (serviceId: string) => {
+    setFormData((prev) => {
+      const selectedServices = prev.selectedServices.includes(serviceId)
+        ? prev.selectedServices.filter((id) => id !== serviceId)
+        : [...prev.selectedServices, serviceId];
+
+      return { ...prev, selectedServices };
+    });
   };
 
-  const handleItemSelect = (itemId: ItemsType["id"]) => {
-    // setFormData((prev) => {
-    //   // Check if item is already selected
-    //   const existingItemIndex = prev.service.findIndex(
-    //     (item) => item.id === itemId
-    //   );
-    //   if (existingItemIndex !== -1) {
-    //     // Remove item if already selected
-    //     const updatedItems = [...prev.service];
-    //     updatedItems.splice(existingItemIndex, 1);
-    //     return { ...prev, service: updatedItems };
-    //   } else {
-    //     // Add item with default quantity of 1
-    //     return {
-    //       ...prev,
-    //       service: [...prev.service, { id: itemId, quantity: 1 }],
-    //     };
-    //   }
-    // });
+  const handleItemSelect = (itemId: string) => {
+    setFormData((prev) => {
+      // Check if item is already selected
+      const existingItemIndex = prev.selectedItems.findIndex(
+        (item) => item.id === itemId
+      );
+
+      if (existingItemIndex !== -1) {
+        // Remove item if already selected
+        const updatedItems = [...prev.selectedItems];
+        updatedItems.splice(existingItemIndex, 1);
+        return { ...prev, selectedItems: updatedItems };
+      } else {
+        // Add item with default quantity of 1
+        return {
+          ...prev,
+          selectedItems: [...prev.selectedItems, { id: itemId, quantity: 1 }],
+        };
+      }
+    });
   };
 
-  const updateItemQuantity = (itemId: ItemsType["id"], change: number) => {
-    // setFormData((prev) => {
-    //   const updatedItems = prev.service.map((item) => {
-    //     if (item.id === itemId) {
-    //       return {
-    //         ...item,
-    //         quantity: Math.max(1, item.quantity + change),
-    //       };
-    //     }
-    //     return item;
-    //   });
-    //   return { ...prev, service: updatedItems };
-    // });
+  const updateItemQuantity = (itemId: string, change: number) => {
+    setFormData((prev) => {
+      const updatedItems = prev.selectedItems.map((item) => {
+        if (item.id === itemId) {
+          return {
+            ...item,
+            quantity: Math.max(1, item.quantity + change),
+          };
+        }
+        return item;
+      });
+
+      return { ...prev, selectedItems: updatedItems };
+    });
   };
 
   const addPayment = () => {
-    if (newPayment.description && newPayment.price > 0) {
+    if (newPayment.description && newPayment.amount > 0) {
       const paymentId = editingPaymentId || formData.payments.length + 1;
 
       setFormData((prev: any) => {
@@ -201,130 +200,140 @@ export default function VisitCreateForm({
 
       // Reset form
       setNewPayment({
-        date: new Date(),
+        date: new Date().toISOString().split("T")[0],
         description: "",
-        price: 0,
-        paid: false,
-        created_at: new Date(),
+        amount: 0,
+        isPaid: false,
       });
 
       setEditingPaymentId(null);
     }
   };
 
-  const editPayment = (payment: PaymentsType) => {
-    // setNewPayment({
-    //   date: payment.date,
-    //   description: payment.description,
-    //   price: payment.price,
-    //   paid: payment.paid,
-    // });
-    // setEditingPaymentId(payment.id);
+  const editPayment = (payment: Payment) => {
+    setNewPayment({
+      date: payment.date,
+      description: payment.description,
+      amount: payment.amount,
+      isPaid: payment.isPaid,
+    });
+
+    setEditingPaymentId(payment.id);
   };
 
-  const deletePayment = (paymentId: number) => {
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   payments: prev.payments.filter((payment) => payment.id !== paymentId),
-    // }));
-    // if (editingPaymentId === paymentId) {
-    //   setEditingPaymentId(null);
-    //   setNewPayment({
-    //     date: new Date().toISOString().split("T")[0],
-    //     description: "",
-    //     price: 0,
-    //     paid: false,
-    //   });
-    // }
+  const deletePayment = (paymentId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      payments: prev.payments.filter((payment) => payment.id !== paymentId),
+    }));
+
+    if (editingPaymentId === paymentId) {
+      setEditingPaymentId(null);
+      setNewPayment({
+        date: new Date().toISOString().split("T")[0],
+        description: "",
+        amount: 0,
+        isPaid: false,
+      });
+    }
   };
 
-  const togglePaymentStatus = (paymentId: PaymentsType["id"]) => {
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   payments: prev.payments.map((payment) =>
-    //     payment.id === paymentId ? { ...payment, paid: !payment.paid } : payment
-    //   ),
-    // }));
+  const togglePaymentStatus = (paymentId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      payments: prev.payments.map((payment) =>
+        payment.id === paymentId
+          ? { ...payment, isPaid: !payment.isPaid }
+          : payment
+      ),
+    }));
   };
 
-  const filteredServices = services_list.filter((service) =>
+  const filteredServices = services.filter((service) =>
     service.name.toLowerCase().includes(serviceSearch.toLowerCase())
   );
 
-  const filteredItems = items_list.filter((item) =>
+  const filteredItems = items.filter((item) =>
     item.name.toLowerCase().includes(itemSearch.toLowerCase())
   );
 
-  const removeService = (serviceId: ServicesType["id"]) => {
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   service: prev..filter((id) => id !== serviceId),
-    // }));
+  const removeService = (serviceId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      selectedServices: prev.selectedServices.filter((id) => id !== serviceId),
+    }));
   };
 
-  const removeItem = (itemId: ItemsType["id"]) => {
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   service: prev.service.filter((item) => item.id !== itemId),
-    // }));
+  const removeItem = (itemId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      selectedItems: prev.selectedItems.filter((item) => item.id !== itemId),
+    }));
   };
 
-  const isItemSelected = (itemId: ItemsType["id"]) => {
-    return formData.items.some((item) => item.id === itemId);
+  const isItemSelected = (itemId: string) => {
+    return formData.selectedItems.some((item) => item.id === itemId);
   };
 
   const calculateTotalPayment = () => {
     return formData.payments.reduce(
-      (total, payment) => total + payment.price,
+      (total, payment) => total + payment.amount,
       0
     );
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-      <div className="p-5">
+    <div className="card bg-base-100">
+      <div className="card-body">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Client Field */}
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text flex items-center gap-2">
+                <User className="h-4 w-4" /> {t("visits.client")}
+              </span>
+            </label>
+            <input
+              id="client"
+              name="client"
+              value={formData.client}
+              onChange={handleChange}
+              placeholder={t("visits.enterClientName")}
+              className="input input-bordered w-full"
+              required
+            />
+          </div>
+
           {/* Services Field */}
           <div className="form-control" ref={serviceDropdownRef}>
             <label className="label">
-              <span className="label-text flex items-center gap-2 text-gray-700 font-medium">
-                <div className="bg-secondary/10 p-1 rounded-full">
-                  <Briefcase className="h-4 w-4 text-secondary" />
-                </div>
-                Services
+              <span className="label-text flex items-center gap-2">
+                <Briefcase className="h-4 w-4" /> {t("services.services")}
               </span>
             </label>
             <div className="relative w-full">
               <div
-                className={cn(
-                  "input input-bordered flex justify-between items-center",
-                  "w-full bg-gray-50 border-gray-200",
-                  {
-                    "cursor-pointer": !readonly,
-                    "bg-gray-100 text-gray-500": readonly,
-                  }
-                )}
-                onClick={() => {
-                  if (!readonly) setShowServiceDropdown(true);
-                }}
+                className="input input-bordered flex justify-between items-center cursor-pointer w-full"
+                onClick={() => setShowServiceDropdown(true)}
               >
                 <span className="text-sm">
-                  {formData.service.length > 0
-                    ? `${formData.service.length} service(s) selected`
-                    : "Select services"}
+                  {formData.selectedServices.length > 0
+                    ? t("visits.servicesSelected", {
+                        count: formData.selectedServices.length,
+                      })
+                    : t("visits.selectServices")}
                 </span>
                 <Search className="h-4 w-4 opacity-50" />
               </div>
 
               {showServiceDropdown && (
-                <div className="absolute z-30 bg-white shadow-lg rounded-lg w-full mt-1 border border-gray-100">
+                <div className="absolute z-30 bg-base-100 shadow-lg rounded-box w-full mt-1">
                   <div className="p-2">
-                    <div className="flex items-center border-b border-gray-100 pb-2">
+                    <div className="flex items-center border-b border-base-300 pb-2">
                       <Search className="h-4 w-4 mr-2 opacity-50" />
                       <input
-                        disabled={readonly}
                         type="text"
-                        placeholder="Search services..."
+                        placeholder={t("visits.searchServices")}
                         className="input input-sm input-ghost w-full focus:outline-none"
                         value={serviceSearch}
                         onChange={(e) => setServiceSearch(e.target.value)}
@@ -334,30 +343,33 @@ export default function VisitCreateForm({
                     <ul className="menu menu-compact py-2 max-h-60 overflow-y-auto">
                       {filteredServices.length === 0 ? (
                         <li className="disabled text-center py-2 text-sm opacity-50">
-                          No services found
+                          {t("visits.noServicesFound")}
                         </li>
                       ) : (
                         filteredServices.map((service) => (
                           <li key={service.id}>
                             <a
                               className={`flex items-center ${
-                                formData.service.includes(service)
-                                  ? "bg-primary/10 text-primary"
+                                formData.selectedServices.includes(
+                                  service.id.toString()
+                                )
+                                  ? "active"
                                   : ""
                               }`}
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleServiceSelect(service.id);
+                                handleServiceSelect(service.id.toString());
                               }}
                             >
                               <div className="form-control">
                                 <label className="label cursor-pointer justify-start gap-2">
                                   <input
-                                    disabled={readonly}
                                     type="checkbox"
-                                    className="checkbox checkbox-sm checkbox-primary"
-                                    checked={formData.service.includes(service)}
+                                    className="checkbox checkbox-sm"
+                                    checked={formData.selectedServices.includes(
+                                      service.id.toString()
+                                    )}
                                     readOnly
                                   />
                                   <span>{service.name}</span>
@@ -373,22 +385,22 @@ export default function VisitCreateForm({
               )}
             </div>
 
-            {formData.service.length > 0 && (
+            {formData.selectedServices.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
-                {formData.service.map((service) => (
-                  <div
-                    key={service.id}
-                    className="badge bg-secondary/10 text-secondary gap-1 border-0"
-                  >
-                    {service.name}
-                    <button
-                      className="btn btn-ghost btn-xs btn-circle"
-                      onClick={() => removeService(service.id)}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
+                {formData.selectedServices.map((id) => {
+                  const service = services.find((s) => s.id === Number(id));
+                  return service ? (
+                    <div key={id} className="badge badge-secondary gap-1">
+                      {service.name}
+                      <button
+                        className="btn btn-ghost btn-xs btn-circle"
+                        onClick={() => removeService(id)}
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ) : null;
+                })}
               </div>
             )}
           </div>
@@ -396,44 +408,33 @@ export default function VisitCreateForm({
           {/* Items Field */}
           <div className="form-control" ref={itemDropdownRef}>
             <label className="label">
-              <span className="label-text flex items-center gap-2 text-gray-700 font-medium">
-                <div className="bg-primary/10 p-1 rounded-full">
-                  <Package className="h-4 w-4 text-primary" />
-                </div>
-                Items
+              <span className="label-text flex items-center gap-2">
+                <Package className="h-4 w-4" /> {t("inventory.inventoryItems")}
               </span>
             </label>
             <div className="relative w-full">
               <div
-                className={cn(
-                  "input input-bordered flex justify-between items-center",
-                  "w-full bg-gray-50 border-gray-200",
-                  {
-                    "cursor-pointer": !readonly,
-                    "bg-gray-100 text-gray-500": readonly,
-                  }
-                )}
-                onClick={() => {
-                  if (!readonly) setShowItemDropdown(true);
-                }}
+                className="input input-bordered flex justify-between items-center cursor-pointer w-full"
+                onClick={() => setShowItemDropdown(true)}
               >
                 <span className="text-sm">
-                  {formData.service.length > 0
-                    ? `${formData.service.length} item(s) selected`
-                    : "Select items"}
+                  {formData.selectedItems.length > 0
+                    ? t("visits.itemsSelected", {
+                        count: formData.selectedItems.length,
+                      })
+                    : t("visits.selectItems")}
                 </span>
                 <Search className="h-4 w-4 opacity-50" />
               </div>
 
               {showItemDropdown && (
-                <div className="absolute z-30 bg-white shadow-lg rounded-lg w-full mt-1 border border-gray-100">
+                <div className="absolute z-30 bg-base-100 shadow-lg rounded-box w-full mt-1">
                   <div className="p-2">
-                    <div className="flex items-center border-b border-gray-100 pb-2">
+                    <div className="flex items-center border-b border-base-300 pb-2">
                       <Search className="h-4 w-4 mr-2 opacity-50" />
                       <input
-                        disabled={readonly}
                         type="text"
-                        placeholder="Search items..."
+                        placeholder={t("visits.searchItems")}
                         className="input input-sm input-ghost w-full focus:outline-none"
                         value={itemSearch}
                         onChange={(e) => setItemSearch(e.target.value)}
@@ -443,30 +444,29 @@ export default function VisitCreateForm({
                     <ul className="menu menu-compact py-2 max-h-60 overflow-y-auto">
                       {filteredItems.length === 0 ? (
                         <li className="disabled text-center py-2 text-sm opacity-50">
-                          No items found
+                          {t("inventory.noItemsFound")}
                         </li>
                       ) : (
                         filteredItems.map((item) => (
                           <li key={item.id}>
                             <a
                               className={`flex items-center ${
-                                isItemSelected(item.id)
-                                  ? "bg-primary/10 text-primary"
+                                isItemSelected(item.id.toString())
+                                  ? "active"
                                   : ""
                               }`}
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleItemSelect(item.id);
+                                handleItemSelect(item.id.toString());
                               }}
                             >
                               <div className="form-control">
                                 <label className="label cursor-pointer justify-start gap-2">
                                   <input
-                                    disabled={readonly}
                                     type="checkbox"
-                                    className="checkbox checkbox-sm checkbox-primary"
-                                    checked={isItemSelected(item.id)}
+                                    className="checkbox checkbox-sm"
+                                    checked={isItemSelected(item.id.toString())}
                                     readOnly
                                   />
                                   <span>{item.name}</span>
@@ -482,48 +482,51 @@ export default function VisitCreateForm({
               )}
             </div>
 
-            {formData.items.length > 0 && (
+            {formData.selectedItems.length > 0 && (
               <div className="mt-2 space-y-2">
-                {formData.items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-100"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{item.item.name}</span>
-                    </div>
-                    {readonly ? (
-                      <span className="text-center px-2">
-                        count: {item.count}
-                      </span>
-                    ) : (
+                {formData.selectedItems.map((selectedItem) => {
+                  const item = items.find(
+                    (i) => i.id === Number(selectedItem.id)
+                  );
+                  return item ? (
+                    <div
+                      key={selectedItem.id}
+                      className="flex items-center justify-between bg-base-200 p-2 rounded-lg"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{item.name}</span>
+                      </div>
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
-                          className="btn btn-sm btn-circle bg-gray-100 hover:bg-gray-200 border-0"
-                          onClick={() => updateItemQuantity(item.id, -1)}
+                          className="btn btn-sm btn-circle btn-ghost"
+                          onClick={() =>
+                            updateItemQuantity(selectedItem.id, -1)
+                          }
                         >
                           <Minus className="h-3 w-3" />
                         </button>
-                        <span className="w-8 text-center">{item.count}</span>
+                        <span className="w-8 text-center">
+                          {selectedItem.quantity}
+                        </span>
                         <button
                           type="button"
-                          className="btn btn-sm btn-circle bg-gray-100 hover:bg-gray-200 border-0"
-                          onClick={() => updateItemQuantity(item.id, 1)}
+                          className="btn btn-sm btn-circle btn-ghost"
+                          onClick={() => updateItemQuantity(selectedItem.id, 1)}
                         >
                           <Plus className="h-3 w-3" />
                         </button>
                         <button
                           type="button"
-                          className="btn btn-sm btn-circle bg-red-50 hover:bg-red-100 border-0 text-red-500"
-                          onClick={() => removeItem(item.id)}
+                          className="btn btn-sm btn-circle btn-ghost text-error"
+                          onClick={() => removeItem(selectedItem.id)}
                         >
                           <X className="h-3 w-3" />
                         </button>
                       </div>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  ) : null;
+                })}
               </div>
             )}
           </div>
@@ -531,21 +534,17 @@ export default function VisitCreateForm({
           {/* Date & Time Field */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text flex items-center gap-2 text-gray-700 font-medium">
-                <div className="bg-secondary/10 p-1 rounded-full">
-                  <Calendar className="h-4 w-4 text-secondary" />
-                </div>
-                Date & Time
+              <span className="label-text flex items-center gap-2">
+                <Calendar className="h-4 w-4" /> {t("visits.dateTime")}
               </span>
             </label>
             <input
-              disabled={readonly}
-              id="date"
-              name="date"
-              type="date"
-              value={formData.datetime.toString()}
+              id="datetime"
+              name="datetime"
+              type="datetime-local"
+              value={formData.datetime}
               onChange={handleChange}
-              className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-secondary focus:ring-secondary"
+              className="input input-bordered w-full"
               required
             />
           </div>
@@ -554,109 +553,101 @@ export default function VisitCreateForm({
           <div className="col-span-1 md:col-span-2">
             <div className="form-control">
               <label className="label">
-                <span className="label-text flex items-center gap-2 text-gray-700 font-medium">
-                  <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-1 rounded-full">
-                    <CreditCard className="h-4 w-4 text-secondary" />
-                  </div>
-                  Payments
+                <span className="label-text flex items-center gap-2">
+                  <CreditCard className="h-4 w-4" /> {t("payments.title")}
                 </span>
-                <span className="label-text-alt text-gray-500">
-                  Total: {calculateTotalPayment()}{" "}
+                <span className="label-text-alt">
+                  {t("payments.total")}: {calculateTotalPayment()}{" "}
                   {formData.payments.length > 0 &&
-                    `(${formData.payments.length} entries)`}
+                    t("payments.entriesCount", {
+                      count: formData.payments.length,
+                    })}
                 </span>
               </label>
 
               {/* Add/Edit Payment Form */}
-              {!readonly && (
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-gray-700">Date</span>
-                    </label>
-                    <input
-                      disabled={readonly}
-                      type="date"
-                      name="date"
-                      value={newPayment.date.toString()}
-                      onChange={handleNewPaymentChange}
-                      className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
-                    />
-                  </div>
-
-                  <div className="form-control md:col-span-2">
-                    <label className="label">
-                      <span className="label-text text-gray-700">
-                        Description
-                      </span>
-                    </label>
-                    <input
-                      disabled={readonly}
-                      type="text"
-                      name="description"
-                      value={newPayment.description}
-                      onChange={handleNewPaymentChange}
-                      placeholder="Enter payment description"
-                      className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
-                    />
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-gray-700">Amount</span>
-                    </label>
-                    <input
-                      disabled={readonly}
-                      type="number"
-                      name="price"
-                      value={newPayment.price}
-                      onChange={handleNewPaymentChange}
-                      min="0"
-                      className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
-                    />
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label cursor-pointer">
-                      <span className="label-text text-gray-700">Paid</span>
-                      <input
-                        disabled={readonly}
-                        type="checkbox"
-                        name="paid"
-                        checked={newPayment.paid}
-                        onChange={handleNewPaymentChange as any}
-                        className="checkbox checkbox-primary"
-                      />
-                    </label>
-                  </div>
-
-                  <div className="md:col-span-3 flex justify-end items-end">
-                    <button
-                      type="button"
-                      className="btn enabled:bg-gradient-to-r from-primary to-secondary disabled:bg-gray-200
-                      hover:from-primary/90 hover:to-secondary/90 text-white border-0"
-                      onClick={addPayment}
-                      disabled={
-                        !newPayment.description || newPayment.price <= 0
-                      }
-                    >
-                      {editingPaymentId ? "Update Payment" : "Add Payment"}
-                    </button>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4">
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">{t("common.date")}</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="date"
+                    value={newPayment.date}
+                    onChange={handleNewPaymentChange}
+                    className="input input-bordered w-full"
+                  />
                 </div>
-              )}
+
+                <div className="form-control md:col-span-2">
+                  <label className="label">
+                    <span className="label-text">
+                      {t("common.description")}
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    name="description"
+                    value={newPayment.description}
+                    onChange={handleNewPaymentChange}
+                    placeholder={t("payments.enterPaymentDescription")}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">{t("payments.amount")}</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="amount"
+                    value={newPayment.amount}
+                    onChange={handleNewPaymentChange}
+                    min="0"
+                    className="input input-bordered w-full"
+                  />
+                </div>
+
+                <div className="form-control">
+                  <label className="label cursor-pointer">
+                    <span className="label-text">{t("payments.paid")}</span>
+                    <input
+                      type="checkbox"
+                      name="isPaid"
+                      checked={newPayment.isPaid}
+                      onChange={handleNewPaymentChange as any}
+                      className="checkbox"
+                    />
+                  </label>
+                </div>
+
+                <div className="md:col-span-3 flex justify-end items-end">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={addPayment}
+                    disabled={!newPayment.description || newPayment.amount <= 0}
+                  >
+                    {editingPaymentId
+                      ? t("payments.updatePayment")
+                      : t("payments.addPayment")}
+                  </button>
+                </div>
+              </div>
 
               {/* Payment List */}
               {formData.payments.length > 0 ? (
-                <div className="overflow-x-auto border border-gray-100 rounded-lg">
+                <div className="overflow-x-auto">
                   <table className="table table-compact w-full">
-                    <thead className="bg-gray-50 text-gray-700">
+                    <thead>
                       <tr>
-                        <th className="font-medium">Date</th>
-                        <th className="font-medium">Description</th>
-                        <th className="font-medium">Amount</th>
-                        <th className="font-medium">Status</th>
-                        {!readonly && <th className="font-medium">Actions</th>}
+                        <th>{t("common.date")}</th>
+                        <th>{t("common.description")}</th>
+                        <th>{t("payments.amount")}</th>
+                        <th>{t("common.status")}</th>
+                        <th>{t("common.actions")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -664,76 +655,71 @@ export default function VisitCreateForm({
                         <tr
                           key={payment.id}
                           className={
-                            payment.paid ? "bg-green-50" : "hover:bg-gray-50"
+                            payment.isPaid ? "bg-success bg-opacity-10" : ""
                           }
                         >
-                          <td>{new Date(payment.date).toLocaleDateString()}</td>
+                          <td>{payment.date}</td>
                           <td>{payment.description}</td>
-                          <td>{payment.price}</td>
+                          <td>{payment.amount}</td>
                           <td>
                             <div className="flex items-center gap-2">
-                              <div
+                              <button
                                 className={`btn btn-xs ${
-                                  payment.paid
-                                    ? "bg-green-100 hover:bg-green-200 text-green-700 border-0"
-                                    : "bg-gray-100 hover:bg-gray-200 text-gray-700 border-0"
+                                  payment.isPaid ? "btn-success" : "btn-ghost"
                                 }`}
+                                onClick={() => togglePaymentStatus(payment.id)}
                               >
-                                {payment.paid ? (
+                                {payment.isPaid ? (
                                   <>
-                                    <Check className="h-3 w-3 mr-1" /> Paid
+                                    <Check className="h-3 w-3 mr-1" />{" "}
+                                    {t("payments.paid")}
                                   </>
                                 ) : (
-                                  "Unpaid"
+                                  t("payments.unpaid")
                                 )}
-                              </div>
+                              </button>
                             </div>
                           </td>
-                          {!readonly && (
-                            <td className="flex items-center gap-1">
-                              <button
-                                className="btn btn-xs bg-blue-50 hover:bg-blue-100 text-blue-600 border-0"
-                                onClick={() => editPayment(payment)}
-                              >
-                                <Edit className="h-3 w-3" />
-                              </button>
-                              <button
-                                className="btn btn-xs bg-red-50 hover:bg-red-100 text-red-500 border-0"
-                                onClick={() => deletePayment(payment.id)}
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </button>
-                            </td>
-                          )}
+                          <td className="flex items-center gap-1">
+                            <button
+                              className="btn btn-ghost btn-xs"
+                              onClick={() => editPayment(payment)}
+                            >
+                              <Edit className="h-3 w-3" />
+                            </button>
+                            <button
+                              className="btn btn-ghost btn-xs text-error"
+                              onClick={() => deletePayment(payment.id)}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
               ) : (
-                <div className="text-center py-6 text-gray-500 bg-gray-50 rounded-lg border border-gray-100">
-                  No payments added yet
+                <div className="text-center py-4 text-base-content opacity-60">
+                  {t("payments.noPaymentsAdded")}
                 </div>
               )}
             </div>
           </div>
           <input
-            disabled={readonly}
             type="hidden"
             name="payments"
             value={JSON.stringify(formData.payments)}
           />
           <input
-            disabled={readonly}
             type="hidden"
             name="services"
-            value={JSON.stringify(formData.service)}
+            value={JSON.stringify(formData.selectedServices)}
           />
           <input
-            disabled={readonly}
             type="hidden"
             name="items"
-            value={JSON.stringify(formData.service)}
+            value={JSON.stringify(formData.selectedItems)}
           />
         </div>
       </div>

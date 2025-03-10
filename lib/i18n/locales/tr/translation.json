@@ -26,11 +26,8 @@
     "noResults": "Sonuç bulunamadı",
     "clearSearch": "Aramayı temizle",
     "clearFilters": "Filtreleri temizle",
-    "confirmDelete": "Bunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
-  },
-  "nav": {
-    "dashboard": "Gösterge Paneli",
-    "clients": "Müş  Bu işlem geri alınamaz."
+    "confirmDelete": "Bunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "warning": "Uyarı!"
   },
   "nav": {
     "dashboard": "Gösterge Paneli",
@@ -172,7 +169,13 @@
     "created": "Oluşturuldu",
     "visitInformation": "Ziyaret Bilgileri",
     "visitId": "Ziyaret ID",
-    "confirmDeletion": "Silmeyi Onayla"
+    "confirmDeletion": "Silmeyi Onayla",
+    "entriesCount": "({{count}} kayıt)",
+    "enterPaymentDescription": "Ödeme açıklaması girin",
+    "addPayment": "Ödeme Ekle",
+    "noPaymentsAdded": "Henüz ödeme eklenmedi",
+    "paymentAmount": "Ödeme miktarı",
+    "total": "Toplam"
   },
   "personnel": {
     "title": "Personel Yönetimi",
@@ -226,7 +229,17 @@
     "visits": "ziyaret",
     "previous": "Önceki",
     "next": "Sonraki",
-    "visitDetails": "Ziyaret Detayları"
+    "visitDetails": "Ziyaret Detayları",
+    "servicesSelected": "{{count}} hizmet seçildi",
+    "itemsSelected": "{{count}} öğe seçildi",
+    "selectServices": "Hizmetleri seçin",
+    "selectItems": "Öğeleri seçin",
+    "searchServices": "Hizmetlerde ara...",
+    "searchItems": "Öğelerde ara...",
+    "noServicesFound": "Hizmet bulunamadı",
+    "selectClient": "Müşteri seçin",
+    "selectService": "Hizmet seçin",
+    "numberOfItems": "Öğe sayısı"
   },
   "services": {
     "management": "Hizmet Yönetimi",
@@ -246,6 +259,12 @@
     "createService": "Hizmet Oluştur",
     "updateService": "Hizmeti Güncelle",
     "deleteService": "Hizmeti Sil",
-    "deleteServiceConfirm": "Bu hizmeti silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+    "deleteServiceConfirm": "Bu hizmeti silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "serviceName": "Hizmet adı",
+    "serviceDescription": "Hizmet açıklaması",
+    "selectPersonnel": "Personel seçin",
+    "searchPersonnel": "Personel ara...",
+    "noPersonnelFound": "Personel bulunamadı",
+    "personnelExpense": "Personel Gideri"
   }
 }

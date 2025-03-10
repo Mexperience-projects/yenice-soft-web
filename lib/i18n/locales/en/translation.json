@@ -26,7 +26,8 @@
     "noResults": "No results found",
     "clearSearch": "Clear search",
     "clearFilters": "Clear filters",
-    "confirmDelete": "Are you sure you want to delete this? This action cannot be undone."
+    "confirmDelete": "Are you sure you want to delete this? This action cannot be undone.",
+    "warning": "Warning!"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -168,7 +169,13 @@
     "created": "Created",
     "visitInformation": "Visit Information",
     "visitId": "Visit ID",
-    "confirmDeletion": "Confirm Deletion"
+    "confirmDeletion": "Confirm Deletion",
+    "entriesCount": "({{count}} entries)",
+    "enterPaymentDescription": "Enter payment description",
+    "addPayment": "Add Payment",
+    "noPaymentsAdded": "No payments added yet",
+    "paymentAmount": "Payment amount",
+    "total": "Total"
   },
   "personnel": {
     "title": "Personnel Management",
@@ -222,7 +229,17 @@
     "visits": "visits",
     "previous": "Previous",
     "next": "Next",
-    "visitDetails": "Visit Details"
+    "visitDetails": "Visit Details",
+    "servicesSelected": "{{count}} service(s) selected",
+    "itemsSelected": "{{count}} item(s) selected",
+    "selectServices": "Select services",
+    "selectItems": "Select items",
+    "searchServices": "Search services...",
+    "searchItems": "Search items...",
+    "noServicesFound": "No services found",
+    "selectClient": "Select client",
+    "selectService": "Select service",
+    "numberOfItems": "Number of items"
   },
   "services": {
     "management": "Services Management",
@@ -242,6 +259,12 @@
     "createService": "Create Service",
     "updateService": "Update Service",
     "deleteService": "Delete Service",
-    "deleteServiceConfirm": "Are you sure you want to delete this service? This action cannot be undone."
+    "deleteServiceConfirm": "Are you sure you want to delete this service? This action cannot be undone.",
+    "serviceName": "Service name",
+    "serviceDescription": "Service description",
+    "selectPersonnel": "Select personnel",
+    "searchPersonnel": "Search personnel...",
+    "noPersonnelFound": "No personnel found",
+    "personnelExpense": "Personnel Expense"
   }
 }

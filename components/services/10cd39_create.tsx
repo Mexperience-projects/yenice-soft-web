@@ -8,14 +8,15 @@ import {
   usePersonel_e02ed2,
 } from "@/hooks/personel/e02ed2";
 import { useAppDispatch } from "@/store/HOCs";
-
-// Mock data for personnel - replace with actual API call
+import { useTranslation } from "react-i18next";
 
 interface ServicesProps {
   initialData?: ServicesType;
 }
 
 export default function ServicesUpdateForm({ initialData }: ServicesProps) {
+  const { t } = useTranslation();
+
   const [selectedPersonnel, setSelectedPersonnel] = useState<number | null>(
     null
   );
@@ -54,21 +55,25 @@ export default function ServicesUpdateForm({ initialData }: ServicesProps) {
   const getSelectedPersonnelName = () => {
     if (!selectedPersonnel) return "";
     const person = personel_list.find((p) => p.id === selectedPersonnel);
-    return person ? person.name : `Personnel ${selectedPersonnel}`;
+    return person
+      ? person.name
+      : `${t("personnel.title")} ${selectedPersonnel}`;
   };
 
   return (
     <div className="card bg-base-100 ">
       <div className="card-body">
         <h2 className="card-title text-lg font-bold mb-4">
-          {initialData ? "Update Service" : "Create New Service"}
+          {initialData
+            ? t("services.editService")
+            : t("services.addNewService")}
         </h2>
 
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="form-control w-full">
               <label className="label">
-                <span className="label-text">Name</span>
+                <span className="label-text">{t("common.name")}</span>
               </label>
               <input
                 id="name"
@@ -77,13 +82,13 @@ export default function ServicesUpdateForm({ initialData }: ServicesProps) {
                 required
                 defaultValue={initialData?.name}
                 className="input input-bordered w-full"
-                placeholder="Service name"
+                placeholder={t("services.serviceName")}
               />
             </div>
 
             <div className="form-control w-full">
               <label className="label">
-                <span className="label-text">Price</span>
+                <span className="label-text">{t("common.price")}</span>
               </label>
               <label className="input-group">
                 <span></span>
@@ -104,7 +109,7 @@ export default function ServicesUpdateForm({ initialData }: ServicesProps) {
 
           <div className="form-control w-full">
             <label className="label">
-              <span className="label-text">Description</span>
+              <span className="label-text">{t("common.description")}</span>
             </label>
             <textarea
               id="description"
@@ -112,13 +117,13 @@ export default function ServicesUpdateForm({ initialData }: ServicesProps) {
               rows={3}
               defaultValue={initialData?.description}
               className="textarea textarea-bordered w-full"
-              placeholder="Service description"
+              placeholder={t("services.serviceDescription")}
             />
           </div>
 
           <div className="form-control w-full" ref={personnelDropdownRef}>
             <label className="label">
-              <span className="label-text">Personnel</span>
+              <span className="label-text">{t("personnel.title")}</span>
             </label>
             <div className="relative w-full">
               <div
@@ -128,7 +133,7 @@ export default function ServicesUpdateForm({ initialData }: ServicesProps) {
                 <span className="text-sm">
                   {selectedPersonnel
                     ? getSelectedPersonnelName()
-                    : "Select personnel"}
+                    : t("services.selectPersonnel")}
                 </span>
                 <Search className="h-4 w-4 opacity-50" />
               </div>
@@ -140,7 +145,7 @@ export default function ServicesUpdateForm({ initialData }: ServicesProps) {
                       <Search className="h-4 w-4 mr-2 opacity-50" />
                       <input
                         type="text"
-                        placeholder="Search personnel..."
+                        placeholder={t("services.searchPersonnel")}
                         className="input input-sm input-ghost w-full focus:outline-none"
                         value={personnelSearch}
                         onChange={(e) => setPersonnelSearch(e.target.value)}
@@ -150,7 +155,7 @@ export default function ServicesUpdateForm({ initialData }: ServicesProps) {
                     <ul className="menu menu-compact py-2 max-h-60 overflow-y-auto">
                       {filteredPersonnel.length === 0 ? (
                         <li className="disabled text-center py-2 text-sm opacity-50">
-                          No personnel found
+                          {t("services.noPersonnelFound")}
                         </li>
                       ) : (
                         filteredPersonnel.map((person) => (
@@ -192,7 +197,9 @@ export default function ServicesUpdateForm({ initialData }: ServicesProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="form-control w-full">
               <label className="label">
-                <span className="label-text">personnel Expense</span>
+                <span className="label-text">
+                  {t("services.personnelExpense")}
+                </span>
               </label>
               <label className="input-group">
                 <span></span>
