@@ -44,7 +44,8 @@ export default function VisitCreateForm({
   const [formData, setFormData] = useState(initial);
 
   // New payment form state
-  const [newPayment, setNewPayment] = useState<Omit<PaymentsType, "id">>({
+  const [newPayment, setNewPayment] = useState<PaymentsType>({
+    id: -1,
     date: new Date(),
     description: "",
     price: 0,
@@ -103,12 +104,7 @@ export default function VisitCreateForm({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (!formData) return;
-    if (["date", "datetime"].includes(name))
-      setFormData({
-        ...formData,
-        [name]: new Date(value).toLocaleString("en-CA"),
-      });
-    else setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleNewPaymentChange = (
@@ -198,7 +194,7 @@ export default function VisitCreateForm({
   const addPayment = () => {
     if (!formData) return;
     if (newPayment.description && newPayment.price > 0) {
-      const paymentId = editingPayment || formData.payments.length + 1;
+      const paymentId = editingPayment?.id || -1;
 
       setFormData((prev: any) => {
         let updatedPayments;
@@ -206,8 +202,8 @@ export default function VisitCreateForm({
         if (editingPayment) {
           // Update existing payment
           updatedPayments = prev.payments.map((payment: any) =>
-            payment.id === editingPayment
-              ? { ...newPayment, id: paymentId }
+            payment.id === editingPayment.id
+              ? { ...newPayment, id: editingPayment.id }
               : payment
           );
         } else {
@@ -223,6 +219,7 @@ export default function VisitCreateForm({
 
       // Reset form
       setNewPayment({
+        id: -1,
         date: new Date(),
         description: "",
         price: 0,
@@ -235,6 +232,7 @@ export default function VisitCreateForm({
 
   const editPayment = (payment: PaymentsType) => {
     setNewPayment({
+      id: payment.id,
       date: payment.date,
       description: payment.description,
       price: payment.price,
@@ -253,6 +251,7 @@ export default function VisitCreateForm({
     if (editingPayment?.id === paymentId) {
       setEditingPayment(null);
       setNewPayment({
+        id: -1,
         date: new Date(),
         description: "",
         price: 0,

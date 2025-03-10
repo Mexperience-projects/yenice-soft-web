@@ -9,6 +9,7 @@ import { useVisits } from "@/hooks/visit/ae978b";
 import { useTranslation } from "react-i18next";
 import CreateClient from "../../@clients/(modals)/createClient";
 import { useServices_10cd39 } from "@/hooks/services/10cd39";
+import { useItems_691d50 } from "@/hooks/items/691d50";
 
 interface VisitFormProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ export default function VisitForm({
   const { create_clients_data, clients_list, get_clients_list_list } =
     useClients();
   const { create_visit_data } = useVisits();
+  const { get_items_list_list } = useItems_691d50();
   const { get_services_list_list } = useServices_10cd39();
   const [isClientCreateModalOpen, setIsClientCreateModalOpen] = useState(false);
   const [editMode, editModeHandler] = useState(false);
@@ -69,6 +71,7 @@ export default function VisitForm({
   useEffect(() => {
     get_clients_list_list();
     get_services_list_list();
+    get_items_list_list();
   }, []);
 
   return (
