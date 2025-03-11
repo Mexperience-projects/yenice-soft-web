@@ -62,7 +62,7 @@ export default function LayoutMenu() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white shadow-sm border-r border-gray-100 text-gray-700 flex flex-col w-72">
+    <div className=" sticky top-0 max-h-screen  bg-white shadow-sm border-r border-gray-100 text-gray-700 flex flex-col w-72 ">
       {/* Brand Header */}
       <div className="p-6 flex justify-between items-center border-b border-gray-100 relative">
         <div className="flex items-center gap-2">

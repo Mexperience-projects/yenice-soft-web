@@ -42,7 +42,7 @@ export default function ({
   return (
     <div className="flex">
       <Menu />
-      <main className="w-full">{renderContent()}</main>
+      <main className="w-full ">{renderContent()}</main>
     </div>
   );
 }
