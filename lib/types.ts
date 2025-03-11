@@ -9,12 +9,19 @@ export interface ServicesType {
   personel_precent_fee: number;
 }
 
+export interface PersonelPayments {
+  id: number;
+  price: number;
+  date: Date;
+}
+
 export interface PersonelType {
   id: number;
   name: string;
   description: string;
   visits: VisitType[];
   doctorExpense: number;
+  payments: PersonelPayments[];
 }
 
 export interface OperationType {

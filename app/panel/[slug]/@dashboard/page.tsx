@@ -341,12 +341,11 @@ export default function Dashboard() {
         );
 
         // Count visits for this personnel
-        const visitCount = person.visits.length;
 
         return {
           name: person.name,
           revenue,
-          visits: visitCount,
+          visits: 0,
           expenses: person.doctorExpense,
         };
       })
