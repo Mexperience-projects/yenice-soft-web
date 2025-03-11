@@ -13,6 +13,7 @@ interface _LayoutType {
   services: ReactNode;
   clients: ReactNode;
   payments: ReactNode;
+  users: ReactNode;
 }
 
 export default function ({
@@ -24,6 +25,7 @@ export default function ({
   services,
   clients,
   payments,
+  users,
 }: _LayoutType) {
   const params = useParams();
 
@@ -37,6 +39,7 @@ export default function ({
       services,
       clients,
       payments,
+      users,
     })[params.slug as string];
 
   return (

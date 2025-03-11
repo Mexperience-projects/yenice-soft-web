@@ -391,7 +391,10 @@ export default function ClientManagement() {
           </h3>
           <p className="text-gray-600 mb-4">{t("clients.enterFullName")}</p>
 
-          <form action={create_clients_data}>
+          <form
+            action={create_clients_data}
+            onSubmit={() => setIsCreateModalOpen(false)}
+          >
             <ClientForm />
             <div className="flex justify-end gap-3 mt-6">
               <button

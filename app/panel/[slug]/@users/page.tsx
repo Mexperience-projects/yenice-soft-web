@@ -11,11 +11,11 @@ import {
   UserPlus,
   UserCheck,
 } from "lucide-react";
-import type { PersonelType } from "@/lib/types";
+import type { PersonelType, UsersType } from "@/lib/types";
 import { useTranslation } from "react-i18next";
-import Personel_modal from "./(modals)/personel_modal";
+import UserModal from "./(modals)/user_modal";
 
-export default function PersonnelPage() {
+export default function usersPage() {
   const { t } = useTranslation();
 
   const {
@@ -29,8 +29,7 @@ export default function PersonnelPage() {
   const [activeTab, setActiveTab] = useState<"create" | "update" | "list">(
     "list"
   );
-  const [selectedPersonnel, setSelectedPersonnel] =
-    useState<PersonelType | null>(null);
+  const [selectedusers, setSelectedusers] = useState<UsersType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -40,7 +39,7 @@ export default function PersonnelPage() {
   const openModal = (): void => {
     setIsModalOpen(true);
     const modal = document.getElementById(
-      "personnel_modal"
+      "users_modal"
     ) as HTMLDialogElement | null;
     if (modal) modal.showModal();
   };
@@ -49,15 +48,13 @@ export default function PersonnelPage() {
     setIsModalOpen(false);
   };
 
-  const handlePersonnelSelect = (personnel: PersonelType): void => {
-    setSelectedPersonnel(personnel);
+  const handleusersSelect = (users: PersonelType): void => {
+    setSelectedusers(users);
     setActiveTab("update");
   };
 
-  const handleDeletePersonnel = async (
-    personel: PersonelType
-  ): Promise<void> => {
-    if (window.confirm(t("personnel.deleteConfirm"))) {
+  const handleDeleteusers = async (personel: PersonelType): Promise<void> => {
+    if (window.confirm(t("users.deleteConfirm"))) {
       delete_personel_data(personel.id);
       setActiveTab("list");
     }
@@ -70,9 +67,9 @@ export default function PersonnelPage() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-800 flex items-center">
             <span className="inline-block w-2 h-8 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></span>
-            {t("personnel.title")}
+            {t("users.title")}
           </h1>
-          <p className="text-gray-600 ml-5">{t("personnel.subtitle")}</p>
+          <p className="text-gray-600 ml-5">{t("users.subtitle")}</p>
         </div>
 
         {/* Stats Cards */}
@@ -81,7 +78,7 @@ export default function PersonnelPage() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  {t("personnel.totalPersonnel")}
+                  {t("users.totalusers")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-secondary">
@@ -89,7 +86,7 @@ export default function PersonnelPage() {
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  {t("personnel.activeTeamMembers")}
+                  {t("users.activeTeamMembers")}
                 </p>
               </div>
               <div className="flex items-center justify-center bg-secondary/10 rounded-full p-3">
@@ -102,7 +99,7 @@ export default function PersonnelPage() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  {t("personnel.availableStaff")}
+                  {t("users.availableStaff")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-primary">
@@ -110,7 +107,7 @@ export default function PersonnelPage() {
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  {t("personnel.readyForAssignment")}
+                  {t("users.readyForAssignment")}
                 </p>
               </div>
               <div className="flex items-center justify-center bg-primary/10 rounded-full p-3">
@@ -123,15 +120,15 @@ export default function PersonnelPage() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  {t("personnel.lastUpdated")}
+                  {t("users.lastUpdated")}
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-gray-700">
-                    {t("personnel.justNow")}
+                    {t("users.justNow")}
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  {t("personnel.personnelUpToDate")}
+                  {t("users.usersUpToDate")}
                 </p>
               </div>
               <button
@@ -151,7 +148,7 @@ export default function PersonnelPage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <h2 className="text-lg font-semibold text-gray-800 flex items-center">
                 <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-                {t("personnel.personnelRecords")}
+                {t("users.usersRecords")}
               </h2>
 
               <button
@@ -162,7 +159,7 @@ export default function PersonnelPage() {
                 className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300"
               >
                 <Plus className="h-4 w-4" />
-                <span>{t("personnel.addNewPersonnel")}</span>
+                <span>{t("users.addNewusers")}</span>
               </button>
             </div>
           </div>
@@ -184,23 +181,23 @@ export default function PersonnelPage() {
                 </tr>
               </thead>
               <tbody>
-                {personel_list.map((personnel, i) => (
+                {personel_list.map((users, i) => (
                   <tr
                     key={i}
                     className="bg-white border-b hover:bg-gray-50 transition-colors duration-150"
                   >
                     <td className="px-6 py-4 font-medium text-gray-900">
-                      {personnel.name}
+                      {users.name}
                     </td>
                     <td className="px-6 py-4 text-gray-700">
-                      {personnel.description}
+                      {users.description}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex gap-2 justify-end">
                         <button
                           className="px-3 py-1.5 bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-lg transition-colors flex items-center gap-1"
                           onClick={() => {
-                            handlePersonnelSelect(personnel);
+                            handleusersSelect(users);
                             openModal();
                           }}
                         >
@@ -209,7 +206,7 @@ export default function PersonnelPage() {
                         </button>
                         <button
                           className="px-3 py-1.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-colors flex items-center gap-1"
-                          onClick={() => handleDeletePersonnel(personnel)}
+                          onClick={() => handleDeleteusers(users)}
                         >
                           <Trash className="h-3.5 w-3.5" />
                           {t("common.delete")}
@@ -224,15 +221,13 @@ export default function PersonnelPage() {
 
           {/* Mobile Table Alternative - Visible only on small screens */}
           <div className="md:hidden">
-            {personel_list.map((personnel, i) => (
+            {personel_list.map((users, i) => (
               <div key={i} className="border-b border-gray-100 p-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-medium text-gray-900">
-                      {personnel.name}
-                    </h3>
+                    <h3 className="font-medium text-gray-900">{users.name}</h3>
                     <p className="text-gray-600 text-sm mt-1">
-                      {personnel.description}
+                      {users.description}
                     </p>
                   </div>
                   <div className="dropdown dropdown-end">
@@ -261,7 +256,7 @@ export default function PersonnelPage() {
                       <li>
                         <a
                           onClick={() => {
-                            handlePersonnelSelect(personnel);
+                            handleusersSelect(users);
                             openModal();
                           }}
                           className="flex items-center gap-2 text-secondary hover:bg-secondary/10"
@@ -271,7 +266,7 @@ export default function PersonnelPage() {
                       </li>
                       <li>
                         <a
-                          onClick={() => handleDeletePersonnel(personnel)}
+                          onClick={() => handleDeleteusers(users)}
                           className="flex items-center gap-2 text-red-500 hover:bg-red-50"
                         >
                           <Trash className="h-4 w-4" /> {t("common.delete")}
@@ -290,10 +285,10 @@ export default function PersonnelPage() {
                 <UserPlus className="h-12 w-12 text-gray-400 mx-auto" />
               </div>
               <h3 className="text-lg font-medium text-gray-800 mb-2">
-                {t("personnel.noPersonnelRecords")}
+                {t("users.nousersRecords")}
               </h3>
               <p className="text-gray-500 max-w-md mx-auto mb-6">
-                {t("personnel.noPersonnelFound")}
+                {t("users.nousersFound")}
               </p>
               <button
                 onClick={() => {
@@ -303,7 +298,7 @@ export default function PersonnelPage() {
                 className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 mx-auto"
               >
                 <Plus className="h-4 w-4" />
-                <span>{t("personnel.addFirstPersonnel")}</span>
+                <span>{t("users.addFirstusers")}</span>
               </button>
             </div>
           )}
@@ -314,7 +309,7 @@ export default function PersonnelPage() {
               <div className="text-sm text-gray-500">
                 {t("common.showing")}{" "}
                 <span className="font-medium">{personel_list.length}</span>{" "}
-                {t("personnel.personnelRecords").toLowerCase()}
+                {t("users.usersRecords").toLowerCase()}
               </div>
             </div>
           )}
@@ -332,12 +327,12 @@ export default function PersonnelPage() {
           </button>
         </div>
       </div>
-      <Personel_modal
+      <UserModal
         onClose={() => {
-          closeModal(); // This will set isModalOpen to false
-          setSelectedPersonnel(null); // This will clear the selected personnel
+          closeModal();
+          setSelectedusers(null);
         }}
-        selectedPersonnel={selectedPersonnel}
+        selecteduser={selectedusers}
         isOpen={isModalOpen}
       />
     </div>

@@ -47,7 +47,8 @@
     "notifications": "Bildirimler",
     "administrator": "Yönetici",
     "main": "Ana",
-    "management": "Yönetim"
+    "management": "Yönetim",
+    "users":"Kullanıcı"
   },
   "nav": {
     "dashboard": "Gösterge Paneli",
@@ -286,5 +287,30 @@
     "searchPersonnel": "Personel ara...",
     "noPersonnelFound": "Personel bulunamadı",
     "personnelExpense": "Personel Gideri"
+  },
+  "users": {
+    "title": "Kullanıcı Yönetimi",
+    "subtitle": "Takım üyelerinizi ve bilgilerini yönetin",
+    "totalusers": "Toplam Kullanıcılar",
+    "activeTeamMembers": "Aktif takım üyeleri",
+    "availableStaff": "Mevcut Personel",
+    "readyForAssignment": "Görevlendirmeye hazır",
+    "lastUpdated": "Son Güncelleme",
+    "justNow": "Az Önce",
+    "usersUpToDate": "Kullanıcı kayıtları güncel",
+    "usersRecords": "Kullanıcı Kayıtları",
+    "addNewusers": "Yeni Kullanıcı Ekle",
+    "nousersRecords": "Kullanıcı Kaydı Yok",
+    "nousersFound": "Henüz hiç kullanıcı eklenmedi. Başlamak için ilk kullanıcınızı ekleyin.",
+    "addFirstusers": "İlk Kullanıcıyı Ekle",
+    "deleteConfirm": "Bu kullanıcıyı silmek istediğinizden emin misiniz?"
+  },
+  "user": {
+    "addNewuser": "Yeni Kullanıcı Ekle",
+    "saveChanges": "Değişiklikleri Kaydet",
+    "fullName": "Tam İsim",
+    "enterFullName": "Tam isim girin",
+    "enterPosition": "Pozisyon veya açıklama girin",
+    "deleteConfirm": "Bu kullanıcıyı silmek istediğinizden emin misiniz?"
   }
 }

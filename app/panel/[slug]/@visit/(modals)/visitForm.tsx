@@ -15,12 +15,14 @@ interface VisitFormProps {
   isOpen: boolean;
   onClose: () => void;
   selectedVisit?: VisitType;
+  onComplete: () => void; // Add this prop
 }
 
 export default function VisitForm({
   isOpen,
   onClose: onClose_,
   selectedVisit,
+  onComplete: onComplete_, // Add this prop
 }: VisitFormProps) {
   const { t } = useTranslation();
   const { create_clients_data, clients_list, get_clients_list_list } =
@@ -66,6 +68,7 @@ export default function VisitForm({
   const onClose = () => {
     setFormData(emptyForm);
     onClose_();
+    onComplete_();
   };
 
   useEffect(() => {

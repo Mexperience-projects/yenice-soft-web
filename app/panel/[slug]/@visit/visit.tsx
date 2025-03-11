@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import VisitForm from "./(modals)/visitForm";
 import { useTranslation } from "react-i18next";
-import { VisitType } from "@/lib/types";
+import type { VisitType } from "@/lib/types";
 
 export default function VisitManagement() {
   const { t } = useTranslation();
@@ -33,13 +33,29 @@ export default function VisitManagement() {
 
   useEffect(() => {
     get_visit_list_list();
-  }, []);
+  }, [
+    isCreateModalOpen,
+    isUpdateModalOpen,
+    isDeleteModalOpen,
+    isViewModalOpen,
+  ]);
+
+  const handleOperationComplete = () => {
+    // Close all modals
+    setIsCreateModalOpen(false);
+    setIsUpdateModalOpen(false);
+    setIsDeleteModalOpen(false);
+    setIsViewModalOpen(false);
+    // Reset selected visit
+    setSelectedVisit(undefined);
+    // Refresh the list
+    get_visit_list_list();
+  };
 
   const handleDeleteSubmit = async (formData: FormData) => {
     if (selectedVisit) {
-      delete_visit_data(selectedVisit.id);
-      setIsDeleteModalOpen(false);
-      setSelectedVisit(undefined);
+      await delete_visit_data(selectedVisit.id);
+      handleOperationComplete();
     }
   };
 
@@ -354,9 +370,11 @@ export default function VisitManagement() {
           setIsUpdateModalOpen(false);
           setSelectedVisit(undefined);
         }}
+        onComplete={handleOperationComplete}
         selectedVisit={selectedVisit}
       />
       {/* Delete Visit Modal */}
+
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => {

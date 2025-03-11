@@ -37,6 +37,7 @@ export default function LayoutMenu() {
     { href: "/panel/services", label: t("menu.services"), icon: HeartPulse },
     { href: "/panel/payments", label: t("menu.payments"), icon: CreditCard },
     { href: "/panel/clients", label: t("menu.clients"), icon: UserCircle },
+    { href: "/panel/users", label: t("menu.users"), icon: Users },
   ];
 
   const changeLanguage = (lang: string) => {

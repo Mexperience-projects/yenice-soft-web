@@ -50,6 +50,9 @@ export default function PersonnelModal({
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [sortField, setSortField] = useState<"date" | "price">("date");
 
+  // Loading state
+  const [isLoading, setIsLoading] = useState(false);
+
   // Apply filters and sorting to payments
   const filteredPayments = useMemo(() => {
     let result = [...payments];
@@ -150,9 +153,11 @@ export default function PersonnelModal({
 
     if (!paymentPrice || !paymentDate) return;
 
+    let updatedPayments: PersonelPayments[] = [];
+
     if (editingPayment) {
       // Update existing payment
-      const updatedPayments = payments.map((payment) =>
+      updatedPayments = payments.map((payment) =>
         payment.id === editingPayment.id
           ? {
               ...payment,
@@ -161,10 +166,6 @@ export default function PersonnelModal({
             }
           : payment
       );
-      setPayments(updatedPayments);
-
-      // Here you would also update the payment in your backend
-      // updatePaymentInBackend(editingPayment.id, parseFloat(paymentPrice), paymentDate)
     } else {
       // Add new payment
       const newPayment: PersonelPayments = {
@@ -172,10 +173,17 @@ export default function PersonnelModal({
         price: Number.parseFloat(paymentPrice),
         date: paymentDate,
       };
-      setPayments([...payments, newPayment]);
+      updatedPayments = [...payments, newPayment];
+    }
 
-      // Here you would also save the new payment to your backend
-      // savePaymentToBackend(selectedPersonnel?.id, newPayment)
+    setPayments(updatedPayments);
+
+    // Update the hidden input value
+    const paymentsInput = document.querySelector(
+      'input[name="payments"]'
+    ) as HTMLInputElement;
+    if (paymentsInput) {
+      paymentsInput.value = JSON.stringify(updatedPayments);
     }
 
     resetPaymentForm();
@@ -242,65 +250,156 @@ export default function PersonnelModal({
 
   if (!isOpen) return null;
 
-  // If no personnel is selected, show the create form
+  // If no personnel is selected, show the same layout but with empty fields
   if (!selectedPersonnel) {
+    // Create an empty personnel object to use the same layout
+    const emptyPersonnel = {
+      id: "",
+      name: "",
+      description: "",
+      payments: [],
+    };
+
+    // Use the same layout but with the create_personel_data action
     return (
       <div className="modal modal-open">
-        <div className="modal-box">
-          <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
-            <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            {t("personnel.addNewPersonnel")}
-          </h3>
-
-          <form action={create_personel_data} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text text-gray-700 font-medium">
-                    {t("personnel.fullName")}
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder={t("personnel.enterFullName")}
-                  className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
-                  required
-                />
-              </div>
-
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text text-gray-700 font-medium">
-                    {t("common.description")}
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  name="description"
-                  placeholder={t("personnel.enterPosition")}
-                  className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
-                  required
-                />
-              </div>
-            </div>
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                type="button"
-                className="btn btn-ghost text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200"
-                onClick={onClose}
-              >
-                {t("common.cancel")}
-              </button>
+        <div className="modal-box max-w-5xl p-0">
+          <div className="p-4 flex justify-between items-center">
+            <h3 className="text-xl font-bold text-gray-800 flex items-center">
+              <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
+              {t("personnel.addNewPersonnel")}
+            </h3>
+            <div className="flex gap-2">
               <button
                 type="submit"
-                onClick={onClose}
-                className="btn text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-none"
+                form="create-personnel-form"
+                disabled={isLoading}
+                className="btn btn-sm text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-none"
               >
-                {t("personnel.addNewPersonnel")}
+                {isLoading ? (
+                  <>
+                    <span className="loading loading-spinner loading-xs"></span>
+                    {t("common.saving")}
+                  </>
+                ) : (
+                  t("personnel.addNewPersonnel")
+                )}
+              </button>
+              <button
+                type="button"
+                className="btn btn-sm btn-ghost text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200"
+                onClick={onClose}
+              >
+                {t("common.close")}
               </button>
             </div>
-          </form>
+          </div>
+
+          {/* Two-column layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Left Column - Chart and Stats */}
+            <div className="p-4 border-t lg:border-t-0 lg:border-r">
+              {/* Personnel Details Section */}
+              <div className="mt-2">
+                <h4 className="font-semibold mb-2">Details</h4>
+                <form
+                  id="create-personnel-form"
+                  action={async (formData) => {
+                    setIsLoading(true);
+                    await create_personel_data(formData);
+                    setIsLoading(false);
+                    onClose();
+                  }}
+                  className="space-y-3"
+                >
+                  <div className="grid grid-cols-1 gap-3">
+                    <div className="form-control w-full">
+                      <label className="label py-1">
+                        <span className="label-text text-gray-700 font-medium">
+                          {t("personnel.fullName")}
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder={t("personnel.enterFullName")}
+                        className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
+                        required
+                      />
+                    </div>
+
+                    <div className="form-control w-full">
+                      <label className="label py-1">
+                        <span className="label-text text-gray-700 font-medium">
+                          {t("common.description")}
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        name="description"
+                        placeholder={t("personnel.enterPosition")}
+                        className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
+                        required
+                      />
+                    </div>
+                    <input
+                      type="hidden"
+                      name="payments"
+                      value={JSON.stringify([])}
+                    />
+                  </div>
+                </form>
+              </div>
+
+              {/* Payment Statistics - Empty State */}
+              <h4 className="font-semibold mb-2 mt-4">Payment Analytics</h4>
+              <div className="stats shadow w-full mb-4 text-sm">
+                <div className="stat py-2">
+                  <div className="stat-title">Total Payments</div>
+                  <div className="stat-value text-primary text-xl">
+                    {formatCurrency(0)}
+                  </div>
+                  <div className="stat-desc">0 payments recorded</div>
+                </div>
+
+                <div className="stat py-2">
+                  <div className="stat-title">Average Payment</div>
+                  <div className="stat-value text-secondary text-xl">
+                    {formatCurrency(0)}
+                  </div>
+                  <div className="stat-desc">per payment</div>
+                </div>
+              </div>
+
+              {/* Payments Chart - Empty State */}
+              <div className="bg-base-100 rounded-box shadow p-3">
+                <h4 className="font-medium mb-2">Payments Trend</h4>
+                <div className="h-60 w-full">
+                  <div className="flex items-center justify-center h-full text-gray-500">
+                    No data to display
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Payments List */}
+            <div className="p-4 border-t">
+              <div className="flex justify-between items-center mb-3">
+                <h4 className="font-semibold">Payments</h4>
+                <div className="text-gray-500 text-sm">
+                  Save personnel first to add payments
+                </div>
+              </div>
+
+              {/* Empty Payments Table */}
+              <div className="overflow-x-auto h-[300px] overflow-y-auto">
+                <div className="text-center py-6 text-gray-500">
+                  {t("personnel.noPaymentsFound")}
+                </div>
+              </div>
+            </div>
+          </div>
+
           <form method="dialog" className="modal-backdrop">
             <button onClick={onClose}>close</button>
           </form>
@@ -312,26 +411,64 @@ export default function PersonnelModal({
   // If personnel is selected, show the two-column layout
   return (
     <div className="modal modal-open">
-      <div className="modal-box max-w-6xl max-h-[90vh] overflow-y-auto p-0">
-        <div className="p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+      <div className="modal-box max-w-5xl p-0">
+        <div className="p-4 flex justify-between items-center">
+          <h3 className="text-xl font-bold text-gray-800 flex items-center">
             <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
             {selectedPersonnel.name}
           </h3>
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              form="update-personnel-form"
+              disabled={isLoading}
+              className="btn btn-sm text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-none"
+            >
+              {isLoading ? (
+                <>
+                  <span className="loading loading-spinner loading-xs"></span>
+                  {t("common.saving")}
+                </>
+              ) : (
+                t("personnel.saveChanges")
+              )}
+            </button>
+            <button
+              type="button"
+              className="btn btn-sm btn-ghost text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200"
+              onClick={onClose}
+            >
+              {t("common.close")}
+            </button>
+          </div>
         </div>
 
         {/* Two-column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Left Column - Chart and Stats */}
-          <div className="p-6 border-t lg:border-t-0 lg:border-r">
+          <div className="p-4 border-t lg:border-t-0 lg:border-r">
             {/* Personnel Details Section */}
-            <div className="mt-6">
-              <h4 className="font-semibold mb-4">{t("personnel.details")}</h4>
-              <form action={update_personel_data} className="space-y-4">
+            <div className="mt-2">
+              <h4 className="font-semibold mb-2">Details</h4>
+              <form
+                id="update-personnel-form"
+                action={async (formData) => {
+                  setIsLoading(true);
+                  await update_personel_data(formData);
+                  setIsLoading(false);
+                  onClose();
+                }}
+                className="space-y-3"
+              >
                 <input type="hidden" name="id" value={selectedPersonnel.id} />
-                <div className="grid grid-cols-1 gap-4">
+                <input
+                  type="hidden"
+                  name="payments"
+                  value={JSON.stringify(payments)}
+                />
+                <div className="grid grid-cols-1 gap-3">
                   <div className="form-control w-full">
-                    <label className="label">
+                    <label className="label py-1">
                       <span className="label-text text-gray-700 font-medium">
                         {t("personnel.fullName")}
                       </span>
@@ -347,7 +484,7 @@ export default function PersonnelModal({
                   </div>
 
                   <div className="form-control w-full">
-                    <label className="label">
+                    <label className="label py-1">
                       <span className="label-text text-gray-700 font-medium">
                         {t("common.description")}
                       </span>
@@ -362,55 +499,39 @@ export default function PersonnelModal({
                     />
                   </div>
                 </div>
-
-                {/* Save Changes Button */}
-                <div className="flex justify-end gap-3 mt-4">
-                  <button
-                    type="submit"
-                    className="btn text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-none"
-                  >
-                    {t("personnel.saveChanges")}
-                  </button>
-                </div>
               </form>
             </div>
 
             {/* Payment Statistics */}
-            <h4 className="font-semibold mb-4">
-              {t("personnel.paymentAnalytics")}
-            </h4>
-            <div className="stats shadow w-full mb-6">
-              <div className="stat">
-                <div className="stat-title">{t("personnel.totalPayments")}</div>
-                <div className="stat-value text-primary">
+            <h4 className="font-semibold mb-2 mt-4">Payment Analytics</h4>
+            <div className="stats shadow w-full mb-4 text-sm">
+              <div className="stat py-2">
+                <div className="stat-title">Total Payments</div>
+                <div className="stat-value text-primary text-xl">
                   {formatCurrency(totalPayments)}
                 </div>
                 <div className="stat-desc">
-                  {payments.length} {t("personnel.paymentsRecorded")}
+                  {payments.length} payments recorded
                 </div>
               </div>
 
-              <div className="stat">
-                <div className="stat-title">
-                  {t("personnel.averagePayment")}
-                </div>
-                <div className="stat-value text-secondary">
+              <div className="stat py-2">
+                <div className="stat-title">Average Payment</div>
+                <div className="stat-value text-secondary text-xl">
                   {payments.length > 0
                     ? formatCurrency(totalPayments / payments.length)
                     : formatCurrency(0)}
                 </div>
-                <div className="stat-desc">{t("personnel.perPayment")}</div>
+                <div className="stat-desc">per payment</div>
               </div>
             </div>
 
             {/* Payments Chart */}
-            <div className="bg-base-100 rounded-box shadow p-4">
-              <h4 className="font-medium mb-4">
-                {t("personnel.paymentsTrend")}
-              </h4>
-              <div className="h-80 w-full">
+            <div className="bg-base-100 rounded-box shadow p-3">
+              <h4 className="font-medium mb-2">Payments Trend</h4>
+              <div className="h-60 w-full">
                 {chartData.length > 0 ? (
-                  <div className="flex items-end h-64 w-full gap-1 overflow-x-hidden">
+                  <div className="flex items-end h-48 w-full gap-1 overflow-x-hidden">
                     {chartData.map((item, index) => {
                       // Calculate height percentage (max 100%)
                       const maxAmount = Math.max(
@@ -439,7 +560,7 @@ export default function PersonnelModal({
                   </div>
                 ) : (
                   <div className="flex items-center justify-center h-full text-gray-500">
-                    {t("personnel.noDataToDisplay")}
+                    No data to display
                   </div>
                 )}
               </div>
@@ -447,9 +568,9 @@ export default function PersonnelModal({
           </div>
 
           {/* Right Column - Payments List */}
-          <div className="p-6 border-t">
-            <div className="flex justify-between items-center mb-4">
-              <h4 className="font-semibold">{t("personnel.payments")}</h4>
+          <div className="p-4 border-t">
+            <div className="flex justify-between items-center mb-3">
+              <h4 className="font-semibold">Payments</h4>
 
               <div className="flex gap-2">
                 <button
@@ -458,7 +579,7 @@ export default function PersonnelModal({
                   disabled={isAddingPayment}
                 >
                   <PlusIcon className="h-4 w-4 mr-1" />
-                  {t("personnel.addPayment")}
+                  Add Payment
                 </button>
 
                 <button
@@ -475,9 +596,9 @@ export default function PersonnelModal({
 
             {/* Filters */}
             {showFilters && (
-              <div className="bg-base-200 p-4 rounded-lg mb-4">
+              <div className="bg-base-200 p-3 rounded-lg mb-3">
                 <div className="flex justify-between items-center mb-2">
-                  <h5 className="font-medium">{t("common.filters")}</h5>
+                  <h5 className="font-medium text-sm">{t("common.filters")}</h5>
                   <button
                     onClick={resetFilters}
                     className="btn btn-xs btn-ghost"
@@ -485,15 +606,15 @@ export default function PersonnelModal({
                     {t("common.resetFilters")}
                   </button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div className="form-control">
-                    <label className="label">
-                      <span className="label-text">
+                    <label className="label py-1">
+                      <span className="label-text text-sm">
                         {t("personnel.dateRange")}
                       </span>
                     </label>
                     <select
-                      className="select select-bordered w-full"
+                      className="select select-bordered select-sm w-full"
                       value={dateFilter}
                       onChange={(e) => setDateFilter(e.target.value)}
                     >
@@ -510,30 +631,30 @@ export default function PersonnelModal({
                   </div>
 
                   <div className="form-control">
-                    <label className="label">
-                      <span className="label-text">
+                    <label className="label py-1">
+                      <span className="label-text text-sm">
                         {t("personnel.minAmount")}
                       </span>
                     </label>
                     <input
                       type="number"
                       placeholder="0.00"
-                      className="input input-bordered w-full"
+                      className="input input-bordered input-sm w-full"
                       value={minAmount}
                       onChange={(e) => setMinAmount(e.target.value)}
                     />
                   </div>
 
                   <div className="form-control">
-                    <label className="label">
-                      <span className="label-text">
+                    <label className="label py-1">
+                      <span className="label-text text-sm">
                         {t("personnel.maxAmount")}
                       </span>
                     </label>
                     <input
                       type="number"
                       placeholder="0.00"
-                      className="input input-bordered w-full"
+                      className="input input-bordered input-sm w-full"
                       value={maxAmount}
                       onChange={(e) => setMaxAmount(e.target.value)}
                     />
@@ -544,13 +665,13 @@ export default function PersonnelModal({
 
             {/* Payment Form */}
             {isAddingPayment && (
-              <div className="card bg-base-100 shadow-sm mb-4">
-                <div className="card-body pt-4">
-                  <form onSubmit={handlePaymentSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="card bg-base-100 shadow-sm mb-3">
+                <div className="card-body p-3">
+                  <form onSubmit={handlePaymentSubmit} className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="form-control">
-                        <label className="label">
-                          <span className="label-text">
+                        <label className="label py-1">
+                          <span className="label-text text-sm">
                             {t("personnel.amount")}
                           </span>
                         </label>
@@ -560,13 +681,13 @@ export default function PersonnelModal({
                           placeholder="0.00"
                           value={paymentPrice}
                           onChange={(e) => setPaymentPrice(e.target.value)}
-                          className="input input-bordered bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
+                          className="input input-bordered input-sm bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
                           required
                         />
                       </div>
                       <div className="form-control">
-                        <label className="label">
-                          <span className="label-text">
+                        <label className="label py-1">
+                          <span className="label-text text-sm">
                             {t("personnel.date")}
                           </span>
                         </label>
@@ -576,22 +697,22 @@ export default function PersonnelModal({
                             paymentDate ? format(paymentDate, "yyyy-MM-dd") : ""
                           }
                           onChange={handleDateChange}
-                          className="input input-bordered bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
+                          className="input input-bordered input-sm bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
                           required
                         />
                       </div>
                     </div>
-                    <div className="flex justify-end gap-3">
+                    <div className="flex justify-end gap-2">
                       <button
                         type="button"
-                        className="btn btn-ghost text-gray-700 bg-gray-100 hover:bg-gray-200"
+                        className="btn btn-sm btn-ghost text-gray-700 bg-gray-100 hover:bg-gray-200"
                         onClick={resetPaymentForm}
                       >
                         {t("common.cancel")}
                       </button>
                       <button
                         type="submit"
-                        className="btn text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-none"
+                        className="btn btn-sm text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-none"
                       >
                         {editingPayment
                           ? t("personnel.updatePayment")
@@ -604,10 +725,10 @@ export default function PersonnelModal({
             )}
 
             {/* Payments Table */}
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto h-[300px] overflow-y-auto">
               {filteredPayments.length > 0 ? (
-                <table className="table table-zebra w-full">
-                  <thead>
+                <table className="table table-zebra table-sm w-full">
+                  <thead className="sticky top-0 bg-base-100 z-10">
                     <tr>
                       <th
                         className="cursor-pointer"
@@ -649,15 +770,15 @@ export default function PersonnelModal({
                           <div className="flex justify-end gap-2">
                             <button
                               onClick={() => handleEditPayment(payment)}
-                              className="btn btn-ghost btn-sm text-gray-500 hover:text-primary"
+                              className="btn btn-ghost btn-xs text-gray-500 hover:text-primary"
                             >
-                              <PencilIcon className="h-4 w-4" />
+                              <PencilIcon className="h-3 w-3" />
                             </button>
                             <button
                               onClick={() => handleDeletePayment(payment.id)}
-                              className="btn btn-ghost btn-sm text-gray-500 hover:text-red-500"
+                              className="btn btn-ghost btn-xs text-gray-500 hover:text-red-500"
                             >
-                              <TrashIcon className="h-4 w-4" />
+                              <TrashIcon className="h-3 w-3" />
                             </button>
                           </div>
                         </td>
@@ -668,24 +789,11 @@ export default function PersonnelModal({
               ) : (
                 <div className="text-center py-6 text-gray-500">
                   {payments.length > 0
-                    ? t("personnel.noPaymentsMatchFilters")
-                    : t("personnel.noPaymentsFound")}
+                    ? "No payments match filters"
+                    : "No payments found"}
                 </div>
               )}
             </div>
-          </div>
-        </div>
-
-        {/* Footer with Close Button */}
-        <div className="p-6 border-t mt-4">
-          <div className="flex justify-end">
-            <button
-              type="button"
-              className="btn btn-ghost text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200"
-              onClick={onClose}
-            >
-              {t("common.close")}
-            </button>
           </div>
         </div>
 

@@ -24,6 +24,13 @@ export interface PersonelType {
   payments: PersonelPayments[];
 }
 
+export interface UsersType {
+  id: number;
+  name: string;
+  description: string;
+  doctorExpense: number;
+}
+
 export interface OperationType {
   id: number;
   service: ServicesType[];

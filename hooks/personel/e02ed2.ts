@@ -26,6 +26,8 @@ export function usePersonel_e02ed2() {
 
   const create_personel_data = async (formData: any) => {
     loadingHandler(true);
+    console.log("creating");
+
     // create backend form
     const data = Object.fromEntries(formData);
     const response = await axiosUser.post("/personel/", data);

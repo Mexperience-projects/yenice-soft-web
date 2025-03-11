@@ -47,7 +47,8 @@
     "notifications": "Notifications",
     "administrator": "Administrator",
     "main": "Main",
-    "management": "Management"
+    "management": "Management",
+    "users":"Users"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -286,5 +287,30 @@
     "searchPersonnel": "Search personnel...",
     "noPersonnelFound": "No personnel found",
     "personnelExpense": "Personnel Expense"
+  },
+  "users": {
+    "title": "User Management",
+    "subtitle": "Manage your team members and their information",
+    "totalusers": "Total Users",
+    "activeTeamMembers": "Active team members",
+    "availableStaff": "Available Staff",
+    "readyForAssignment": "Ready for assignment",
+    "lastUpdated": "Last Updated",
+    "justNow": "Just Now",
+    "usersUpToDate": "User records are up to date",
+    "usersRecords": "User Records",
+    "addNewusers": "Add New User",
+    "nousersRecords": "No User Records",
+    "nousersFound": "No users have been added yet. Add your first user to get started.",
+    "addFirstusers": "Add First User",
+    "deleteConfirm": "Are you sure you want to delete this user?"
+  },
+  "user": {
+    "addNewuser": "Add New User",
+    "saveChanges": "Save Changes",
+    "fullName": "Full Name",
+    "enterFullName": "Enter full name",
+    "enterPosition": "Enter position or description",
+    "deleteConfirm": "Are you sure you want to delete this user?"
   }
 }
