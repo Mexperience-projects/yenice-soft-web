@@ -59,6 +59,7 @@ export interface ItemsType {
   name: string;
   price: number;
   count: number;
+  limit: number;
 }
 
 export interface Service_itemsType {

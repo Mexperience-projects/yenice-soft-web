@@ -48,7 +48,7 @@
     "administrator": "Yönetici",
     "main": "Ana",
     "management": "Yönetim",
-    "users":"Kullanıcı"
+    "users": "Kullanıcı"
   },
   "nav": {
     "dashboard": "Gösterge Paneli",
@@ -57,8 +57,8 @@
     "payments": "Ödemeler",
     "personnel": "Personel"
   },
-  "dashboard": {
-    "title": "Gösterge Paneli",
+  "analytics": {
+    "title": "Analitik",
     "totalVisits": "Toplam Ziyaret",
     "activePersonnel": "Aktif Personel",
     "onLeave": "izinde",
@@ -95,7 +95,49 @@
     "createReport": "Rapor Oluştur",
     "customReports": "Ziyaretler, envanter ve personel için özel raporlar oluşturun.",
     "newUpdateAvailable": "Yeni Güncelleme Mevcut",
-    "systemUpdate": "Sistem güncellemesi v2.0.4 artık kullanılabilir. Ayrıntılar için değişiklik günlüğünü görüntüleyin."
+    "systemUpdate": "Sistem güncellemesi v2.0.4 artık kullanılabilir. Ayrıntılar için değişiklik günlüğünü görüntüleyin.",
+    "analysis": "Analiz",
+    "personnelAnalytics": "Personel performans analitiği ve metrikleri",
+    "loading": "Analiz verileri yükleniyor...",
+    "searchPersonnel": "Personel ara...",
+    "filterByDate": "Tarih aralığına göre filtrele",
+    "filterByService": "Hizmete göre filtrele",
+    "allServices": "Tüm Hizmetler",
+    "acrossAllPersonnel": "Tüm personel genelinde",
+    "itemsUsed": "Kullanılan Ürünler",
+    "totalConsumedItems": "Toplam tüketilen ürünler",
+    "totalRevenue": "Toplam Gelir",
+    "fromAllServices": "Tüm hizmetlerden",
+    "personnelPayments": "Personel Ödemeleri",
+    "totalExpensesToPersonnel": "Personele toplam giderler",
+    "personnelPerformance": "Personel Performansı",
+    "name": "İsim",
+    "visits": "Ziyaretler",
+    "revenue": "Gelir",
+    "payments": "Ödemeler",
+    "profit": "Kâr",
+    "actions": "İşlemler",
+    "noPersonnelFound": "Filtrelerinize uygun personel bulunamadı",
+    "details": "Detaylar",
+    "performanceMetrics": "Performans metrikleri ve detaylı bilgiler",
+    "servicesProvided": "Sağlanan Hizmetler",
+    "serviceName": "Hizmet Adı",
+    "itemsRequired": "Gereken Ürünler",
+    "fixedFee": "Sabit Ücret",
+    "percentFee": "Yüzde Ücret",
+    "noServicesFound": "Bu personel için hizmet bulunamadı",
+    "visitHistory": "Ziyaret Geçmişi",
+    "client": "Müşteri",
+    "service": "Hizmet",
+    "noVisitsFound": "Bu personel için ziyaret bulunamadı",
+    "itemName": "Ürün Adı",
+    "quantity": "Miktar",
+    "visitDate": "Ziyaret Tarihi",
+    "noItemsFound": "Bu personel için ürün bulunamadı",
+    "close": "Kapat",
+    "unknown": "Bilinmiyor",
+    "notApplicable": "Uygulanamaz",
+    "clear": "Temizle"
   },
   "clients": {
     "title": "Müşteri Yönetimi",
@@ -314,3 +356,4 @@
     "deleteConfirm": "Bu kullanıcıyı silmek istediğinizden emin misiniz?"
   }
 }
+

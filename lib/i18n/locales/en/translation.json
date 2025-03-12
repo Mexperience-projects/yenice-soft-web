@@ -27,11 +27,12 @@
     "clearSearch": "Clear search",
     "clearFilters": "Clear filters",
     "confirmDelete": "Are you sure you want to delete this? This action cannot be undone.",
-    "warning": "Warning!"
+    "warning": "Warning!",
+    "limit":"Limit"
   },
   "menu": {
     "adminPanel": "Admin Panel",
-    "dashboard": "Dashboard",
+    "analytics": "analytics",
     "visits": "Visits",
     "personnel": "Personnel",
     "inventory": "Inventory",
@@ -48,17 +49,17 @@
     "administrator": "Administrator",
     "main": "Main",
     "management": "Management",
-    "users":"Users"
+    "users": "Users"
   },
   "nav": {
-    "dashboard": "Dashboard",
+    "analytics": "analytics",
     "clients": "Clients",
     "inventory": "Inventory",
     "payments": "Payments",
     "personnel": "Personnel"
   },
-  "dashboard": {
-    "title": "Dashboard",
+  "analytics": {
+    "title": "analytics",
     "totalVisits": "Total Visits",
     "activePersonnel": "Active Personnel",
     "onLeave": "on leave",
@@ -95,7 +96,49 @@
     "createReport": "Create Report",
     "customReports": "Create custom reports for visits, inventory, and personnel.",
     "newUpdateAvailable": "New Update Available",
-    "systemUpdate": "System update v2.0.4 is now available. View the changelog for details."
+    "systemUpdate": "System update v2.0.4 is now available. View the changelog for details.",
+    "analysis": "Analysis",
+    "personnelAnalytics": "Personnel performance analytics and metrics",
+    "loading": "Loading analytics data...",
+    "searchPersonnel": "Search personnel...",
+    "filterByDate": "Filter by date range",
+    "filterByService": "Filter by service",
+    "allServices": "All Services",
+    "acrossAllPersonnel": "Across all personnel",
+    "itemsUsed": "Items Used",
+    "totalConsumedItems": "Total consumed items",
+    "totalRevenue": "Total Revenue",
+    "fromAllServices": "From all services",
+    "personnelPayments": "Personnel Payments",
+    "totalExpensesToPersonnel": "Total expenses to personnel",
+    "personnelPerformance": "Personnel Performance",
+    "name": "Name",
+    "visits": "Visits",
+    "revenue": "Revenue",
+    "payments": "Payments",
+    "profit": "Profit",
+    "actions": "Actions",
+    "noPersonnelFound": "No personnel found matching your filters",
+    "details": "Details",
+    "performanceMetrics": "Performance metrics and detailed information",
+    "servicesProvided": "Services Provided",
+    "serviceName": "Service Name",
+    "itemsRequired": "Items Required",
+    "fixedFee": "Fixed Fee",
+    "percentFee": "Percent Fee",
+    "noServicesFound": "No services found for this personnel",
+    "visitHistory": "Visit History",
+    "client": "Client",
+    "service": "Service",
+    "noVisitsFound": "No visits found for this personnel",
+    "itemName": "Item Name",
+    "quantity": "Quantity",
+    "visitDate": "Visit Date",
+    "noItemsFound": "No items found for this personnel",
+    "close": "Close",
+    "unknown": "Unknown",
+    "notApplicable": "N/A",
+    "clear": "Clear"
   },
   "clients": {
     "title": "Client Management",
@@ -314,3 +357,4 @@
     "deleteConfirm": "Are you sure you want to delete this user?"
   }
 }
+

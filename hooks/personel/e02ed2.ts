@@ -33,7 +33,6 @@ export function usePersonel_e02ed2() {
     const response = await axiosUser.post("/personel/", data);
     const serverData = response.data.personel;
     get_personel_list_list();
-    // set response of server on state
     loadingHandler(false);
   };
   const update_personel_data = async (formData: any) => {

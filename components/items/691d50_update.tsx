@@ -15,12 +15,14 @@ export default function Items_691d50_update({ item }: ItemsProps) {
   const priceRef = useRef<HTMLInputElement>(null);
   const countRef = useRef<HTMLInputElement>(null);
   const idRef = useRef<HTMLInputElement>(null);
+  const limitRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (nameRef.current) nameRef.current.value = item.name;
     if (priceRef.current) priceRef.current.value = item.price.toString();
     if (countRef.current) countRef.current.value = item.count.toString();
     if (idRef.current) idRef.current.value = item.count.toString();
+    if (limitRef.current) limitRef.current.value = item.limit.toString();
   }, [item]);
 
   return (
@@ -69,6 +71,20 @@ export default function Items_691d50_update({ item }: ItemsProps) {
           type="number"
           min="0"
           ref={countRef}
+          className="input input-bordered w-full"
+          required
+        />
+      </div>
+      <div className="form-control">
+        <label className="label">
+          <span className="label-text">{t("common.limit")}</span>
+        </label>
+        <input
+          id="limit"
+          name="limit"
+          type="number"
+          min="0"
+          ref={limitRef}
           className="input input-bordered w-full"
           required
         />

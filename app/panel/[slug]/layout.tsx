@@ -6,7 +6,7 @@ import { type ReactNode } from "react";
 
 interface _LayoutType {
   children: ReactNode;
-  dashboard: ReactNode;
+  analytics: ReactNode;
   visit: ReactNode;
   presonels: ReactNode;
   items: ReactNode;
@@ -18,7 +18,7 @@ interface _LayoutType {
 
 export default function ({
   children,
-  dashboard,
+  analytics,
   visit,
   presonels,
   items,
@@ -32,7 +32,7 @@ export default function ({
   // render content for meny
   const renderContent = () =>
     ({
-      dashboard,
+      analytics,
       visit,
       presonels,
       items,

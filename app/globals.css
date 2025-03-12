@@ -71,5 +71,50 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+
 }
+
+/* Custom styles for react-day-picker with Daisy UI */
+.rdp-daisy .rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
+  @apply bg-base-300;
+}
+
+.rdp-daisy .rdp-day_selected {
+  @apply bg-primary text-primary-content;
+}
+
+.rdp-daisy .rdp-day_today {
+  @apply border border-primary;
+}
+
+.rdp-daisy .rdp-button:focus-visible {
+  @apply outline-primary;
+}
+
+.rdp-daisy .rdp-nav_button {
+  @apply btn btn-sm btn-ghost;
+}
+
+.rdp-daisy .rdp-caption {
+  @apply mb-4;
+}
+
+.rdp-daisy .rdp-head_cell {
+  @apply font-bold text-base-content/70;
+}
+
+/* Ensure dropdowns appear above other elements */
+.dropdown-content {
+  z-index: 50 !important;
+}
+
+.modal {
+  z-index: 40;
+}
+
+.modal-box {
+  z-index: 45;
+}
+
+
 

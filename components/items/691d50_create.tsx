@@ -54,6 +54,20 @@ export default function Items_691d50_create({}: ItemsProps) {
           required
         />
       </div>
+      <div className="form-control">
+        <label className="label">
+          <span className="label-text">{t("common.limit")}</span>
+        </label>
+        <input
+          id="limit"
+          name="limit"
+          type="number"
+          min="0"
+          placeholder="0"
+          className="input input-bordered w-full"
+          required
+        />
+      </div>
     </div>
   );
 }

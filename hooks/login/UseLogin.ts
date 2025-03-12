@@ -14,7 +14,7 @@ export function useLogin() {
     });
 
     if (response.status === 200) {
-      router.push("/panel/dashboard");
+      router.push("/panel/analytics");
       toast.success("Login Succesfull");
     } else if (response.status === 401) {
       toast.error("Username or Password is Wrong");

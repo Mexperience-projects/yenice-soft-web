@@ -17,7 +17,7 @@
 // export type coreType = {
 //   message: appMessageType;
 //   groupModal?: PartnerGroupType;
-//   selectDashboardModal?: { host: HostType };
+//   selectanalyticsModal?: { host: HostType };
 //   partnerSelectModalOpen?: boolean;
 // };
 
@@ -43,9 +43,9 @@
 //         desc: "",
 //       };
 //     },
-//     openSelectDashboardModal: (state, action: PayloadAction<HostType>) => ({
+//     openSelectanalyticsModal: (state, action: PayloadAction<HostType>) => ({
 //       ...state,
-//       selectDashboardModal: { host: action.payload },
+//       selectanalyticsModal: { host: action.payload },
 //     }),
 //     openGroupModal: (state, action: PayloadAction<PartnerGroupType>) => ({
 //       ...state,
@@ -58,7 +58,7 @@
 //     closeModal: (state) => ({
 //       ...state,
 //       groupModal: undefined,
-//       selectDashboardModal: undefined,
+//       selectanalyticsModal: undefined,
 //       partnerSelectModalOpen: undefined,
 //     }),
 //   },
@@ -70,6 +70,6 @@
 //   clearMessage,
 //   openGroupModal,
 //   closeModal,
-//   openSelectDashboardModal,
+//   openSelectanalyticsModal,
 //   openpartnerSelectModal,
 // } = coreSlice.actions;

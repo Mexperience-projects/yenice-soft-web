@@ -6,7 +6,7 @@ import { setItems } from "@/store/slice/items";
 
 export type items_691d50Type = Pick<
   ItemsType,
-  "name" | "price" | "count" | "id"
+  "name" | "price" | "count" | "id" | "limit"
 >;
 
 export function useItems_691d50() {

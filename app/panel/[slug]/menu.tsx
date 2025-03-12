@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import {
-  LayoutDashboard,
   Users,
   ClipboardList,
   Package,
@@ -27,9 +26,9 @@ export default function LayoutMenu() {
 
   const menuItems = [
     {
-      href: "/panel/dashboard",
-      label: t("menu.dashboard"),
-      icon: LayoutDashboard,
+      href: "/panel/analytics",
+      label: t("menu.analytics"),
+      icon: ClipboardList,
     },
     { href: "/panel/visit", label: t("menu.visits"), icon: ClipboardList },
     { href: "/panel/presonels", label: t("menu.personnel"), icon: Users },
