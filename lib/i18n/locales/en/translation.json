@@ -28,7 +28,7 @@
     "clearFilters": "Clear filters",
     "confirmDelete": "Are you sure you want to delete this? This action cannot be undone.",
     "warning": "Warning!",
-    "limit":"Limit"
+    "limit": "Limit"
   },
   "menu": {
     "adminPanel": "Admin Panel",
@@ -314,22 +314,39 @@
     "dataUpToDate": "Services data is up to date",
     "servicesList": "Services List",
     "searchServices": "Search services...",
-    "addNewService": "Add New Service",
     "noServicesFound": "No Services Found",
     "noServicesMatch": "No services match your search criteria. Try a different search term or clear your search.",
     "noServicesYet": "No services have been added yet. Add your first service to get started!",
     "services": "services",
-    "editService": "Edit Service",
-    "createService": "Create Service",
-    "updateService": "Update Service",
     "deleteService": "Delete Service",
     "deleteServiceConfirm": "Are you sure you want to delete this service? This action cannot be undone.",
     "serviceName": "Service name",
     "serviceDescription": "Service description",
-    "selectPersonnel": "Select personnel",
+    "personnelExpense": "Personnel Expense",
+    "addNewService": "Add New Service",
+    "editService": "Edit Service",
+    "createService": "Create Service",
+    "updateService": "Update Service",
+    "basicInfo": "Basic Information",
+    "name": "Service Name",
+    "namePlaceholder": "Enter service name",
+    "price": "Price",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter service description...",
+    "personnel": "Personnel",
+    "personnelSelected": "personnel selected",
+    "noPersonnelSelected": "No personnel selected",
+    "selectPersonnel": "Select Personnel",
     "searchPersonnel": "Search personnel...",
+    "noPersonnelAvailable": "No personnel available",
     "noPersonnelFound": "No personnel found",
-    "personnelExpense": "Personnel Expense"
+    "items": "Service Items",
+    "item": "Item",
+    "selectItem": "Select an item",
+    "count": "Quantity",
+    "noItemsAdded": "No items added to this service",
+    "clickBelowToAddItems": "Click the button below to add items",
+    "addItem": "Add Item"
   },
   "users": {
     "title": "User Management",
@@ -357,4 +374,3 @@
     "deleteConfirm": "Are you sure you want to delete this user?"
   }
 }
-

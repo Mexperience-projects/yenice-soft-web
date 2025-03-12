@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { usePersonel_e02ed2 } from "@/hooks/personel/e02ed2";
 import type { PersonelPayments, PersonelType } from "@/lib/types";
 import { useTranslation } from "react-i18next";
@@ -38,9 +38,7 @@ export default function PersonnelModal({
   const [paymentDate, setPaymentDate] = useState<Date | undefined>(new Date());
 
   // State for personnel payments
-  const [payments, setPayments] = useState<PersonelPayments[]>(
-    selectedPersonnel?.payments || []
-  );
+  const [payments, setPayments] = useState<PersonelPayments[]>([]);
 
   // State for filters
   const [showFilters, setShowFilters] = useState(false);
@@ -52,6 +50,10 @@ export default function PersonnelModal({
 
   // Loading state
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (selectedPersonnel) setPayments(selectedPersonnel.payments);
+  }, [selectedPersonnel]);
 
   // Apply filters and sorting to payments
   const filteredPayments = useMemo(() => {
@@ -111,36 +113,6 @@ export default function PersonnelModal({
 
     return result;
   }, [payments, dateFilter, minAmount, maxAmount, sortDirection, sortField]);
-
-  // Group payments by month for chart
-  const chartData = useMemo(() => {
-    const monthlyData: Record<string, number> = {};
-
-    // Get last 12 months
-    const today = new Date();
-    for (let i = 0; i < 12; i++) {
-      const monthDate = subMonths(today, i);
-      const monthKey = format(monthDate, "MMM yyyy");
-      monthlyData[monthKey] = 0;
-    }
-
-    // Sum payments by month
-    payments.forEach((payment) => {
-      const paymentDate = new Date(payment.date);
-      // Only include payments from the last 12 months
-      if (paymentDate >= subMonths(today, 12)) {
-        const monthKey = format(paymentDate, "MMM yyyy");
-        if (monthlyData[monthKey] !== undefined) {
-          monthlyData[monthKey] += payment.price;
-        }
-      }
-    });
-
-    // Convert to array and sort by date
-    return Object.entries(monthlyData)
-      .map(([month, amount]) => ({ month, amount }))
-      .reverse();
-  }, [payments]);
 
   // Calculate total payments
   const totalPayments = useMemo(() => {
@@ -252,14 +224,6 @@ export default function PersonnelModal({
 
   // If no personnel is selected, show the same layout but with empty fields
   if (!selectedPersonnel) {
-    // Create an empty personnel object to use the same layout
-    const emptyPersonnel = {
-      id: "",
-      name: "",
-      description: "",
-      payments: [],
-    };
-
     // Use the same layout but with the create_personel_data action
     return (
       <div className="modal modal-open">
@@ -368,16 +332,6 @@ export default function PersonnelModal({
                     {formatCurrency(0)}
                   </div>
                   <div className="stat-desc">per payment</div>
-                </div>
-              </div>
-
-              {/* Payments Chart - Empty State */}
-              <div className="bg-base-100 rounded-box shadow p-3">
-                <h4 className="font-medium mb-2">Payments Trend</h4>
-                <div className="h-60 w-full">
-                  <div className="flex items-center justify-center h-full text-gray-500">
-                    No data to display
-                  </div>
                 </div>
               </div>
             </div>
@@ -523,46 +477,6 @@ export default function PersonnelModal({
                     : formatCurrency(0)}
                 </div>
                 <div className="stat-desc">per payment</div>
-              </div>
-            </div>
-
-            {/* Payments Chart */}
-            <div className="bg-base-100 rounded-box shadow p-3">
-              <h4 className="font-medium mb-2">Payments Trend</h4>
-              <div className="h-60 w-full">
-                {chartData.length > 0 ? (
-                  <div className="flex items-end h-48 w-full gap-1 overflow-x-hidden">
-                    {chartData.map((item, index) => {
-                      // Calculate height percentage (max 100%)
-                      const maxAmount = Math.max(
-                        ...chartData.map((d) => d.amount)
-                      );
-                      const heightPercent =
-                        maxAmount > 0
-                          ? Math.max(5, (item.amount / maxAmount) * 100)
-                          : 0;
-
-                      return (
-                        <div
-                          key={index}
-                          className="flex flex-col items-center flex-1"
-                        >
-                          <div
-                            className="bg-primary/80 hover:bg-primary w-full rounded-t-sm transition-all duration-200"
-                            style={{ height: `${heightPercent}%` }}
-                            title={`${item.month}: ${formatCurrency(
-                              item.amount
-                            )}`}
-                          ></div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center h-full text-gray-500">
-                    No data to display
-                  </div>
-                )}
               </div>
             </div>
           </div>

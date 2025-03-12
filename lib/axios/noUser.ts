@@ -1,5 +1,6 @@
 import axios from "axios";
 import { SERVER_URL } from "../core";
+import toast from "react-hot-toast";
 
 export const axiosUser = axios.create({
   baseURL: SERVER_URL,
@@ -21,7 +22,10 @@ axiosUser.interceptors.request.use(
 );
 
 axiosUser.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response.status >= 400) toast.error(response.data);
+    return response;
+  },
   (error) => {
     if (error.response.status === 401) {
       // Handle token expiration, e.g., refresh the token
@@ -42,6 +46,7 @@ axiosUser.interceptors.response.use(
           });
       }
     }
+
     return Promise.reject(error);
   }
 );

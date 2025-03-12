@@ -16,13 +16,9 @@ import {
   Edit,
   Trash2,
 } from "lucide-react";
-import {
-  type services_10cd39Type,
-  useServices_10cd39,
-} from "@/hooks/services/10cd39";
-import { type items_691d50Type, useItems_691d50 } from "@/hooks/items/691d50";
-import { useClients } from "@/hooks/clients/main";
-import {
+import { useServices_10cd39 } from "@/hooks/services/10cd39";
+import { useItems_691d50 } from "@/hooks/items/691d50";
+import type {
   ItemsType,
   OperationType,
   PaymentsType,
@@ -34,6 +30,13 @@ interface VisitProps {
   initial?: OperationType;
   readonly?: boolean;
   setFormData: (newValue: OperationType) => void;
+}
+
+export enum PAYMENT_TYPE {
+  credit_card = 0,
+  debit_card = 1,
+  cash_pay = 2,
+  card_to_card = 3,
 }
 
 export default function VisitCreateForm({
@@ -50,6 +53,7 @@ export default function VisitCreateForm({
     description: "",
     price: 0,
     paid: false,
+    type: PAYMENT_TYPE.credit_card, // Add default payment type
   });
 
   useEffect(() => {
@@ -108,9 +112,13 @@ export default function VisitCreateForm({
   };
 
   const handleNewPaymentChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value, type } = e.target;
+
+    console.log(value);
 
     setNewPayment((prev) => ({
       ...prev,
@@ -119,6 +127,8 @@ export default function VisitCreateForm({
           ? (e.target as HTMLInputElement).checked
           : name === "price"
           ? Number.parseFloat(value)
+          : name === "type"
+          ? (Number(value) as PAYMENT_TYPE)
           : value,
     }));
   };
@@ -224,6 +234,7 @@ export default function VisitCreateForm({
         description: "",
         price: 0,
         paid: false,
+        type: PAYMENT_TYPE.credit_card, // Reset payment type
       });
 
       setEditingPayment(null);
@@ -237,6 +248,7 @@ export default function VisitCreateForm({
       description: payment.description,
       price: payment.price,
       paid: payment.paid,
+      type: payment.type,
     });
     setEditingPayment(payment);
   };
@@ -256,6 +268,7 @@ export default function VisitCreateForm({
         description: "",
         price: 0,
         paid: false,
+        type: PAYMENT_TYPE.credit_card,
       });
     }
   };
@@ -637,6 +650,37 @@ export default function VisitCreateForm({
                   </div>
 
                   <div className="form-control">
+                    <label className="label">
+                      <span className="label-text text-gray-700">
+                        Payment Type
+                      </span>
+                    </label>
+                    <select
+                      disabled={readonly}
+                      name="type"
+                      value={newPayment.type}
+                      onChange={(e) =>
+                        setNewPayment({
+                          ...newPayment,
+                          type: Number(e.target.value) as PAYMENT_TYPE,
+                        })
+                      }
+                      className="select select-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
+                    >
+                      <option value={PAYMENT_TYPE.credit_card}>
+                        Credit Card
+                      </option>
+                      <option value={PAYMENT_TYPE.debit_card}>
+                        Debit Card
+                      </option>
+                      <option value={PAYMENT_TYPE.cash_pay}>Cash</option>
+                      <option value={PAYMENT_TYPE.card_to_card}>
+                        Card to Card
+                      </option>
+                    </select>
+                  </div>
+
+                  <div className="form-control">
                     <label className="label cursor-pointer">
                       <span className="label-text text-gray-700">Paid</span>
                       <input
@@ -676,6 +720,7 @@ export default function VisitCreateForm({
                         <th className="font-medium">Description</th>
                         <th className="font-medium">Amount</th>
                         <th className="font-medium">Status</th>
+                        <th className="font-medium">Type</th>
                         {!readonly && <th className="font-medium">Actions</th>}
                       </tr>
                     </thead>
@@ -707,6 +752,11 @@ export default function VisitCreateForm({
                                   "Unpaid"
                                 )}
                               </div>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="badge bg-blue-50 text-blue-600 border-0">
+                              {PAYMENT_TYPE[payment.type]}
                             </div>
                           </td>
                           {!readonly && (

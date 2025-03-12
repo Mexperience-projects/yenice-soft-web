@@ -13,27 +13,24 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
-import Services_10cd39_create from "@/components/services/10cd39_create";
 import { usePersonel_e02ed2 } from "@/hooks/personel/e02ed2";
 import { useTranslation } from "react-i18next";
+import FormModal from "./(modals)/form";
+import { useItems_691d50 } from "@/hooks/items/691d50";
 
 export default function ServicesPage() {
   const { t } = useTranslation();
 
-  const {
-    get_services_list_list,
-    create_services_data,
-    update_services_data,
-    delete_services_data,
-    services_list,
-  } = useServices_10cd39();
-  const { get_personel_list_list } = usePersonel_e02ed2();
+  const { get_services_list_list, delete_services_data, services_list } =
+    useServices_10cd39();
+  const { get_personel_list_list, personel_list } = usePersonel_e02ed2();
+  const { get_items_list_list, items_list } = useItems_691d50();
 
   const [servicesModal, setServicesModal] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "update">("create");
-  const [selectedService, setSelectedService] = useState<ServicesType | null>(
-    null
-  );
+  const [selectedService, setSelectedService] = useState<
+    ServicesType | undefined
+  >();
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteModal, setDeleteModal] = useState(false);
   const [serviceToDelete, setServiceToDelete] = useState<number | null>(null);
@@ -41,6 +38,7 @@ export default function ServicesPage() {
   useEffect(() => {
     get_services_list_list();
     get_personel_list_list();
+    get_items_list_list();
   }, []);
 
   const handleEdit = (service: ServicesType) => {
@@ -63,7 +61,7 @@ export default function ServicesPage() {
   };
 
   const handleAddNew = () => {
-    setSelectedService(null);
+    setSelectedService(undefined);
     setModalMode("create");
     setServicesModal(true);
   };
@@ -266,44 +264,13 @@ export default function ServicesPage() {
         </div>
       </div>
 
-      {/* Create/Update Modal */}
-      <Modal isOpen={servicesModal} onClose={() => setServicesModal(false)}>
-        <div className="p-6">
-          <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
-            <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            {modalMode === "create"
-              ? t("services.addNewService")
-              : t("services.editService")}
-          </h3>
-          <form
-            action={(formData) => {
-              if (selectedService) update_services_data(formData);
-              else create_services_data(formData);
-              setServicesModal(false);
-            }}
-          >
-            <input type="hidden" name="id" value={selectedService?.id} />
-            <Services_10cd39_create />
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                type="button"
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
-                onClick={() => setServicesModal(false)}
-              >
-                {t("common.cancel")}
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
-              >
-                {modalMode === "create"
-                  ? t("services.createService")
-                  : t("services.updateService")}
-              </button>
-            </div>
-          </form>
-        </div>
-      </Modal>
+      <FormModal
+        isOpen={servicesModal}
+        onClose={() => setServicesModal(false)}
+        selectedService={selectedService}
+        personnel={personel_list}
+        items={items_list}
+      />
 
       {/* Delete Modal */}
       <Modal isOpen={deleteModal} onClose={() => setDeleteModal(false)}>

@@ -3,10 +3,8 @@ export interface ServicesType {
   name: string;
   price: number;
   description: string;
-  personel?: PersonelType;
-  items: number;
-  personel_fixed_fee: number;
-  personel_precent_fee: number;
+  personel: PersonelType[];
+  items: Service_itemsType[];
 }
 
 export interface PersonelPayments {
@@ -76,11 +74,19 @@ export interface Visit_itemType {
   visit: number;
 }
 
+export enum PAYMENT_TYPE {
+  credit_card,
+  debit_card,
+  cash_pay,
+  card_to_card,
+}
+
 export interface Visit_paymentType {
   id: number;
   visit: number[];
   price: number;
   paid: boolean;
+  type: PAYMENT_TYPE;
 }
 
 export interface PaymentsType {
@@ -91,4 +97,5 @@ export interface PaymentsType {
   paid: boolean;
   visit?: VisitType;
   description: string;
+  type: PAYMENT_TYPE;
 }

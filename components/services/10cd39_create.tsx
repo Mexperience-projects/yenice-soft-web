@@ -208,7 +208,7 @@ export default function ServicesUpdateForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="card bg-base-100">
+    <div className="card bg-base-100">
       <div className="card-body">
         <h2 className="card-title text-lg font-bold mb-4">
           {initialData
@@ -607,6 +607,6 @@ export default function ServicesUpdateForm({
           ></div>
         </div>
       )}
-    </form>
+    </div>
   );
 }
