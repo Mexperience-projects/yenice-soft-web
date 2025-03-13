@@ -23,8 +23,10 @@ import type {
   OperationType,
   PaymentsType,
   ServicesType,
+  PersonelType,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { usePersonel_e02ed2 } from "@/hooks/personel/e02ed2";
 
 interface VisitProps {
   initial?: OperationType;
@@ -73,18 +75,29 @@ export default function VisitCreateForm({
 
   const [serviceSearch, setServiceSearch] = useState("");
   const [itemSearch, setItemSearch] = useState("");
+  const [personelSearch, setPersonelSearch] = useState("");
 
   const [showServiceDropdown, setShowServiceDropdown] = useState(false);
   const [showItemDropdown, setShowItemDropdown] = useState(false);
+  const [showPersonelDropdown, setShowPersonelDropdown] = useState(false);
 
   const serviceDropdownRef = useRef<HTMLDivElement>(null);
   const itemDropdownRef = useRef<HTMLDivElement>(null);
+  const personelDropdownRef = useRef<HTMLDivElement>(null);
   const { services_list } = useServices_10cd39();
   const { items_list } = useItems_691d50();
+  const { personel_list } = usePersonel_e02ed2();
 
   // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      if (
+        personelDropdownRef.current &&
+        !personelDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowPersonelDropdown(false);
+      }
+      // Keep the existing code for other dropdowns
       if (
         serviceDropdownRef.current &&
         !serviceDropdownRef.current.contains(event.target as Node)
@@ -151,9 +164,42 @@ export default function VisitCreateForm({
         ],
       };
     });
+
+    service.items.forEach((item) => {
+      setFormData((prev) => {
+        if (!prev) return;
+        // Check if item is already selected
+        const foundedItem = prev.items.find((i) => item.item.id === i.id);
+
+        if (foundedItem) {
+          // Remove item if already selected
+          return {
+            ...prev,
+            items: [
+              ...prev.items.filter((i) => item.item.id !== i.id),
+              { ...foundedItem, count: foundedItem.count + item.count },
+            ],
+          };
+        } else {
+          // Add item with default quantity of 1
+          return {
+            ...prev,
+            items: [
+              ...prev.items,
+              {
+                id: item.id,
+                count: item.count,
+                visit: -1,
+                item: item.item,
+              },
+            ],
+          };
+        }
+      });
+    });
   };
 
-  const handleItemSelect = (item_id: ItemsType) => {
+  const handleItemSelect = (item_id: ItemsType, count = 1) => {
     if (!formData) return;
     setFormData((prev) => {
       if (!prev) return;
@@ -164,7 +210,7 @@ export default function VisitCreateForm({
       if (existingItemIndex !== -1) {
         // Remove item if already selected
         const updatedItems = [...prev.items];
-        updatedItems.splice(existingItemIndex, 1);
+        updatedItems.splice(existingItemIndex, count);
         return { ...prev, items: updatedItems };
       } else {
         // Add item with default quantity of 1
@@ -174,7 +220,7 @@ export default function VisitCreateForm({
             ...prev.items,
             {
               id: (prev.items.length + 1) * -1,
-              count: 1,
+              count: count,
               visit: -1,
               item: item_id,
             },
@@ -307,6 +353,21 @@ export default function VisitCreateForm({
       0
     );
   };
+
+  const handlePersonelSelect = (personel: PersonelType) => {
+    if (!formData) return;
+    setFormData({
+      ...formData,
+      personel: personel,
+    });
+    setShowPersonelDropdown(false);
+  };
+
+  const filteredPersonel = personel_list
+    ? personel_list.filter((personel) =>
+        personel.name.toLowerCase().includes(personelSearch.toLowerCase())
+      )
+    : [];
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
@@ -448,7 +509,7 @@ export default function VisitCreateForm({
                 }}
               >
                 <span className="text-sm">
-                  {formData && formData.service.length > 0
+                  {formData && formData.items.length > 0
                     ? `${formData.service.length} item(s) selected`
                     : "Select items"}
                 </span>
@@ -580,6 +641,93 @@ export default function VisitCreateForm({
               className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-secondary focus:ring-secondary"
               required
             />
+          </div>
+
+          {/* Personnel Field */}
+          <div className="form-control" ref={personelDropdownRef}>
+            <label className="label">
+              <span className="label-text flex items-center gap-2 text-gray-700 font-medium">
+                <div className="bg-primary/10 p-1 rounded-full">
+                  <Briefcase className="h-4 w-4 text-primary" />
+                </div>
+                Personnel
+              </span>
+            </label>
+            <div className="relative w-full">
+              <div
+                className={cn(
+                  "input input-bordered flex justify-between items-center",
+                  "w-full bg-gray-50 border-gray-200",
+                  {
+                    "cursor-pointer": !readonly,
+                    "bg-gray-100 text-gray-500": readonly,
+                  }
+                )}
+                onClick={() => {
+                  if (!readonly) setShowPersonelDropdown(true);
+                }}
+              >
+                <span className="text-sm">
+                  {formData?.personel
+                    ? formData.personel.name
+                    : "Select personnel"}
+                </span>
+                <Search className="h-4 w-4 opacity-50" />
+              </div>
+
+              {showPersonelDropdown && (
+                <div className="absolute z-30 bg-white shadow-lg rounded-lg w-full mt-1 border border-gray-100">
+                  <div className="p-2">
+                    <div className="flex items-center border-b border-gray-100 pb-2">
+                      <Search className="h-4 w-4 mr-2 opacity-50" />
+                      <input
+                        disabled={readonly}
+                        type="text"
+                        placeholder="Search personnel..."
+                        className="input input-sm input-ghost w-full focus:outline-none"
+                        value={personelSearch}
+                        onChange={(e) => setPersonelSearch(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
+                    <ul className="menu menu-compact py-2 max-h-60 overflow-y-auto">
+                      {filteredPersonel.length === 0 ? (
+                        <li className="disabled text-center py-2 text-sm opacity-50">
+                          No personnel found
+                        </li>
+                      ) : (
+                        filteredPersonel.map((personel) => (
+                          <li key={personel.id}>
+                            <a
+                              className={`flex items-center ${
+                                formData?.personel?.id === personel.id
+                                  ? "bg-primary/10 text-primary"
+                                  : ""
+                              }`}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handlePersonelSelect(personel);
+                              }}
+                            >
+                              <span>{personel.name}</span>
+                            </a>
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {formData?.personel && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                <div className="badge bg-primary/10 text-primary gap-1 border-0">
+                  {formData.personel.name}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Payments Section - Full Width */}

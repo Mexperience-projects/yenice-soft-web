@@ -9,7 +9,6 @@ import {
   PencilIcon,
   PlusIcon,
   TrashIcon,
-  FilterIcon,
   ChevronDownIcon,
   ChevronUpIcon,
 } from "lucide-react";
@@ -306,6 +305,23 @@ export default function PersonnelModal({
                         required
                       />
                     </div>
+                    <div className="form-control w-full">
+                      <label className="label py-1">
+                        <span className="label-text text-gray-700 font-medium">
+                          {t("common.price")}
+                        </span>
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="100"
+                        placeholder="20 %"
+                        name="precent"
+                        className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
+                        required
+                      />
+                    </div>
                     <input
                       type="hidden"
                       name="payments"
@@ -400,7 +416,7 @@ export default function PersonnelModal({
         {/* Two-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Left Column - Chart and Stats */}
-          <div className="p-4 border-t lg:border-t-0 lg:border-r">
+          <div className="p-4 lg:border-r">
             {/* Personnel Details Section */}
             <div className="mt-2">
               <h4 className="font-semibold mb-2">Details</h4>
@@ -452,6 +468,25 @@ export default function PersonnelModal({
                       required
                     />
                   </div>
+                  <div className="form-control">
+                    <label className="label py-1">
+                      <span className="label-text text-sm">
+                        {t("common.price")}
+                      </span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max="100"
+                      placeholder="20 %"
+                      name="precent"
+                      defaultValue={selectedPersonnel.precent}
+                      onChange={(e) => setPaymentPrice(e.target.value)}
+                      className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
+                      required
+                    />
+                  </div>
                 </div>
               </form>
             </div>
@@ -482,100 +517,22 @@ export default function PersonnelModal({
           </div>
 
           {/* Right Column - Payments List */}
-          <div className="p-4 border-t">
+          <div className="p-4">
             <div className="flex justify-between items-center mb-3">
               <h4 className="font-semibold">Payments</h4>
 
               <div className="flex gap-2">
                 <button
                   onClick={() => setIsAddingPayment(true)}
-                  className="btn btn-sm text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-none"
+                  className="btn btn-sm text-white enabled:bg-gradient-to-r from-primary 
+                  to-secondary hover:from-primary/90 hover:to-secondary/90 border-none"
                   disabled={isAddingPayment}
                 >
                   <PlusIcon className="h-4 w-4 mr-1" />
                   Add Payment
                 </button>
-
-                <button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className={`btn btn-sm ${
-                    showFilters ? "btn-primary" : "btn-outline"
-                  }`}
-                >
-                  <FilterIcon className="h-4 w-4 mr-1" />
-                  {t("common.filter")}
-                </button>
               </div>
             </div>
-
-            {/* Filters */}
-            {showFilters && (
-              <div className="bg-base-200 p-3 rounded-lg mb-3">
-                <div className="flex justify-between items-center mb-2">
-                  <h5 className="font-medium text-sm">{t("common.filters")}</h5>
-                  <button
-                    onClick={resetFilters}
-                    className="btn btn-xs btn-ghost"
-                  >
-                    {t("common.resetFilters")}
-                  </button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <div className="form-control">
-                    <label className="label py-1">
-                      <span className="label-text text-sm">
-                        {t("personnel.dateRange")}
-                      </span>
-                    </label>
-                    <select
-                      className="select select-bordered select-sm w-full"
-                      value={dateFilter}
-                      onChange={(e) => setDateFilter(e.target.value)}
-                    >
-                      <option value="all">{t("personnel.allTime")}</option>
-                      <option value="1month">{t("personnel.lastMonth")}</option>
-                      <option value="3months">
-                        {t("personnel.last3Months")}
-                      </option>
-                      <option value="6months">
-                        {t("personnel.last6Months")}
-                      </option>
-                      <option value="1year">{t("personnel.lastYear")}</option>
-                    </select>
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label py-1">
-                      <span className="label-text text-sm">
-                        {t("personnel.minAmount")}
-                      </span>
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="0.00"
-                      className="input input-bordered input-sm w-full"
-                      value={minAmount}
-                      onChange={(e) => setMinAmount(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label py-1">
-                      <span className="label-text text-sm">
-                        {t("personnel.maxAmount")}
-                      </span>
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="0.00"
-                      className="input input-bordered input-sm w-full"
-                      value={maxAmount}
-                      onChange={(e) => setMaxAmount(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Payment Form */}
             {isAddingPayment && (
@@ -586,7 +543,7 @@ export default function PersonnelModal({
                       <div className="form-control">
                         <label className="label py-1">
                           <span className="label-text text-sm">
-                            {t("personnel.amount")}
+                            {t("common.price")}
                           </span>
                         </label>
                         <input
@@ -602,7 +559,7 @@ export default function PersonnelModal({
                       <div className="form-control">
                         <label className="label py-1">
                           <span className="label-text text-sm">
-                            {t("personnel.date")}
+                            {t("common.date")}
                           </span>
                         </label>
                         <input

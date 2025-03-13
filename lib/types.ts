@@ -14,6 +14,7 @@ export interface PersonelPayments {
 }
 
 export interface PersonelType {
+  precent: number;
   id: number;
   name: string;
   description: string;
@@ -35,6 +36,7 @@ export interface OperationType {
   datetime: Date;
   items: Visit_itemType[];
   payments: PaymentsType[];
+  personel: PersonelType;
 }
 
 export interface VisitType {
@@ -62,7 +64,7 @@ export interface ItemsType {
 
 export interface Service_itemsType {
   id: number;
-  item: number[];
+  item: ItemsType;
   service: number[];
   count: number;
 }

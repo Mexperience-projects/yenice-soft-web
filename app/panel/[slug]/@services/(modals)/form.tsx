@@ -48,7 +48,7 @@ export default function ServiceModal({
       setSelectedPersonnel(selectedService.personel.map((p) => p.id));
       setServiceItems(
         selectedService.items.map((item) => ({
-          item_id: item.item[0],
+          item_id: item.item.id,
           count: item.count,
         }))
       );
