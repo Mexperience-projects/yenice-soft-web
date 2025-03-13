@@ -75,7 +75,7 @@ export function DateRangePicker({
       </div>
 
       {isOpen && (
-        <div className="dropdown-content z-[50] bg-base-100 shadow-xl rounded-box p-4 w-auto">
+        <div className="dropdown-content z-[100000000] bg-base-100 shadow-xl rounded-box p-4 w-auto">
           <DayPicker
             mode="range"
             defaultMonth={date?.from}
