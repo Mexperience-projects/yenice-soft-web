@@ -28,12 +28,12 @@ export default function LayoutMenu() {
   const user = useAppSelector((store) => store.auth.user);
 
   const menuItems = [
-    {
-      href: "/panel/analytics",
-      label: t("menu.analytics"),
-      icon: ClipboardList,
-      permission: USER_PERMISSIONS.ANALYSES,
-    },
+    // {
+    //   href: "/panel/analytics",
+    //   label: t("menu.analytics"),
+    //   icon: ClipboardList,
+    //   permission: USER_PERMISSIONS.ANALYSES,
+    // },
     {
       href: "/panel/visit",
       label: t("menu.visits"),

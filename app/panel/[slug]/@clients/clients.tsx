@@ -36,11 +36,9 @@ export default function ClientManagement() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterGender, setFilterGender] = useState<number | "all">("all");
   const [currentTab, setCurrentTab] = useState("all");
-  const [birthdate, setBirthdate] = useState<Date | undefined>(undefined);
 
   useEffect(() => {
     get_clients_list_list();
@@ -326,16 +324,6 @@ export default function ClientManagement() {
                         <td className="px-6 py-4 text-right">
                           <div className="flex gap-2 justify-end">
                             <button
-                              className="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                              onClick={() => {
-                                setSelectedClient(client);
-                                setIsViewModalOpen(true);
-                              }}
-                              title={t("common.view")}
-                            >
-                              <Eye className="h-4 w-4 text-gray-600" />
-                            </button>
-                            <button
                               className="p-1.5 bg-secondary/10 hover:bg-secondary/20 rounded-lg transition-colors"
                               onClick={() => {
                                 setSelectedClient(client);
@@ -446,110 +434,6 @@ export default function ClientManagement() {
               </button>
             </div>
           </form>
-        </div>
-      </Modal>
-
-      {/* View Client Modal */}
-      <Modal isOpen={isViewModalOpen} onClose={() => setIsViewModalOpen(false)}>
-        <div className="p-6">
-          <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
-            <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            {t("clients.clientDetails")}
-          </h3>
-
-          {selectedClient && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                    <UserCircle className="h-4 w-4 text-primary" />
-                    {t("clients.personalInformation")}
-                  </h4>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">
-                        {t("clients.name")}
-                      </p>
-                      <p className="font-medium text-gray-800">
-                        {selectedClient.name}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">
-                        {t("clients.nationalId")}
-                      </p>
-                      <p className="font-medium text-gray-800">
-                        {selectedClient.nationalCo}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">
-                        {t("clients.birthdate")}
-                      </p>
-                      <p className="font-medium text-gray-800">
-                        {formatBirthdate(selectedClient.birthdate)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">
-                        {t("clients.gender")}
-                      </p>
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          selectedClient.gender === 1
-                            ? "bg-primary/10 text-primary"
-                            : "bg-secondary/10 text-secondary"
-                        }`}
-                      >
-                        {selectedClient.gender === 1
-                          ? t("clients.male")
-                          : t("clients.female")}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-secondary" />
-                    {t("clients.visitHistory")}
-                  </h4>
-                  <div className="flex items-center justify-center h-32 text-gray-500 text-sm">
-                    {t("clients.visitHistoryDisplay")}
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                  <CreditCard className="h-4 w-4 text-primary" />
-                  {t("clients.paymentHistory")}
-                </h4>
-                <div className="flex items-center justify-center h-32 text-gray-500 text-sm">
-                  {t("clients.paymentHistoryDisplay")}
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="flex justify-end gap-3 mt-6">
-            <button
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
-              onClick={() => setIsViewModalOpen(false)}
-            >
-              {t("common.close")}
-            </button>
-            <button
-              className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
-              onClick={() => {
-                setIsViewModalOpen(false);
-                setIsUpdateModalOpen(true);
-              }}
-            >
-              <FileEdit className="h-4 w-4 mr-2 inline" />
-              {t("common.edit")}
-            </button>
-          </div>
         </div>
       </Modal>
 

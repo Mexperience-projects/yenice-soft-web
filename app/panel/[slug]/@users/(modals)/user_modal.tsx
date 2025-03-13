@@ -82,7 +82,10 @@ export default function UserModal({
             <h4 className="font-semibold mb-2">{t("user.details")}</h4>
             <form
               id="update-user-form"
-              action={create_user_data}
+              action={(f) => {
+                create_user_data(f);
+                onClose();
+              }}
               className="space-y-3"
             >
               <input type="hidden" name="id" value={selectedUser?.id} />
