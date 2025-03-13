@@ -5,15 +5,15 @@ import {
   Calendar,
   DollarSign,
   Search,
-  Filter,
   Package,
   CreditCard,
   Eye,
   Globe,
+  SlidersHorizontal,
+  X,
 } from "lucide-react";
 import { format, isWithinInterval } from "date-fns";
 import type { DateRange } from "react-day-picker";
-import { DateRangePicker } from "@/components/analiz/date-range-picker";
 import { useTranslation } from "react-i18next";
 import type {
   PersonelType,
@@ -22,6 +22,7 @@ import type {
   Visit_itemType,
   PaymentsType,
   OperationType,
+  ItemsType,
 } from "@/lib/types";
 import { LowStockAlert } from "@/components/analiz/low-stock-alert";
 
@@ -46,28 +47,32 @@ export default function Analytics() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [animateIn, setAnimateIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
+  const [activeFilters, setActiveFilters] = useState(0);
 
   const [activeTab, setActiveTab] = useState("services");
 
   // Use our custom hooks with Redux
   const { loading: personnelLoading, get_personel_list_list } =
     usePersonel_e02ed2();
-
   const { loading: servicesLoading, get_services_list_list } =
     useServices_10cd39();
-
   const { get_visit_list_list } = useVisits();
-
   const { loading: paymentsLoading, get_payments_list_list } = usePayments();
-
   const { loading: itemsLoading, get_items_list_list } = useItems_691d50();
 
   // Get data from Redux store
-  const personel_list = useAppSelector((store) => store.personels);
-  const services_list = useAppSelector((store) => store.services);
-  const visit_list = useAppSelector((store) => store.visits);
-  const payments_list = useAppSelector((store) => store.payments);
-  const items_list = useAppSelector((store) => store.items);
+  const personel_list = useAppSelector(
+    (store) => store.personels
+  ) as PersonelType[];
+  const services_list = useAppSelector(
+    (store) => store.services
+  ) as ServicesType[];
+  const visit_list = useAppSelector((store) => store.visits) as VisitType[];
+  const payments_list = useAppSelector(
+    (store) => store.payments
+  ) as PaymentsType[];
+  const items_list = useAppSelector((store) => store.items) as ItemsType[];
 
   // Fetch data on component mount
   useEffect(() => {
@@ -111,6 +116,15 @@ export default function Analytics() {
     fetchData();
   }, []);
 
+  // Count active filters
+  useEffect(() => {
+    let count = 0;
+    if (searchQuery) count++;
+    if (dateRange?.from && dateRange?.to) count++;
+    if (selectedService !== "all") count++;
+    setActiveFilters(count);
+  }, [searchQuery, dateRange, selectedService]);
+
   // Add console logs to help diagnose the issue
   useEffect(() => {
     if (personel_list.length > 0) {
@@ -136,7 +150,7 @@ export default function Analytics() {
         visit.operations.forEach((operation) => {
           if (operation.items) {
             operation.items.forEach((item) => {
-              allVisitItems.push(item as Visit_itemType);
+              allVisitItems.push(item);
             });
           }
         });
@@ -186,7 +200,7 @@ export default function Analytics() {
         selectedService === "all" ||
         services_list.some(
           (service) =>
-            service.personel?.id === person.id &&
+            service.personel?.some((p) => p.id === person.id) &&
             (selectedService === "all" ||
               service.id.toString() === selectedService)
         );
@@ -200,7 +214,9 @@ export default function Analytics() {
             visit.operations.some(
               (op) =>
                 op.service &&
-                op.service.some((s) => s.personel?.id === person.id)
+                op.service.some(
+                  (s) => s.personel?.some((p) => p.id === person.id)
+                )
             )
         );
 
@@ -258,47 +274,49 @@ export default function Analytics() {
 
         // Find the personnel associated with each service in this operation
         operation.service.forEach((service) => {
-          if (!service.personel || !service.personel.id) return;
+          if (!service.personel) return;
 
-          const personnelId = service.personel.id;
+          service.personel.forEach((personel) => {
+            const personnelId = personel.id;
 
-          // Initialize metrics for this personnel if not already done
-          if (!personnelMetrics.has(personnelId)) {
-            personnelMetrics.set(personnelId, {
-              visitCount: 0,
-              itemCount: 0,
-              revenue: 0,
-              visits: [],
-              visitItems: [],
-              payments: [],
-            });
-          }
+            // Initialize metrics for this personnel if not already done
+            if (!personnelMetrics.has(personnelId)) {
+              personnelMetrics.set(personnelId, {
+                visitCount: 0,
+                itemCount: 0,
+                revenue: 0,
+                visits: [],
+                visitItems: [],
+                payments: [],
+              });
+            }
 
-          const metrics = personnelMetrics.get(personnelId);
+            const metrics = personnelMetrics.get(personnelId);
 
-          // Count this as a visit for the personnel
-          if (!metrics.visits.some((v) => v.id === visit.id)) {
-            metrics.visits.push(visit);
-            metrics.visitCount++;
-          }
+            // Count this as a visit for the personnel
+            if (!metrics.visits.some((v: VisitType) => v.id === visit.id)) {
+              metrics.visits.push(visit);
+              metrics.visitCount++;
+            }
 
-          // Add items used in this operation
-          if (operation.items) {
-            operation.items.forEach((item) => {
-              metrics.visitItems.push(item);
-              metrics.itemCount += item.count || 1;
-            });
-          }
+            // Add items used in this operation
+            if (operation.items) {
+              operation.items.forEach((item) => {
+                metrics.visitItems.push(item);
+                metrics.itemCount += item.count || 1;
+              });
+            }
 
-          // Add revenue from this operation
-          if (operation.payments) {
-            operation.payments.forEach((payment) => {
-              if (payment.personel_id === personnelId) {
-                metrics.payments.push(payment);
-                metrics.revenue += payment.price || 0;
-              }
-            });
-          }
+            // Add revenue from this operation
+            if (operation.payments) {
+              operation.payments.forEach((payment) => {
+                if (payment.personel_id?.includes(personnelId)) {
+                  metrics.payments.push(payment);
+                  metrics.revenue += payment.price || 0;
+                }
+              });
+            }
+          });
         });
       });
     });
@@ -319,7 +337,7 @@ export default function Analytics() {
 
         // Get services provided by this personnel
         const personServices = services_list.filter(
-          (service) => service.personel?.id === person.id
+          (service) => service.personel?.some((p) => p.id === person.id)
         );
 
         return {
@@ -362,6 +380,19 @@ export default function Analytics() {
     i18n.changeLanguage(newLang);
   };
 
+  // Reset all filters
+  const resetFilters = () => {
+    setSearchQuery("");
+    setSelectedService("all");
+    setDateRange(undefined);
+  };
+
+  // Apply filters and close filter section
+  const applyFilters = () => {
+    setShowFilters(false);
+    // Filters are already applied reactively through state changes
+  };
+
   // Check if any data is still loading
   const isDataLoading =
     personnelLoading || servicesLoading || paymentsLoading || itemsLoading;
@@ -398,87 +429,149 @@ export default function Analytics() {
             </p>
           </div>
 
-          <button
-            className="btn btn-outline btn-sm gap-2 bg-gradient-to-r from-primary to-secondary text-white border-none hover:opacity-90"
-            onClick={toggleLanguage}
+          <div className="flex items-center gap-2">
+            <button
+              className={`btn btn-outline btn-sm gap-2 relative ${
+                activeFilters > 0 ? "border-primary text-primary" : ""
+              }`}
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              {t("analytics.filters")}
+              {activeFilters > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  {activeFilters}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Filters Section */}
+        {showFilters && (
+          <div
+            className={`bg-white shadow-md rounded-lg p-4 transition-all duration-300 ease-in-out ${
+              showFilters
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 -translate-y-4 pointer-events-none"
+            }`}
           >
-            <Globe className="h-4 w-4" />
-            {i18n.language === "en" ? "Türkçe" : "English"}
-          </button>
-        </div>
-
-        {/* Filters */}
-        <div
-          className={`flex flex-col md:flex-row gap-4 transition-all duration-500 ease-out ${
-            animateIn ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
-          }`}
-          style={{ transitionDelay: "100ms" }}
-        >
-          <div className="relative flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/50" />
-              <input
-                type="text"
-                placeholder={t("analytics.searchPersonnel")}
-                className="input input-bordered w-full pl-10"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold text-lg">
+                {t("analytics.filterData")}
+              </h3>
+              <button
+                className="btn btn-ghost btn-sm p-1 h-8 w-8"
+                onClick={() => setShowFilters(false)}
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
-          </div>
 
-          <DateRangePicker
-            date={dateRange}
-            onDateChange={setDateRange}
-            placeholder={t("analytics.filterByDate")}
-          />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  {t("analytics.searchPersonnel")}
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/50" />
+                  <input
+                    type="text"
+                    placeholder={t("analytics.searchPersonnel")}
+                    className="input input-bordered w-full pl-10"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              </div>
 
-          <div className="dropdown dropdown-end w-full md:w-auto">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-outline w-full md:w-[200px] justify-between"
-            >
-              <span className="truncate">
-                {selectedService === "all"
-                  ? t("analytics.allServices")
-                  : services_list.find(
-                      (s) => s.id.toString() === selectedService
-                    )?.name || t("analytics.filterByService")}
-              </span>
-              <Filter className="h-4 w-4 opacity-50" />
-            </div>
-            <ul
-              tabIndex={0}
-              className="dropdown-content z-[50] menu p-2 shadow bg-base-100 rounded-box w-full md:w-[200px] max-h-60 overflow-auto"
-            >
-              <li>
-                <a
-                  className={selectedService === "all" ? "active" : ""}
-                  onClick={() => setSelectedService("all")}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  {t("analytics.filterByDate")}
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <div className="relative">
+                    <input
+                      type="date"
+                      className="input input-bordered w-full pl-12"
+                      value={
+                        dateRange?.from
+                          ? format(dateRange.from, "yyyy-MM-dd")
+                          : ""
+                      }
+                      onChange={(e) => {
+                        const fromDate = e.target.value
+                          ? new Date(e.target.value)
+                          : undefined;
+                        setDateRange((prev) => ({
+                          from: fromDate,
+                          to: prev?.to,
+                        }));
+                      }}
+                      placeholder="From"
+                    />
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-base-content/50 text-sm">
+                      {!dateRange?.from && "From"}
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      className="input input-bordered w-full  pl-10"
+                      value={
+                        dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : ""
+                      }
+                      onChange={(e) => {
+                        const toDate = e.target.value
+                          ? new Date(e.target.value)
+                          : undefined;
+                        setDateRange((prev) => ({
+                          from: prev?.from,
+                          to: toDate,
+                        }));
+                      }}
+                      placeholder="To"
+                    />
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-base-content/50 text-sm">
+                      {!dateRange?.to && "To"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  {t("analytics.filterByService")}
+                </label>
+                <select
+                  className="select select-bordered w-full"
+                  value={selectedService}
+                  onChange={(e) => setSelectedService(e.target.value)}
                 >
-                  {t("analytics.allServices")}
-                </a>
-              </li>
-              {services_list.map((service) => (
-                <li key={service.id}>
-                  <a
-                    className={
-                      selectedService === service.id.toString() ? "active" : ""
-                    }
-                    onClick={() => setSelectedService(service.id.toString())}
-                  >
-                    {service.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
+                  <option value="all">{t("analytics.allServices")}</option>
+                  {services_list.map((service) => (
+                    <option key={service.id} value={service.id.toString()}>
+                      {service.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex justify-end mt-4 gap-2">
+              <button className="btn btn-outline btn-sm" onClick={resetFilters}>
+                {t("analytics.resetFilters")}
+              </button>
+              <button className="btn btn-primary btn-sm" onClick={applyFilters}>
+                {t("analytics.applyFilters")}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Summary Cards */}
         <div
-          className={`grid gap-6 md:grid-cols-4 transition-all duration-500 ease-out ${
+          className={`grid gap-6 md:grid-cols-4 transition-all duration-500 sticky ease-out ${
             animateIn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
           style={{ transitionDelay: "200ms" }}
@@ -574,12 +667,16 @@ export default function Analytics() {
           <div className="card bg-white shadow-lg border border-gray-100">
             <div className="card-body">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="card-title text-lg font-bold">
-                  {t("analytics.personnelPerformance")}
-                </h2>
-
-                {/* Low Stock Alert Component */}
-                <LowStockAlert items={items_list} threshold={10} />
+                <div className="flex items-center gap-2">
+                  <h2 className="card-title text-lg font-bold">
+                    {t("analytics.personnelPerformance")}
+                  </h2>
+                  {filteredPersonnel.length !== personel_list.length && (
+                    <span className="badge badge-primary">
+                      {filteredPersonnel.length} / {personel_list.length}
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="overflow-x-auto">
@@ -745,9 +842,6 @@ export default function Analytics() {
                                 {t("analytics.itemsRequired")}
                               </th>
                               <th className="text-right">
-                                {t("analytics.fixedFee")}
-                              </th>
-                              <th className="text-right">
                                 {t("analytics.percentFee")}
                               </th>
                             </tr>
@@ -756,7 +850,7 @@ export default function Analytics() {
                             {!(selectedPersonnel as any).services?.length ? (
                               <tr>
                                 <td
-                                  colSpan={5}
+                                  colSpan={4}
                                   className="text-center py-4 text-base-content/50"
                                 >
                                   {t("analytics.noServicesFound")}
@@ -764,24 +858,28 @@ export default function Analytics() {
                               </tr>
                             ) : (
                               (selectedPersonnel as any).services?.map(
-                                (service: ServicesType) => (
-                                  <tr key={service.id}>
-                                    <td>{service.name}</td>
-                                    <td className="text-right">
-                                      ${service.price.toLocaleString()}
-                                    </td>
-                                    <td className="text-right">
-                                      {service.items}
-                                    </td>
-                                    <td className="text-right">
-                                      $
-                                      {service.personel_fixed_fee.toLocaleString()}
-                                    </td>
-                                    <td className="text-right">
-                                      {service.personel_precent_fee}%
-                                    </td>
-                                  </tr>
-                                )
+                                (service: ServicesType) => {
+                                  // Find the personnel in this service
+                                  const personnelInService =
+                                    service.personel?.find(
+                                      (p) => p.id === selectedPersonnel.id
+                                    );
+
+                                  return (
+                                    <tr key={service.id}>
+                                      <td>{service.name}</td>
+                                      <td className="text-right">
+                                        ${service.price.toLocaleString()}
+                                      </td>
+                                      <td className="text-right">
+                                        {service.items?.length || 0}
+                                      </td>
+                                      <td className="text-right">
+                                        {personnelInService?.precent || 0}%
+                                      </td>
+                                    </tr>
+                                  );
+                                }
                               )
                             )}
                           </tbody>
@@ -828,8 +926,10 @@ export default function Analytics() {
                                         op.service &&
                                         op.service.some(
                                           (s) =>
-                                            s.personel?.id ===
-                                            selectedPersonnel.id
+                                            s.personel?.some(
+                                              (p) =>
+                                                p.id === selectedPersonnel.id
+                                            )
                                         )
                                     );
 
@@ -858,8 +958,11 @@ export default function Analytics() {
                                               operation.service
                                                 .filter(
                                                   (s) =>
-                                                    s.personel?.id ===
-                                                    selectedPersonnel.id
+                                                    s.personel?.some(
+                                                      (p) =>
+                                                        p.id ===
+                                                        selectedPersonnel.id
+                                                    )
                                                 )
                                                 .map((s) => s.name)
                                                 .join(", ")) ||
@@ -871,8 +974,9 @@ export default function Analytics() {
                                               operation.payments
                                                 .filter(
                                                   (p) =>
-                                                    p.personel_id ===
-                                                    selectedPersonnel.id
+                                                    p.personel_id?.includes(
+                                                      selectedPersonnel.id
+                                                    )
                                                 )
                                                 .reduce(
                                                   (sum, p) => sum + p.price,
@@ -964,8 +1068,11 @@ export default function Analytics() {
                                           operation.service
                                             .filter(
                                               (s) =>
-                                                s.personel?.id ===
-                                                selectedPersonnel.id
+                                                s.personel?.some(
+                                                  (p) =>
+                                                    p.id ===
+                                                    selectedPersonnel.id
+                                                )
                                             )
                                             .map((s) => s.name)
                                             .join(", ")) ||
