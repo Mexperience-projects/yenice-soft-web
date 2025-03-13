@@ -24,9 +24,9 @@ export interface PersonelType {
 
 export interface UsersType {
   id: number;
-  name: string;
-  description: string;
-  doctorExpense: number;
+  username: string;
+  password?: string;
+  permissions: string[];
 }
 
 export interface OperationType {

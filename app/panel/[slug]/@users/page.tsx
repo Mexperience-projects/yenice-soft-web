@@ -11,29 +11,30 @@ import {
   UserPlus,
   UserCheck,
 } from "lucide-react";
-import type { PersonelType, UsersType } from "@/lib/types";
+import type { UsersType } from "@/lib/types";
 import { useTranslation } from "react-i18next";
 import UserModal from "./(modals)/user_modal";
+import { useuser } from "@/hooks/user/e02ed2";
 
 export default function usersPage() {
   const { t } = useTranslation();
 
   const {
-    get_personel_list_list,
-    create_personel_data,
-    update_personel_data,
-    delete_personel_data,
-    personel_list,
-  } = usePersonel_e02ed2();
+    get_user_list_list,
+    user_list,
+    delete_user_data,
+    update_user_data,
+    create_user_data,
+  } = useuser();
 
   const [activeTab, setActiveTab] = useState<"create" | "update" | "list">(
     "list"
   );
-  const [selectedusers, setSelectedusers] = useState<UsersType | null>(null);
+  const [selectedusers, setSelectedusers] = useState<UsersType | undefined>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    get_personel_list_list();
+    get_user_list_list();
   }, [isModalOpen]);
 
   const openModal = (): void => {
@@ -48,14 +49,14 @@ export default function usersPage() {
     setIsModalOpen(false);
   };
 
-  const handleusersSelect = (users: PersonelType): void => {
+  const handleusersSelect = (users: UsersType): void => {
     setSelectedusers(users);
     setActiveTab("update");
   };
 
-  const handleDeleteusers = async (personel: PersonelType): Promise<void> => {
+  const handleDeleteusers = async (user: UsersType): Promise<void> => {
     if (window.confirm(t("users.deleteConfirm"))) {
-      delete_personel_data(personel.id);
+      delete_user_data(user.id);
       setActiveTab("list");
     }
   };
@@ -82,7 +83,7 @@ export default function usersPage() {
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-secondary">
-                    {personel_list.length}
+                    {user_list.length}
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
@@ -103,7 +104,7 @@ export default function usersPage() {
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-primary">
-                    {personel_list.length}
+                    {user_list.length}
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
@@ -132,7 +133,7 @@ export default function usersPage() {
                 </p>
               </div>
               <button
-                onClick={() => get_personel_list_list()}
+                onClick={() => get_user_list_list()}
                 className="flex items-center justify-center bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full p-3 hover:from-primary/20 hover:to-secondary/20 transition-all duration-300"
               >
                 <RefreshCw className="h-6 w-6 text-secondary" />
@@ -181,16 +182,16 @@ export default function usersPage() {
                 </tr>
               </thead>
               <tbody>
-                {personel_list.map((users, i) => (
+                {user_list.map((users, i) => (
                   <tr
                     key={i}
                     className="bg-white border-b hover:bg-gray-50 transition-colors duration-150"
                   >
                     <td className="px-6 py-4 font-medium text-gray-900">
-                      {users.name}
+                      {users.username}
                     </td>
                     <td className="px-6 py-4 text-gray-700">
-                      {users.description}
+                      {users.permissions.join("-")}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex gap-2 justify-end">
@@ -221,13 +222,15 @@ export default function usersPage() {
 
           {/* Mobile Table Alternative - Visible only on small screens */}
           <div className="md:hidden">
-            {personel_list.map((users, i) => (
+            {user_list.map((users, i) => (
               <div key={i} className="border-b border-gray-100 p-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-medium text-gray-900">{users.name}</h3>
+                    <h3 className="font-medium text-gray-900">
+                      {users.username}
+                    </h3>
                     <p className="text-gray-600 text-sm mt-1">
-                      {users.description}
+                      {users.permissions.join("-")}
                     </p>
                   </div>
                   <div className="dropdown dropdown-end">
@@ -279,7 +282,7 @@ export default function usersPage() {
             ))}
           </div>
 
-          {personel_list.length === 0 && (
+          {user_list.length === 0 && (
             <div className="p-8 text-center">
               <div className="bg-gray-50 p-6 rounded-lg inline-block mb-4">
                 <UserPlus className="h-12 w-12 text-gray-400 mx-auto" />
@@ -304,11 +307,11 @@ export default function usersPage() {
           )}
 
           {/* Table Footer */}
-          {personel_list.length > 0 && (
+          {user_list.length > 0 && (
             <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
               <div className="text-sm text-gray-500">
                 {t("common.showing")}{" "}
-                <span className="font-medium">{personel_list.length}</span>{" "}
+                <span className="font-medium">{user_list.length}</span>{" "}
                 {t("users.usersRecords").toLowerCase()}
               </div>
             </div>
@@ -330,9 +333,9 @@ export default function usersPage() {
       <UserModal
         onClose={() => {
           closeModal();
-          setSelectedusers(null);
+          setSelectedusers(undefined);
         }}
-        selecteduser={selectedusers}
+        selectedUser={selectedusers}
         isOpen={isModalOpen}
       />
     </div>

@@ -364,7 +364,16 @@
     "addFirstusers": "İlk Kullanıcıyı Ekle",
     "deleteConfirm": "Bu kullanıcıyı silmek istediğinizden emin misiniz?"
   },
+
   "user": {
+    "addNewUser": "Yeni Kullanıcı Ekle",
+    "username": "Kullanıcı Adı",
+    "enterUsername": "Kullanıcı adı girin",
+    "password": "Şifre",
+    "enterPassword": "Şifre girin",
+    "permissions": "İzinler",
+    "details": "Kullanıcı Detayları",
+    "leaveBlankToKeepCurrent": "Mevcut şifreyi korumak için boş bırakın",
     "addNewuser": "Yeni Kullanıcı Ekle",
     "saveChanges": "Değişiklikleri Kaydet",
     "fullName": "Tam İsim",

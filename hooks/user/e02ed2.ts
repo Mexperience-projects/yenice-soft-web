@@ -4,17 +4,17 @@ import { axiosUser } from "@/lib/axios/noUser";
 import { useAppDispatch, useAppSelector } from "@/store/HOCs";
 import { setuserss } from "@/store/slice/users";
 
-export type user_e02ed2Type = Pick<UsersType, "id" | "name" | "description">;
+export type userType = Pick<UsersType, "id" | "name" | "description">;
 
-export function useuser_e02ed2() {
+export function useuser() {
   const dispatch = useAppDispatch();
   const [loading, loadingHandler] = useState(false);
   const user_list = useAppSelector((store) => store.users);
 
   const get_user_list_list = async () => {
     loadingHandler(true);
-    const response = await axiosUser.get("/user/");
-    const serverData = response.data.user;
+    const response = await axiosUser.get("/users/");
+    const serverData = response.data.users;
     // set response of server on state
     dispatch(setuserss(serverData));
 
@@ -27,7 +27,7 @@ export function useuser_e02ed2() {
 
     // create backend form
     const data = Object.fromEntries(formData);
-    const response = await axiosUser.post("/user/", data);
+    const response = await axiosUser.post("/users/", data);
     const serverData = response.data.user;
     get_user_list_list();
     // set response of server on state
@@ -37,7 +37,7 @@ export function useuser_e02ed2() {
     loadingHandler(true);
     // create backend form
     const data = Object.fromEntries(formData);
-    const response = await axiosUser.put("/user/", data);
+    const response = await axiosUser.put("/users/", data);
     const serverData = response.data.user;
     // set response of server on state
     get_user_list_list();
@@ -45,7 +45,7 @@ export function useuser_e02ed2() {
   };
   const delete_user_data = async (user_id: UsersType["id"]) => {
     loadingHandler(true);
-    const response = await axiosUser.delete("/user/", {
+    const response = await axiosUser.delete("/users/", {
       params: { user_id },
     });
     const serverData = response.data.user;

@@ -1,96 +1,37 @@
 "use client";
-
-import type React from "react";
 import { useState } from "react";
-import { useuser_e02ed2 } from "@/hooks/user/e02ed2";
+import { useuser } from "@/hooks/user/e02ed2";
 import { useTranslation } from "react-i18next";
-import { UsersType } from "@/lib/types";
+import type { UsersType } from "@/lib/types";
 
 interface UserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selecteduser: UsersType | null;
+  selectedUser?: UsersType;
 }
 
-export default function userModal({
+export default function UserModal({
   isOpen,
   onClose,
-  selecteduser,
+  selectedUser,
 }: UserModalProps) {
   const { t } = useTranslation();
-  const { create_user_data, update_user_data } = useuser_e02ed2();
-
-  // State for payment form
-  const [isAddingPayment, setIsAddingPayment] = useState(false);
-
-  const [paymentPrice, setPaymentPrice] = useState("");
-  const [paymentDate, setPaymentDate] = useState<Date | undefined>(new Date());
-
-  // State for user payments
-
-  // State for filters
-  const [showFilters, setShowFilters] = useState(false);
-  const [dateFilter, setDateFilter] = useState("all");
-  const [minAmount, setMinAmount] = useState("");
-  const [maxAmount, setMaxAmount] = useState("");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const [sortField, setSortField] = useState<"date" | "price">("date");
+  const { create_user_data, update_user_data } = useuser();
 
   // Loading state
   const [isLoading, setIsLoading] = useState(false);
 
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
-  };
-
-  // Handle date change
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value) {
-      setPaymentDate(new Date(e.target.value));
-    }
-  };
-
-  // Toggle sort direction
-  const toggleSort = (field: "date" | "price") => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("desc");
-    }
-  };
-
-  // Reset filters
-  const resetFilters = () => {
-    setDateFilter("all");
-    setMinAmount("");
-    setMaxAmount("");
-  };
-
   if (!isOpen) return null;
 
   // If no user is selected, show the same layout but with empty fields
-  if (!selecteduser) {
-    // Create an empty user object to use the same layout
-    const emptyuser = {
-      id: "",
-      name: "",
-      description: "",
-      payments: [],
-    };
-
-    // Use the same layout but with the create_user_data action
+  if (!selectedUser) {
     return (
       <div className="modal modal-open">
         <div className="modal-box max-w-5xl p-0">
           <div className="p-4 flex justify-between items-center">
             <h3 className="text-xl font-bold text-gray-800 flex items-center">
               <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-              {t("user.addNewuser")}
+              {t("user.addNewUser")}
             </h3>
             <div className="flex gap-2">
               <button
@@ -105,7 +46,7 @@ export default function userModal({
                     {t("common.saving")}
                   </>
                 ) : (
-                  t("user.addNewuser")
+                  t("user.addNewUser")
                 )}
               </button>
               <button
@@ -119,9 +60,9 @@ export default function userModal({
           </div>
 
           <div className="p-4 border-t lg:border-t-0 lg:border-r">
-            {/* user Details Section */}
+            {/* User Details Section */}
             <div className="mt-2">
-              <h4 className="font-semibold mb-2">Details</h4>
+              <h4 className="font-semibold mb-2">{t("user.details")}</h4>
               <form
                 id="create-user-form"
                 action={async (formData) => {
@@ -136,13 +77,13 @@ export default function userModal({
                   <div className="form-control w-full">
                     <label className="label py-1">
                       <span className="label-text text-gray-700 font-medium">
-                        {t("user.fullName")}
+                        {t("user.username")}
                       </span>
                     </label>
                     <input
                       type="text"
-                      name="name"
-                      placeholder={t("user.enterFullName")}
+                      name="username"
+                      placeholder={t("user.enterUsername")}
                       className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
                       required
                     />
@@ -151,22 +92,41 @@ export default function userModal({
                   <div className="form-control w-full">
                     <label className="label py-1">
                       <span className="label-text text-gray-700 font-medium">
-                        {t("common.description")}
+                        {t("user.password")}
                       </span>
                     </label>
                     <input
-                      type="text"
-                      name="description"
-                      placeholder={t("user.enterPosition")}
+                      type="password"
+                      name="password"
+                      placeholder={t("user.enterPassword")}
                       className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
                       required
                     />
                   </div>
-                  <input
-                    type="hidden"
-                    name="payments"
-                    value={JSON.stringify([])}
-                  />
+
+                  <div className="form-control w-full">
+                    <label className="label py-1">
+                      <span className="label-text text-gray-700 font-medium">
+                        {t("user.permissions")}
+                      </span>
+                    </label>
+                    <div className="flex flex-wrap gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                      {["admin", "editor", "viewer"].map((permission) => (
+                        <label
+                          key={permission}
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            name="permissions"
+                            value={permission}
+                            className="checkbox checkbox-sm checkbox-primary"
+                          />
+                          <span className="text-sm">{permission}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </form>
             </div>
@@ -179,14 +139,14 @@ export default function userModal({
     );
   }
 
-  // If user is selected, show the two-column layout
+  // If user is selected, show the layout with user data
   return (
     <div className="modal modal-open">
       <div className="modal-box max-w-5xl p-0">
         <div className="p-4 flex justify-between items-center">
           <h3 className="text-xl font-bold text-gray-800 flex items-center">
             <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            {selecteduser.name}
+            {selectedUser.username}
           </h3>
           <div className="flex gap-2">
             <button
@@ -214,55 +174,83 @@ export default function userModal({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="p-4 border-t lg:border-t-0 lg:border-r">
-            <div className="mt-2">
-              <h4 className="font-semibold mb-2">Details</h4>
-              <form
-                id="update-user-form"
-                action={async (formData) => {
-                  setIsLoading(true);
-                  await update_user_data(formData);
-                  setIsLoading(false);
-                  onClose();
-                }}
-                className="space-y-3"
-              >
-                <div className="grid grid-cols-1 gap-3">
-                  <div className="form-control w-full">
-                    <label className="label py-1">
-                      <span className="label-text text-gray-700 font-medium">
-                        {t("user.fullName")}
-                      </span>
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      placeholder={t("user.enterFullName")}
-                      className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
-                      defaultValue={selecteduser.name}
-                      required
-                    />
-                  </div>
+        <div className="p-4 border-t">
+          <div className="mt-2">
+            <h4 className="font-semibold mb-2">{t("user.details")}</h4>
+            <form
+              id="update-user-form"
+              action={async (formData) => {
+                setIsLoading(true);
+                await update_user_data(formData);
+                setIsLoading(false);
+                onClose();
+              }}
+              className="space-y-3"
+            >
+              <input type="hidden" name="id" value={selectedUser.id} />
 
-                  <div className="form-control w-full">
-                    <label className="label py-1">
-                      <span className="label-text text-gray-700 font-medium">
-                        {t("common.description")}
-                      </span>
-                    </label>
-                    <input
-                      type="text"
-                      name="description"
-                      placeholder={t("user.enterPosition")}
-                      className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
-                      defaultValue={selecteduser.description}
-                      required
-                    />
+              <div className="grid grid-cols-1 gap-3">
+                <div className="form-control w-full">
+                  <label className="label py-1">
+                    <span className="label-text text-gray-700 font-medium">
+                      {t("user.username")}
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    name="username"
+                    placeholder={t("user.enterUsername")}
+                    className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
+                    defaultValue={selectedUser.username}
+                    required
+                  />
+                </div>
+
+                <div className="form-control w-full">
+                  <label className="label py-1">
+                    <span className="label-text text-gray-700 font-medium">
+                      {t("user.password")}
+                    </span>
+                    <span className="label-text-alt text-gray-500">
+                      {t("user.leaveBlankToKeepCurrent")}
+                    </span>
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="••••••••"
+                    className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
+                  />
+                </div>
+
+                <div className="form-control w-full">
+                  <label className="label py-1">
+                    <span className="label-text text-gray-700 font-medium">
+                      {t("user.permissions")}
+                    </span>
+                  </label>
+                  <div className="flex flex-wrap gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                    {["admin", "editor", "viewer"].map((permission) => (
+                      <label
+                        key={permission}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          name="permissions"
+                          value={permission}
+                          className="checkbox checkbox-sm checkbox-primary"
+                          defaultChecked={selectedUser.permissions.includes(
+                            permission
+                          )}
+                        />
+                        <span className="text-sm">{permission}</span>
+                      </label>
+                    ))}
                   </div>
                 </div>
-              </form>
-            </div>
+              </div>
+            </form>
           </div>
         </div>
 
