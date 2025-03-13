@@ -98,6 +98,7 @@ export interface PaymentsType {
   date: Date;
   paid: boolean;
   visit?: VisitType;
+  client?: ClientType;
   description: string;
   type: PAYMENT_TYPE;
 }
