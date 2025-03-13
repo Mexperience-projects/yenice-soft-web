@@ -4,6 +4,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface AuthType {
   username: string;
   permissions: USER_PERMISSIONS[];
+  is_admin: boolean;
 }
 
 const initialState: { user?: AuthType } = {};

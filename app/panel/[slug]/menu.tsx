@@ -25,8 +25,7 @@ export default function LayoutMenu() {
   const { t, i18n } = useTranslation();
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
-  const permissions =
-    useAppSelector((store) => store.auth.user?.permissions) || [];
+  const user = useAppSelector((store) => store.auth.user);
 
   const menuItems = [
     {
@@ -119,7 +118,11 @@ export default function LayoutMenu() {
       <div className="px-4 py-6 flex-1 h-full">
         <ul className="space-y-1.5">
           {menuItems
-            .filter((m) => permissions.includes(m.permission))
+            .filter(
+              (m) =>
+                user?.is_admin ||
+                (user?.permissions || []).includes(m.permission)
+            )
             .map((item) => {
               const isActive = pathname === item.href;
               const Icon = item.icon;

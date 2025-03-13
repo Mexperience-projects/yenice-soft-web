@@ -30,7 +30,7 @@ export function useLogin() {
     // set response of server on state
     localStorage.setItem("token", token);
     localStorage.setItem("refresh", refresh);
-    dispatch(setAuth(response.data));
+    dispatch(setAuth(response.data.user));
     loadingHandler(false);
   };
 

@@ -51,8 +51,7 @@ export default function ({
   users,
 }: _LayoutType) {
   const params = useParams();
-  const permissions =
-    useAppSelector((store) => store.auth.user?.permissions) || [];
+  const user = useAppSelector((store) => store.auth.user);
 
   const contentItems = [
     {
@@ -84,7 +83,9 @@ export default function ({
   // render content for meny
   const renderContent = () =>
     contentItems.find(
-      (c) => c.slug === params.slug && permissions.includes(c.permission)
+      (c) =>
+        c.slug === params.slug &&
+        (user?.is_admin || (user?.permissions || []).includes(c.permission))
     )?.child;
 
   return (
