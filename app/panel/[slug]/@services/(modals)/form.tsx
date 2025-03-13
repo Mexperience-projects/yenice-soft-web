@@ -123,7 +123,7 @@ export default function ServiceModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="p-8 bg-gradient-to-br from-base-100 to-base-200 rounded-xl shadow-xl max-w-5xl mx-auto">
+      <div className="p-8 max-w-5xl mx-auto">
         <h3 className="text-2xl font-bold mb-8 text-gray-800 flex items-center">
           <div className="w-1.5 h-8 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></div>
           {selectedService === undefined

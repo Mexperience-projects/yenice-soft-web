@@ -26,7 +26,7 @@ export interface UsersType {
   id: number;
   username: string;
   password?: string;
-  permissions: string[];
+  permissions?: string[];
 }
 
 export interface OperationType {
@@ -98,4 +98,15 @@ export interface PaymentsType {
   visit?: VisitType;
   description: string;
   type: PAYMENT_TYPE;
+}
+
+export enum USER_PERMISSIONS {
+  ANALYSES = "analyse",
+  VISITS = "visits",
+  PERSONELS = "personels",
+  INVENTORY = "inventory",
+  SERVICES = "services",
+  PAYMENTS = "payments",
+  CLIENTS = "clients",
+  USERS = "users",
 }

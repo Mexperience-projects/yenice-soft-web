@@ -191,7 +191,7 @@ export default function usersPage() {
                       {users.username}
                     </td>
                     <td className="px-6 py-4 text-gray-700">
-                      {users.permissions.join("-")}
+                      {(users?.permissions || []).join("-")}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex gap-2 justify-end">
@@ -230,7 +230,7 @@ export default function usersPage() {
                       {users.username}
                     </h3>
                     <p className="text-gray-600 text-sm mt-1">
-                      {users.permissions.join("-")}
+                      {(users?.permissions || []).join("-")}
                     </p>
                   </div>
                   <div className="dropdown dropdown-end">

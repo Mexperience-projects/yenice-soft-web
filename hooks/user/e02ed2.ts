@@ -4,8 +4,6 @@ import { axiosUser } from "@/lib/axios/noUser";
 import { useAppDispatch, useAppSelector } from "@/store/HOCs";
 import { setuserss } from "@/store/slice/users";
 
-export type userType = Pick<UsersType, "id" | "name" | "description">;
-
 export function useuser() {
   const dispatch = useAppDispatch();
   const [loading, loadingHandler] = useState(false);
@@ -23,7 +21,6 @@ export function useuser() {
 
   const create_user_data = async (formData: any) => {
     loadingHandler(true);
-    console.log("creating");
 
     // create backend form
     const data = Object.fromEntries(formData);
