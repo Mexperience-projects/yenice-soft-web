@@ -25,6 +25,8 @@ axiosUser.interceptors.response.use(
   (response) => {
     if (response.status >= 400 && response.status < 500)
       toast.error(response.data);
+    if (response.status >= 500) toast.error("server error");
+
     return response;
   },
   (error) => {

@@ -207,7 +207,18 @@ export default function VisitManagement() {
                 </tr>
               </thead>
               <tbody>
-                {visit_list.length === 0 ? (
+                {visit_list.filter(
+                  (visit) =>
+                    searchTerm === "" ||
+                    visit.client.name
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase()) ||
+                    visit.operations.some((op) =>
+                      op.service.some((s) =>
+                        s.name.toLowerCase().includes(searchTerm.toLowerCase())
+                      )
+                    )
+                ).length === 0 ? (
                   <tr className="bg-white">
                     <td colSpan={5} className="px-6 py-8 text-center">
                       <div className="flex flex-col items-center justify-center">
@@ -234,84 +245,89 @@ export default function VisitManagement() {
                     </td>
                   </tr>
                 ) : (
-                  visit_list.map((visit, index) => {
-                    const isPast =
-                      visit_list.filter(
-                        (v) =>
-                          v.operations.filter(
-                            (o) => new Date(o.datetime) > new Date()
-                          ).length > 0
-                      ).length == 0;
+                  visit_list
+                    .filter(
+                      (visit) =>
+                        searchTerm === "" ||
+                        visit.client.name
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase()) ||
+                        visit.operations.some((op) =>
+                          op.service.some((s) =>
+                            s.name
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                          )
+                        )
+                    )
+                    .map((visit, index) => {
+                      const isPast =
+                        visit_list.filter(
+                          (v) =>
+                            v.operations.filter(
+                              (o) => new Date(o.datetime) > new Date()
+                            ).length > 0
+                        ).length == 0;
 
-                    return (
-                      <tr
-                        key={index}
-                        className="bg-white border-b hover:bg-gray-50 transition-colors duration-150"
-                      >
-                        <td className="px-6 py-4 font-medium text-gray-900">
-                          {visit.client.name}
-                        </td>
-                        <td className="px-6 py-4 text-gray-700">
-                          {visit.operations.map((o) =>
-                            o.service.map((s) => <p>{s.name}</p>)
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-gray-700">
-                          <div className="flex items-center">
-                            <Clock className="h-4 w-4 text-gray-400 mr-2" />
-                            {visit.operations.length} operation
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          {isPast ? (
-                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                              <CheckCircle2 className="h-3 w-3 mr-1" />
-                              {t("visits.completed")}
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                              <Calendar className="h-3 w-3 mr-1" />
-                              {t("visits.scheduled")}
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <div className="flex gap-2 justify-end">
-                            <button
-                              onClick={() => {
-                                setSelectedVisit(visit);
-                                setIsViewModalOpen(true);
-                              }}
-                              className="text-gray-600 hover:text-primary bg-gray-100 hover:bg-primary/10 p-2 rounded-lg transition-colors"
-                              title={t("common.view")}
-                            >
-                              <Users className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => {
-                                setSelectedVisit(visit);
-                                setIsUpdateModalOpen(true);
-                              }}
-                              className="text-gray-600 hover:text-secondary bg-gray-100 hover:bg-secondary/10 p-2 rounded-lg transition-colors"
-                              title={t("common.edit")}
-                            >
-                              <FileEdit className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => {
-                                setSelectedVisit(visit);
-                                setIsDeleteModalOpen(true);
-                              }}
-                              className="text-gray-600 hover:text-red-500 bg-gray-100 hover:bg-red-50 p-2 rounded-lg transition-colors"
-                              title={t("common.delete")}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
+                      return (
+                        <tr
+                          key={index}
+                          className="bg-white border-b hover:bg-gray-50 transition-colors duration-150"
+                        >
+                          <td className="px-6 py-4 font-medium text-gray-900">
+                            {visit.client.name}
+                          </td>
+                          <td className="px-6 py-4 text-gray-700">
+                            {visit.operations.map((o) =>
+                              o.service.map((s) => <p>{s.name}</p>)
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-gray-700">
+                            <div className="flex items-center">
+                              <Clock className="h-4 w-4 text-gray-400 mr-2" />
+                              {visit.operations.length} operation
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            {isPast ? (
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                {t("visits.completed")}
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <Calendar className="h-3 w-3 mr-1" />
+                                {t("visits.scheduled")}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <div className="flex gap-2 justify-end">
+                              <button
+                                onClick={() => {
+                                  setSelectedVisit(visit);
+                                  setIsUpdateModalOpen(true);
+                                }}
+                                className="text-gray-600 hover:text-secondary bg-gray-100 hover:bg-secondary/10 p-2 rounded-lg transition-colors"
+                                title={t("common.edit")}
+                              >
+                                <FileEdit className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setSelectedVisit(visit);
+                                  setIsDeleteModalOpen(true);
+                                }}
+                                className="text-gray-600 hover:text-red-500 bg-gray-100 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                                title={t("common.delete")}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
                 )}
               </tbody>
             </table>
@@ -322,7 +338,24 @@ export default function VisitManagement() {
             <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
               <div className="text-sm text-gray-500">
                 {t("common.showing")}{" "}
-                <span className="font-medium">{visit_list.length}</span>{" "}
+                <span className="font-medium">
+                  {
+                    visit_list.filter(
+                      (visit) =>
+                        searchTerm === "" ||
+                        visit.client.name
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase()) ||
+                        visit.operations.some((op) =>
+                          op.service.some((s) =>
+                            s.name
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                          )
+                        )
+                    ).length
+                  }
+                </span>{" "}
                 {t("common.of")}{" "}
                 <span className="font-medium">{visit_list.length}</span>{" "}
                 {t("visits.visits")}
@@ -370,7 +403,12 @@ export default function VisitManagement() {
           setIsUpdateModalOpen(false);
           setSelectedVisit(undefined);
         }}
-        onComplete={handleOperationComplete}
+        onComplete={() => {
+          handleOperationComplete();
+          setIsCreateModalOpen(false);
+          setIsUpdateModalOpen(false);
+          setSelectedVisit(undefined);
+        }}
         selectedVisit={selectedVisit}
       />
       {/* Delete Visit Modal */}

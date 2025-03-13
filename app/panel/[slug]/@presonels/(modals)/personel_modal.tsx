@@ -61,7 +61,7 @@ export default function PersonnelModal({
     // Apply date filter
     if (dateFilter !== "all") {
       const now = new Date();
-      let startDate;
+      let startDate: Date;
 
       switch (dateFilter) {
         case "1month":

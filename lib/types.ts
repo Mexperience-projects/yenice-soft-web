@@ -36,7 +36,7 @@ export interface OperationType {
   datetime: Date;
   items: Visit_itemType[];
   payments: PaymentsType[];
-  personel: PersonelType;
+  personel?: PersonelType;
 }
 
 export interface VisitType {

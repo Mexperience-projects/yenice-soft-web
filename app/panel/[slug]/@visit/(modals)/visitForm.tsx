@@ -2,7 +2,16 @@ import { useClients } from "@/hooks/clients/main";
 import { AlertCircle, Edit, Plus, Trash2, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import Visit_ae978b_create from "@/components/visit/ae978b_create";
-import { ClientType, OperationType, VisitType } from "@/lib/types";
+import {
+  ClientType,
+  ItemsType,
+  OperationType,
+  PaymentsType,
+  PersonelType,
+  ServicesType,
+  Visit_itemType,
+  VisitType,
+} from "@/lib/types";
 import { Modal } from "@/components/ui/modal";
 import { cn } from "@/lib/utils";
 import { useVisits } from "@/hooks/visit/ae978b";
@@ -40,9 +49,9 @@ export default function VisitForm({
       {
         id: 1,
         datetime: new Date(Date.now()),
-        items: [],
-        payments: [],
-        service: [],
+        items: [] as Visit_itemType[],
+        payments: [] as PaymentsType[],
+        service: [] as ServicesType[],
       },
     ] as OperationType[],
   };
