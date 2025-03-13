@@ -245,6 +245,7 @@ export default function VisitForm({
               <button
                 onClick={() => {
                   create_visit_data(formData);
+                  onClose();
                 }}
                 className="px-4 py-2 text-sm font-medium text-white enabled:bg-gradient-to-r from-primary disabled:bg-gray-400
                 to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 group relative"
