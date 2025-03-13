@@ -230,7 +230,8 @@
     "enterFullName": "Enter full name",
     "enterPosition": "Enter position or role",
     "saveChanges": "Save Changes",
-    "deleteConfirm": "Are you sure you want to delete this personnel?"
+    "deleteConfirm": "Are you sure you want to delete this personnel?",
+    "noPaymentsFound":"No Payments Found"
   },
   "visits": {
     "enterClientName": "Enter client name",

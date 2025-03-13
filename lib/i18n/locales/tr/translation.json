@@ -229,7 +229,8 @@
     "enterFullName": "Tam adı girin",
     "enterPosition": "Pozisyon veya rol girin",
     "saveChanges": "Değişiklikleri Kaydet",
-    "deleteConfirm": "Bu personeli silmek istediğinizden emin misiniz?"
+    "deleteConfirm": "Bu personeli silmek istediğinizden emin misiniz?",
+    "noPaymentsFound":"Ödeme Bulunamadı"
   },
   "visits": {
     "enterClientName": "Müşteri adını girin",

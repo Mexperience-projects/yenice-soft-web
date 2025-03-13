@@ -51,7 +51,17 @@ export default function PersonnelModal({
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (selectedPersonnel) setPayments(selectedPersonnel.payments);
+    if (selectedPersonnel) {
+      // Ensure all dates are in YYYY-MM-DD format
+      const formattedPayments = selectedPersonnel.payments.map((payment) => ({
+        ...payment,
+        date:
+          typeof payment.date === "string"
+            ? payment.date
+            : format(new Date(payment.date), "yyyy-MM-dd"),
+      }));
+      setPayments(formattedPayments);
+    }
   }, [selectedPersonnel]);
 
   // Apply filters and sorting to payments
@@ -80,10 +90,10 @@ export default function PersonnelModal({
           startDate = new Date(0); // Beginning of time
       }
 
-      result = result.filter(
-        (payment) =>
-          new Date(payment.date) >= startDate && new Date(payment.date) <= now
-      );
+      result = result.filter((payment) => {
+        const paymentDate = new Date(payment.date);
+        return paymentDate >= startDate && paymentDate <= now;
+      });
     }
 
     // Apply amount filters
@@ -133,7 +143,7 @@ export default function PersonnelModal({
           ? {
               ...payment,
               price: Number.parseFloat(paymentPrice),
-              date: paymentDate,
+              date: format(paymentDate, "yyyy-MM-dd"),
             }
           : payment
       );
@@ -142,7 +152,7 @@ export default function PersonnelModal({
       const newPayment: PersonelPayments = {
         id: Date.now(), // Use a proper ID generation in production
         price: Number.parseFloat(paymentPrice),
-        date: paymentDate,
+        date: format(paymentDate, "yyyy-MM-dd"),
       };
       updatedPayments = [...payments, newPayment];
     }
@@ -313,7 +323,7 @@ export default function PersonnelModal({
                       </label>
                       <input
                         type="number"
-                        step="0.01"
+                        step="1"
                         min="0"
                         max="100"
                         placeholder="20 %"
@@ -476,7 +486,7 @@ export default function PersonnelModal({
                     </label>
                     <input
                       type="number"
-                      step="0.01"
+                      step="1"
                       min="0"
                       max="100"
                       placeholder="20 %"
