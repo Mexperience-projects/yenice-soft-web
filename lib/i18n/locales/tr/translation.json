@@ -161,7 +161,8 @@
     "editItem": "Öğeyi Düzenle",
     "deleteItem": "Öğeyi Sil",
     "deleteItemConfirm": "Bu öğeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
-    "saveItem": "Öğeyi Kaydet"
+    "saveItem": "Öğeyi Kaydet",
+    "enterItemName":"Öğe Adını Gir"
   },
   "payments": {
     "title": "Ödeme Yönetimi",

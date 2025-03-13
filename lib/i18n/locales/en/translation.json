@@ -162,7 +162,8 @@
     "editItem": "Edit Item",
     "deleteItem": "Delete Item",
     "deleteItemConfirm": "Are you sure you want to delete this item? This action cannot be undone.",
-    "saveItem": "Save Item"
+    "saveItem": "Save Item",
+    "enterItemName":"Enter Item Name"
   },
   "payments": {
     "title": "Payments Management",
