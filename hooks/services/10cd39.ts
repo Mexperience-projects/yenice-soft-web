@@ -1,20 +1,7 @@
-import { ServicesType } from "@/lib/types";
 import { useState } from "react";
 import { axiosUser } from "@/lib/axios/noUser";
 import { useAppDispatch, useAppSelector } from "@/store/HOCs";
 import { setServices } from "@/store/slice/services";
-
-export type services_10cd39Type = Pick<
-  ServicesType,
-  | "id"
-  | "name"
-  | "price"
-  | "description"
-  | "personel"
-  | "items"
-  | "personel_fixed_fee"
-  | "personel_precent_fee"
->;
 
 export function useServices_10cd39() {
   const [loading, loadingHandler] = useState(false);

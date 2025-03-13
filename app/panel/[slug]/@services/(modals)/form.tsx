@@ -37,7 +37,7 @@ export default function ServiceModal({
   const { t } = useTranslation();
   const [selectedPersonnel, setSelectedPersonnel] = useState<number[]>([]);
   const [serviceItems, setServiceItems] = useState<
-    { itemId: number; count: number }[]
+    { item_id: number; count: number }[]
   >([]);
   const [isPersonnelDropdownOpen, setIsPersonnelDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -45,13 +45,13 @@ export default function ServiceModal({
 
   useEffect(() => {
     if (selectedService) {
-      // setSelectedPersonnel(selectedService.personel.map((p) => p.id))
-      // setServiceItems(
-      //   selectedService.items.map((item) => ({
-      //     itemId: item.item[0],
-      //     count: item.count,
-      //   })),
-      // )
+      setSelectedPersonnel(selectedService.personel.map((p) => p.id));
+      setServiceItems(
+        selectedService.items.map((item) => ({
+          item_id: item.item[0],
+          count: item.count,
+        }))
+      );
     } else {
       setSelectedPersonnel([]);
       setServiceItems([]);
@@ -74,7 +74,7 @@ export default function ServiceModal({
   }, [isPersonnelDropdownOpen]);
 
   const addServiceItem = () => {
-    setServiceItems([...serviceItems, { itemId: 0, count: 1 }]);
+    setServiceItems([...serviceItems, { item_id: 0, count: 1 }]);
   };
 
   const removeServiceItem = (index: number) => {
@@ -83,9 +83,9 @@ export default function ServiceModal({
     setServiceItems(newItems);
   };
 
-  const updateServiceItem = (index: number, itemId: number, count: number) => {
+  const updateServiceItem = (index: number, item_id: number, count: number) => {
     const newItems = [...serviceItems];
-    newItems[index] = { itemId, count };
+    newItems[index] = { item_id, count };
     setServiceItems(newItems);
   };
 
@@ -133,21 +133,22 @@ export default function ServiceModal({
 
         <form
           action={(formData) => {
-            selectedPersonnel.forEach((id, index) => {
-              formData.append(`personel[${index}]`, id.toString());
-            });
-
-            serviceItems.forEach((item, index) => {
-              formData.append(`items[${index}][item]`, item.itemId.toString());
-              formData.append(`items[${index}][count]`, item.count.toString());
-            });
-
             if (selectedService) update_services_data(formData);
             else create_services_data(formData);
             onClose();
           }}
         >
           <input type="hidden" name="id" value={selectedService?.id} />
+          <input
+            type="hidden"
+            name="items"
+            value={JSON.stringify(serviceItems)}
+          />
+          <input
+            type="hidden"
+            name="personel"
+            value={selectedPersonnel as any}
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Left Column - Basic Information */}
@@ -400,7 +401,7 @@ export default function ServiceModal({
                           </label>
                           <select
                             className="select select-bordered w-full text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                            value={serviceItem.itemId}
+                            value={serviceItem.item_id}
                             onChange={(e) =>
                               updateServiceItem(
                                 index,
@@ -433,7 +434,7 @@ export default function ServiceModal({
                             onChange={(e) =>
                               updateServiceItem(
                                 index,
-                                serviceItem.itemId,
+                                serviceItem.item_id,
                                 Number.parseInt(e.target.value)
                               )
                             }

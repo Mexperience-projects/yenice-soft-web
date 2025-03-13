@@ -293,7 +293,7 @@ export default function ItemsPage() {
 
       {/* Create Modal */}
       <Modal isOpen={createModal} onClose={() => setCreateModal(false)}>
-        <div className="p-6">
+        <div className="p-6 w-96">
           <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
             <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
             {t("inventory.addNewItem")}
@@ -322,7 +322,7 @@ export default function ItemsPage() {
       {/* Update Modal */}
       {selectedItem && (
         <Modal isOpen={updateModal} onClose={() => setUpdateModal(false)}>
-          <div className="p-6">
+          <div className="p-6  w-96">
             <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
               <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
               {t("inventory.editItem")}: {selectedItem.name}

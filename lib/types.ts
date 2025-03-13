@@ -91,7 +91,7 @@ export interface Visit_paymentType {
 
 export interface PaymentsType {
   id: number;
-  personel_id?: PersonelType["id"];
+  personel_id?: PersonelType["id"][];
   price: number;
   date: Date;
   paid: boolean;

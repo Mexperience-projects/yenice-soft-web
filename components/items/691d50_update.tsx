@@ -47,7 +47,6 @@ export default function Items_691d50_update({ item }: ItemsProps) {
           <span className="label-text">{t("common.price")}</span>
         </label>
         <div className="input-group">
-          <span>$</span>
           <input
             id="price"
             name="price"

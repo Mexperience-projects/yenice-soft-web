@@ -153,13 +153,13 @@ export default function VisitCreateForm({
     });
   };
 
-  const handleItemSelect = (itemId: ItemsType) => {
+  const handleItemSelect = (item_id: ItemsType) => {
     if (!formData) return;
     setFormData((prev) => {
       if (!prev) return;
       // Check if item is already selected
       const existingItemIndex = prev.items.findIndex(
-        (item) => item.item.id === itemId.id
+        (item) => item.item.id === item_id.id
       );
       if (existingItemIndex !== -1) {
         // Remove item if already selected
@@ -176,7 +176,7 @@ export default function VisitCreateForm({
               id: (prev.items.length + 1) * -1,
               count: 1,
               visit: -1,
-              item: itemId,
+              item: item_id,
             },
           ],
         };
@@ -184,12 +184,12 @@ export default function VisitCreateForm({
     });
   };
 
-  const updateItemQuantity = (itemId: ItemsType["id"], change: number) => {
+  const updateItemQuantity = (item_id: ItemsType["id"], change: number) => {
     if (!formData) return;
     setFormData((prev) => {
       if (!prev) return;
       const updatedItems = prev.items.map((item) => {
-        if (item.id === itemId) {
+        if (item.id === item_id) {
           return {
             ...item,
             count: Math.max(1, item.count + change),
@@ -287,17 +287,17 @@ export default function VisitCreateForm({
     });
   };
 
-  const removeItem = (itemId: ItemsType["id"]) => {
+  const removeItem = (item_id: ItemsType["id"]) => {
     if (!formData) return;
     setFormData({
       ...formData,
-      items: formData.items.filter((item) => item.id !== itemId),
+      items: formData.items.filter((item) => item.id !== item_id),
     });
   };
 
-  const isItemSelected = (itemId: ItemsType["id"]) => {
+  const isItemSelected = (item_id: ItemsType["id"]) => {
     if (!formData) return;
-    return formData.items.some((item) => item.item.id === itemId);
+    return formData.items.some((item) => item.item.id === item_id);
   };
 
   const calculateTotalPayment = () => {

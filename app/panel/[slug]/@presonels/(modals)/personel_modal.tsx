@@ -628,9 +628,7 @@ export default function PersonnelModal({
                         type="submit"
                         className="btn btn-sm text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-none"
                       >
-                        {editingPayment
-                          ? t("personnel.updatePayment")
-                          : t("personnel.addPayment")}
+                        {t("common.save")}
                       </button>
                     </div>
                   </form>
