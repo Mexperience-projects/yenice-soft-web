@@ -28,7 +28,20 @@
     "clearFilters": "Clear filters",
     "confirmDelete": "Are you sure you want to delete this? This action cannot be undone.",
     "warning": "Warning!",
-    "limit": "Limit"
+    "limit": "Limit",
+    "services":"services",
+    "selected":"selected",
+    "select":"select",
+    "items":"Items",
+    "personnel":"Personnel",
+    "payments":"Payments",
+    "total":"Total",
+    "entries":"Entries",
+    "amount":"Amount",
+    "paymentType":"Payment Type",
+    "paid":"Paid",
+    "updateButton":"Update Button",
+    "addButton":"Add Button"
   },
   "menu": {
     "adminPanel": "Admin Panel",

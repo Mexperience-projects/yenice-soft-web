@@ -16,6 +16,7 @@ import {
   Edit,
   Trash2,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useServices_10cd39 } from "@/hooks/services/10cd39";
 import { useItems_691d50 } from "@/hooks/items/691d50";
 import type {
@@ -46,6 +47,7 @@ export default function VisitCreateForm({
   readonly,
   setFormData: updateFormData,
 }: VisitProps) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState(initial);
 
   // New payment form state
@@ -380,7 +382,7 @@ export default function VisitCreateForm({
                 <div className="bg-secondary/10 p-1 rounded-full">
                   <Briefcase className="h-4 w-4 text-secondary" />
                 </div>
-                Services
+                {t("common.services")}
               </span>
             </label>
             <div className="relative w-full">
@@ -399,8 +401,10 @@ export default function VisitCreateForm({
               >
                 <span className="text-sm">
                   {(formData?.service.length || 0) > 0
-                    ? `${(formData?.service || []).length} service(s) selected`
-                    : "Select services"}
+                    ? t("common.selected", {
+                        count: (formData?.service || []).length,
+                      })
+                    : t("common.select")}
                 </span>
                 <Search className="h-4 w-4 opacity-50" />
               </div>
@@ -413,7 +417,7 @@ export default function VisitCreateForm({
                       <input
                         disabled={readonly}
                         type="text"
-                        placeholder="Search services..."
+                        placeholder={t("common.search")}
                         className="input input-sm input-ghost w-full focus:outline-none"
                         value={serviceSearch}
                         onChange={(e) => setServiceSearch(e.target.value)}
@@ -423,7 +427,7 @@ export default function VisitCreateForm({
                     <ul className="menu menu-compact py-2 max-h-60 overflow-y-auto">
                       {filteredServices.length === 0 ? (
                         <li className="disabled text-center py-2 text-sm opacity-50">
-                          No services found
+                          {t("common.noResults")}
                         </li>
                       ) : (
                         filteredServices.map((service) => (
@@ -491,7 +495,7 @@ export default function VisitCreateForm({
                 <div className="bg-primary/10 p-1 rounded-full">
                   <Package className="h-4 w-4 text-primary" />
                 </div>
-                Items
+                {t("common.items")}
               </span>
             </label>
             <div className="relative w-full">
@@ -510,8 +514,8 @@ export default function VisitCreateForm({
               >
                 <span className="text-sm">
                   {formData && formData.items.length > 0
-                    ? `${formData.service.length} item(s) selected`
-                    : "Select items"}
+                    ? t("common.selected", { count: formData.service.length })
+                    : t("common.select")}
                 </span>
                 <Search className="h-4 w-4 opacity-50" />
               </div>
@@ -524,7 +528,7 @@ export default function VisitCreateForm({
                       <input
                         disabled={readonly}
                         type="text"
-                        placeholder="Search items..."
+                        placeholder={t("common.search")}
                         className="input input-sm input-ghost w-full focus:outline-none"
                         value={itemSearch}
                         onChange={(e) => setItemSearch(e.target.value)}
@@ -534,7 +538,7 @@ export default function VisitCreateForm({
                     <ul className="menu menu-compact py-2 max-h-60 overflow-y-auto">
                       {filteredItems.length === 0 ? (
                         <li className="disabled text-center py-2 text-sm opacity-50">
-                          No items found
+                          {t("common.noResults")}
                         </li>
                       ) : (
                         filteredItems.map((item) => (
@@ -585,7 +589,7 @@ export default function VisitCreateForm({
                     </div>
                     {readonly ? (
                       <span className="text-center px-2">
-                        count: {item.count}
+                        {t("common.count", { count: item.count })}
                       </span>
                     ) : (
                       <div className="flex items-center gap-2">
@@ -626,7 +630,7 @@ export default function VisitCreateForm({
                 <div className="bg-secondary/10 p-1 rounded-full">
                   <Calendar className="h-4 w-4 text-secondary" />
                 </div>
-                Date
+                {t("common.date")}
               </span>
             </label>
             <input
@@ -650,7 +654,7 @@ export default function VisitCreateForm({
                 <div className="bg-primary/10 p-1 rounded-full">
                   <Briefcase className="h-4 w-4 text-primary" />
                 </div>
-                Personnel
+                {t("common.personnel")}
               </span>
             </label>
             <div className="relative w-full">
@@ -670,7 +674,7 @@ export default function VisitCreateForm({
                 <span className="text-sm">
                   {formData?.personel
                     ? formData.personel.name
-                    : "Select personnel"}
+                    : t("common.select")}
                 </span>
                 <Search className="h-4 w-4 opacity-50" />
               </div>
@@ -683,7 +687,7 @@ export default function VisitCreateForm({
                       <input
                         disabled={readonly}
                         type="text"
-                        placeholder="Search personnel..."
+                        placeholder={t("common.search")}
                         className="input input-sm input-ghost w-full focus:outline-none"
                         value={personelSearch}
                         onChange={(e) => setPersonelSearch(e.target.value)}
@@ -693,7 +697,7 @@ export default function VisitCreateForm({
                     <ul className="menu menu-compact py-2 max-h-60 overflow-y-auto">
                       {filteredPersonel.length === 0 ? (
                         <li className="disabled text-center py-2 text-sm opacity-50">
-                          No personnel found
+                          {t("personnel.noResults")}
                         </li>
                       ) : (
                         filteredPersonel.map((personel) => (
@@ -738,13 +742,13 @@ export default function VisitCreateForm({
                   <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-1 rounded-full">
                     <CreditCard className="h-4 w-4 text-secondary" />
                   </div>
-                  Payments
+                  {t("common.payments")}
                 </span>
                 <span className="label-text-alt text-gray-500">
-                  Total: {calculateTotalPayment()}{" "}
+                  {t("common.total", { amount: calculateTotalPayment() })}{" "}
                   {formData &&
                     formData.payments.length > 0 &&
-                    `(${formData.payments.length} entries)`}
+                    t("common.entries", { count: formData.payments.length })}
                 </span>
               </label>
 
@@ -753,7 +757,9 @@ export default function VisitCreateForm({
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text text-gray-700">Date</span>
+                      <span className="label-text text-gray-700">
+                        {t("common.date")}
+                      </span>
                     </label>
                     <input
                       disabled={readonly}
@@ -768,7 +774,7 @@ export default function VisitCreateForm({
                   <div className="form-control md:col-span-2">
                     <label className="label">
                       <span className="label-text text-gray-700">
-                        Description
+                        {t("common.description")}
                       </span>
                     </label>
                     <input
@@ -777,14 +783,16 @@ export default function VisitCreateForm({
                       name="description"
                       value={newPayment.description}
                       onChange={handleNewPaymentChange}
-                      placeholder="Enter payment description"
+                      placeholder={t("common.description")}
                       className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
                     />
                   </div>
 
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text text-gray-700">Amount</span>
+                      <span className="label-text text-gray-700">
+                        {t("common.amount")}
+                      </span>
                     </label>
                     <input
                       disabled={readonly}
@@ -800,7 +808,7 @@ export default function VisitCreateForm({
                   <div className="form-control">
                     <label className="label">
                       <span className="label-text text-gray-700">
-                        Payment Type
+                        {t("common.paymentType")}
                       </span>
                     </label>
                     <select
@@ -816,21 +824,25 @@ export default function VisitCreateForm({
                       className="select select-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
                     >
                       <option value={PAYMENT_TYPE.credit_card}>
-                        Credit Card
+                        {t("credit card")}
                       </option>
                       <option value={PAYMENT_TYPE.debit_card}>
-                        Debit Card
+                        {t("debit card")}
                       </option>
-                      <option value={PAYMENT_TYPE.cash_pay}>Cash</option>
+                      <option value={PAYMENT_TYPE.cash_pay}>
+                        {t("cash pay")}
+                      </option>
                       <option value={PAYMENT_TYPE.card_to_card}>
-                        Card to Card
+                        {t("card to card")}
                       </option>
                     </select>
                   </div>
 
                   <div className="form-control">
                     <label className="label cursor-pointer">
-                      <span className="label-text text-gray-700">Paid</span>
+                      <span className="label-text text-gray-700">
+                        {t("common.paid")}
+                      </span>
                       <input
                         disabled={readonly}
                         type="checkbox"
@@ -852,7 +864,9 @@ export default function VisitCreateForm({
                         !newPayment.description || newPayment.price <= 0
                       }
                     >
-                      {editingPayment ? "Update Payment" : "Add Payment"}
+                      {editingPayment
+                        ? t("common.updateButton")
+                        : t("common.addButton")}
                     </button>
                   </div>
                 </div>
@@ -864,12 +878,26 @@ export default function VisitCreateForm({
                   <table className="table table-compact w-full">
                     <thead className="bg-gray-50 text-gray-700">
                       <tr>
-                        <th className="font-medium">Date</th>
-                        <th className="font-medium">Description</th>
-                        <th className="font-medium">Amount</th>
-                        <th className="font-medium">Status</th>
-                        <th className="font-medium">Type</th>
-                        {!readonly && <th className="font-medium">Actions</th>}
+                        <th className="font-medium">
+                          {t("payments.table.date")}
+                        </th>
+                        <th className="font-medium">
+                          {t("payments.table.description")}
+                        </th>
+                        <th className="font-medium">
+                          {t("payments.table.amount")}
+                        </th>
+                        <th className="font-medium">
+                          {t("payments.table.status")}
+                        </th>
+                        <th className="font-medium">
+                          {t("payments.table.type")}
+                        </th>
+                        {!readonly && (
+                          <th className="font-medium">
+                            {t("payments.table.actions")}
+                          </th>
+                        )}
                       </tr>
                     </thead>
                     <tbody>
@@ -894,17 +922,20 @@ export default function VisitCreateForm({
                               >
                                 {payment.paid ? (
                                   <>
-                                    <Check className="h-3 w-3 mr-1" /> Paid
+                                    <Check className="h-3 w-3 mr-1" />{" "}
+                                    {t("payments.table.paid")}
                                   </>
                                 ) : (
-                                  "Unpaid"
+                                  t("payments.table.unpaid")
                                 )}
                               </div>
                             </div>
                           </td>
                           <td>
                             <div className="badge bg-blue-50 text-blue-600 border-0">
-                              {PAYMENT_TYPE[payment.type]}
+                              {t(
+                                `payments.types.${PAYMENT_TYPE[payment.type]}`
+                              )}
                             </div>
                           </td>
                           {!readonly && (
@@ -930,7 +961,7 @@ export default function VisitCreateForm({
                 </div>
               ) : (
                 <div className="text-center py-6 text-gray-500 bg-gray-50 rounded-lg border border-gray-100">
-                  No payments added yet
+                  {t("payments.table.noPayments")}
                 </div>
               )}
             </div>

@@ -27,7 +27,20 @@
     "clearSearch": "Aramayı temizle",
     "clearFilters": "Filtreleri temizle",
     "confirmDelete": "Bunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
-    "warning": "Uyarı!"
+    "warning": "Uyarı!",
+    "services":"Hizmetler",
+    "selected":"seçilmiş",
+    "select":"Seç",
+    "items":"Öğeler",
+    "personnel":"Personel",
+    "payments":"ödemeler",
+    "total":"Toplam",
+    "entries":"Girişler",
+    "amount":"Miktar",
+    "paymentType":"Ödeme Türü",
+    "paid":"Ücretli",
+    "updateButton":"Düğmeyi Güncelle",
+    "addButton":"Düğme ekle"
   },
   "menu": {
     "adminPanel": "Yönetim Paneli",
