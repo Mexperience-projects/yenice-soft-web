@@ -7,14 +7,11 @@ import { useLogin } from "@/hooks/login/UseLogin";
 import { Toaster } from "react-hot-toast";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const { login, loading } = useLogin();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    login(email, password);
-    console.log("Login attempt with:", { email, password });
+  const handleLogin = (e: any) => {
+    const { username, password } = Object.fromEntries(e);
+    login(username, password);
   };
 
   return (
@@ -36,7 +33,7 @@ export default function Login() {
             </p>
           </div>
 
-          <form onSubmit={handleLogin} className="mt-2">
+          <form action={handleLogin} className="mt-2">
             <div className="space-y-5">
               <div className="form-control">
                 <label className="label">
@@ -50,8 +47,7 @@ export default function Login() {
                     type="text"
                     className="grow"
                     placeholder="Enter your username"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    name="username"
                     required
                   />
                 </label>
@@ -69,8 +65,7 @@ export default function Login() {
                     type="password"
                     className="grow"
                     placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    name="password"
                     required
                   />
                 </label>

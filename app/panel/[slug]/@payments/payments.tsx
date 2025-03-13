@@ -2,24 +2,17 @@
 
 import { useEffect, useState } from "react";
 import {
-  FileEdit,
-  Trash2,
   RefreshCw,
   CreditCard,
   Search,
   ChevronLeft,
   ChevronRight,
-  Filter,
   Check,
   X,
-  AlertCircle,
-  DollarSign,
-  Calendar,
 } from "lucide-react";
 import type { PaymentsType } from "@/lib/types";
 import { usePayments } from "@/hooks/payments/main";
 import { useVisits } from "@/hooks/visit/ae978b";
-import { Modal } from "@/components/ui/modal";
 import { useTranslation } from "react-i18next";
 
 export default function PaymentsManagement() {
@@ -71,14 +64,16 @@ export default function PaymentsManagement() {
 
     // Apply search term
     if (searchTerm) {
-      // result = result.filter(
-      //   (payment) =>
-      //     payment.visit.patient_name
-      //       .toLowerCase()
-      //       .includes(searchTerm.toLowerCase()) ||
-      //     payment.id.toString().includes(searchTerm) ||
-      //     payment.price.toString().includes(searchTerm)
-      // );
+      result = result.filter(
+        (payment) =>
+          payment.visit?.client?.name
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          payment.id.toString().includes(searchTerm) ||
+          payment.price.toString().includes(searchTerm) ||
+          (payment.visit?.id &&
+            payment.visit.id.toString().includes(searchTerm))
+      );
     }
 
     // Apply filters
@@ -309,20 +304,6 @@ export default function PaymentsManagement() {
               </div>
 
               <div className="flex gap-2 w-full md:w-auto">
-                {/* <button
-                  className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 ${
-                    Object.keys(filters).length > 0
-                      ? "bg-secondary/10 text-secondary hover:bg-secondary/20"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  } transition-colors`}
-                  onClick={() => setIsFilterOpen(!isFilterOpen)}
-                >
-                  <Filter className="h-4 w-4" />
-                  {t("common.filter")}{" "}
-                  {Object.keys(filters).length > 0 &&
-                    `(${Object.keys(filters).length})`}
-                </button> */}
-
                 <button
                   className="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg flex items-center gap-2 transition-colors"
                   onClick={get_payments_list_list}
@@ -557,10 +538,10 @@ export default function PaymentsManagement() {
                           {payment.id}
                         </td>
                         <td className="px-6 py-4 text-gray-700">
-                          #{payment.visit?.id}
+                          {payment.visit ? `#${payment.visit.id}` : "N/A"}
                         </td>
                         <td className="px-6 py-4 font-medium text-gray-900">
-                          {payment.visit?.client.name}
+                          {payment.visit?.client?.name || "N/A"}
                         </td>
                         <td className="px-6 py-4 font-semibold text-gray-900">
                           {formatCurrency(payment.price)}
