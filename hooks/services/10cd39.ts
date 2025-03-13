@@ -2,13 +2,19 @@ import { useState } from "react";
 import { axiosUser } from "@/lib/axios/noUser";
 import { useAppDispatch, useAppSelector } from "@/store/HOCs";
 import { setServices } from "@/store/slice/services";
+import { USER_PERMISSIONS } from "@/lib/types";
 
 export function useServices_10cd39() {
   const [loading, loadingHandler] = useState(false);
   const services_list = useAppSelector((store) => store.services);
+
+  const permissions =
+    useAppSelector((store) => store.auth.user?.permissions) || [];
   const dispatch = useAppDispatch();
 
   const get_services_list_list = async () => {
+    if (!permissions.includes(USER_PERMISSIONS.SERVICES)) return;
+
     loadingHandler(true);
     const response = await axiosUser.get("services/");
     const serverData = response.data.services;
@@ -17,6 +23,8 @@ export function useServices_10cd39() {
     loadingHandler(false);
   };
   const create_services_data = async (formData: any) => {
+    if (!permissions.includes(USER_PERMISSIONS.SERVICES)) return;
+
     loadingHandler(true);
     // create backend form
     const data = Object.fromEntries(formData);
@@ -27,6 +35,8 @@ export function useServices_10cd39() {
     loadingHandler(false);
   };
   const update_services_data = async (formData: any) => {
+    if (!permissions.includes(USER_PERMISSIONS.SERVICES)) return;
+
     loadingHandler(true);
     // create backend form
     const data = Object.fromEntries(formData);
@@ -37,6 +47,8 @@ export function useServices_10cd39() {
     loadingHandler(false);
   };
   const delete_services_data = async (id: number) => {
+    if (!permissions.includes(USER_PERMISSIONS.SERVICES)) return;
+
     loadingHandler(true);
     const response = await axiosUser.delete("services/", {
       params: { id: id },

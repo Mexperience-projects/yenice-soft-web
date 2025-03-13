@@ -1,4 +1,4 @@
-import { PersonelType } from "@/lib/types";
+import { PersonelType, USER_PERMISSIONS } from "@/lib/types";
 import { useState } from "react";
 import { axiosUser } from "@/lib/axios/noUser";
 import { useAppDispatch, useAppSelector } from "@/store/HOCs";
@@ -14,7 +14,11 @@ export function usePersonel_e02ed2() {
   const [loading, loadingHandler] = useState(false);
   const personel_list = useAppSelector((store) => store.personels);
 
+  const permissions =
+    useAppSelector((store) => store.auth.user?.permissions) || [];
+
   const get_personel_list_list = async () => {
+    if (!permissions.includes(USER_PERMISSIONS.PERSONELS)) return;
     loadingHandler(true);
     const response = await axiosUser.get("/personel/");
     const serverData = response.data.personel;
@@ -25,6 +29,7 @@ export function usePersonel_e02ed2() {
   };
 
   const create_personel_data = async (formData: any) => {
+    if (!permissions.includes(USER_PERMISSIONS.PERSONELS)) return;
     loadingHandler(true);
     console.log("creating");
 
@@ -36,6 +41,7 @@ export function usePersonel_e02ed2() {
     loadingHandler(false);
   };
   const update_personel_data = async (formData: any) => {
+    if (!permissions.includes(USER_PERMISSIONS.PERSONELS)) return;
     loadingHandler(true);
     // create backend form
     const data = Object.fromEntries(formData);
@@ -46,6 +52,7 @@ export function usePersonel_e02ed2() {
     loadingHandler(false);
   };
   const delete_personel_data = async (personel_id: PersonelType["id"]) => {
+    if (!permissions.includes(USER_PERMISSIONS.PERSONELS)) return;
     loadingHandler(true);
     const response = await axiosUser.delete("/personel/", {
       params: { personel_id },

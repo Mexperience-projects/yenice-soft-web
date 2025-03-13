@@ -1,4 +1,4 @@
-import { ItemsType } from "@/lib/types";
+import { ItemsType, USER_PERMISSIONS } from "@/lib/types";
 import { useState } from "react";
 import { axiosUser } from "@/lib/axios/noUser";
 import { useAppDispatch, useAppSelector } from "@/store/HOCs";
@@ -13,7 +13,11 @@ export function useItems_691d50() {
   const [loading, loadingHandler] = useState(false);
   const dispatch = useAppDispatch();
   const items_list = useAppSelector((store) => store.items);
+  const permissions =
+    useAppSelector((store) => store.auth.user?.permissions) || [];
+
   const get_items_list_list = async () => {
+    if (!permissions.includes(USER_PERMISSIONS.INVENTORY)) return;
     loadingHandler(true);
     const response = await axiosUser.get("items/");
     const serverData = response.data.items;
@@ -22,6 +26,7 @@ export function useItems_691d50() {
     loadingHandler(false);
   };
   const create_items_data = async (formData: any) => {
+    if (!permissions.includes(USER_PERMISSIONS.INVENTORY)) return;
     loadingHandler(true);
     // create backend form
     const data = Object.fromEntries(formData);
@@ -32,6 +37,7 @@ export function useItems_691d50() {
     loadingHandler(false);
   };
   const update_items_data = async (formData: any) => {
+    if (!permissions.includes(USER_PERMISSIONS.INVENTORY)) return;
     loadingHandler(true);
     // create backend form
     const data = Object.fromEntries(formData);
@@ -42,6 +48,7 @@ export function useItems_691d50() {
     loadingHandler(false);
   };
   const delete_items_data = async (id: number) => {
+    if (!permissions.includes(USER_PERMISSIONS.INVENTORY)) return;
     loadingHandler(true);
     const response = await axiosUser.delete("items/", { params: { id } });
     const serverData = response.data.items;
