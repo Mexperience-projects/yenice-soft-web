@@ -88,6 +88,16 @@ export default function VisitForm({
 
   return (
     <>
+      {/* create client modal */}
+      <CreateClient
+        onClose={() => setIsClientCreateModalOpen(false)}
+        isOpen={isClientCreateModalOpen}
+        onSubmit={async (form_) => {
+          const client = (await create_clients_data(form_)) as ClientType;
+          setFormData((f) => ({ ...f, client }));
+          setIsClientCreateModalOpen(false);
+        }}
+      />
       <Modal isOpen={isOpen} onClose={onClose}>
         <div className="flex flex-row bg-gray-100">
           {/* Menu bar */}
@@ -294,17 +304,6 @@ export default function VisitForm({
           </div>
         </div>
       </Modal>
-
-      {/* create client modal */}
-      <CreateClient
-        onClose={() => setIsClientCreateModalOpen(false)}
-        isOpen={isClientCreateModalOpen}
-        onSubmit={async (form_) => {
-          const client = (await create_clients_data(form_)) as ClientType;
-          setFormData((f) => ({ ...f, client }));
-          setIsClientCreateModalOpen(false);
-        }}
-      />
     </>
   );
 }

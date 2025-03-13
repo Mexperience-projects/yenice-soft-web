@@ -13,7 +13,11 @@ export default function ({ isOpen, onClose, onSubmit }: CreateClientModal) {
   const { t } = useTranslation();
 
   return (
-    <dialog className={`modal ${isOpen ? "modal-open" : ""}`}>
+    <dialog
+      className={`modal z-[99999999999999999999999] ${
+        isOpen ? "modal-open" : ""
+      }`}
+    >
       <div className="modal-box max-w-2xl bg-white rounded-xl shadow-lg ">
         <form method="dialog">
           <button
