@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useAppDispatch } from "@/store/HOCs";
 import { setAuth } from "@/store/slice/auth";
+import { USER_PERMISSIONS } from "@/lib/types";
 
 export function useLogin() {
   const [loading, loadingHandler] = useState(false);
