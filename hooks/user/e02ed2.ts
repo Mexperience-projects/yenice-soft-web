@@ -9,11 +9,11 @@ export function useuser() {
   const [loading, loadingHandler] = useState(false);
   const user_list = useAppSelector((store) => store.users);
 
-  const permissions =
-    useAppSelector((store) => store.auth.user?.permissions) || [];
+  const user = useAppSelector((store) => store.auth.user);
 
   const get_user_list_list = async () => {
-    if (!permissions.includes(USER_PERMISSIONS.USERS)) return;
+    if (!user?.is_admin && !user?.permissions.includes(USER_PERMISSIONS.USERS))
+      return;
     loadingHandler(true);
     const response = await axiosUser.get("/users/");
     const serverData = response.data.users;
@@ -24,7 +24,8 @@ export function useuser() {
   };
 
   const create_user_data = async (formData: any) => {
-    if (!permissions.includes(USER_PERMISSIONS.USERS)) return;
+    if (!user?.is_admin && !user?.permissions.includes(USER_PERMISSIONS.USERS))
+      return;
     loadingHandler(true);
 
     // create backend form
@@ -36,7 +37,8 @@ export function useuser() {
     loadingHandler(false);
   };
   const update_user_data = async (formData: any) => {
-    if (!permissions.includes(USER_PERMISSIONS.USERS)) return;
+    if (!user?.is_admin && !user?.permissions.includes(USER_PERMISSIONS.USERS))
+      return;
     loadingHandler(true);
     // create backend form
     const data = Object.fromEntries(formData);
@@ -47,7 +49,8 @@ export function useuser() {
     loadingHandler(false);
   };
   const delete_user_data = async (user_id: UsersType["id"]) => {
-    if (!permissions.includes(USER_PERMISSIONS.USERS)) return;
+    if (!user?.is_admin && !user?.permissions.includes(USER_PERMISSIONS.USERS))
+      return;
     loadingHandler(true);
     const response = await axiosUser.delete("/users/", {
       params: { user_id },

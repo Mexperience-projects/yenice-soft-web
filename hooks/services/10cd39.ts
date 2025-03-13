@@ -8,12 +8,15 @@ export function useServices_10cd39() {
   const [loading, loadingHandler] = useState(false);
   const services_list = useAppSelector((store) => store.services);
 
-  const permissions =
-    useAppSelector((store) => store.auth.user?.permissions) || [];
+  const user = useAppSelector((store) => store.auth.user);
   const dispatch = useAppDispatch();
 
   const get_services_list_list = async () => {
-    if (!permissions.includes(USER_PERMISSIONS.SERVICES)) return;
+    if (
+      !user?.is_admin &&
+      !user?.permissions.includes(USER_PERMISSIONS.SERVICES)
+    )
+      return;
 
     loadingHandler(true);
     const response = await axiosUser.get("services/");
@@ -23,7 +26,11 @@ export function useServices_10cd39() {
     loadingHandler(false);
   };
   const create_services_data = async (formData: any) => {
-    if (!permissions.includes(USER_PERMISSIONS.SERVICES)) return;
+    if (
+      !user?.is_admin &&
+      !user?.permissions.includes(USER_PERMISSIONS.SERVICES)
+    )
+      return;
 
     loadingHandler(true);
     // create backend form
@@ -35,7 +42,11 @@ export function useServices_10cd39() {
     loadingHandler(false);
   };
   const update_services_data = async (formData: any) => {
-    if (!permissions.includes(USER_PERMISSIONS.SERVICES)) return;
+    if (
+      !user?.is_admin &&
+      !user?.permissions.includes(USER_PERMISSIONS.SERVICES)
+    )
+      return;
 
     loadingHandler(true);
     // create backend form
@@ -47,7 +58,11 @@ export function useServices_10cd39() {
     loadingHandler(false);
   };
   const delete_services_data = async (id: number) => {
-    if (!permissions.includes(USER_PERMISSIONS.SERVICES)) return;
+    if (
+      !user?.is_admin &&
+      !user?.permissions.includes(USER_PERMISSIONS.SERVICES)
+    )
+      return;
 
     loadingHandler(true);
     const response = await axiosUser.delete("services/", {

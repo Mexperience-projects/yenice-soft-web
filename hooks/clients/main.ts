@@ -8,10 +8,13 @@ export function useClients() {
   const [loading, loadingHandler] = useState(false);
   const dispatch = useAppDispatch();
   const clients_list = useAppSelector((store) => store.clients);
-  const permissions =
-    useAppSelector((store) => store.auth.user?.permissions) || [];
+  const user = useAppSelector((store) => store.auth.user);
   const get_clients_list_list = async () => {
-    if (!permissions.includes(USER_PERMISSIONS.CLIENTS)) return;
+    if (
+      !user?.is_admin &&
+      !user?.permissions.includes(USER_PERMISSIONS.CLIENTS)
+    )
+      return;
     loadingHandler(true);
     const response = await axiosUser.get("clients/");
     const serverData = response.data.clients;
@@ -20,7 +23,11 @@ export function useClients() {
     loadingHandler(false);
   };
   const create_clients_data = async (formData: any) => {
-    if (!permissions.includes(USER_PERMISSIONS.CLIENTS)) return;
+    if (
+      !user?.is_admin &&
+      !user?.permissions.includes(USER_PERMISSIONS.CLIENTS)
+    )
+      return;
     loadingHandler(true);
     // create backend form
     const data = Object.fromEntries(formData);
@@ -31,7 +38,11 @@ export function useClients() {
     return data;
   };
   const update_clients_data = async (formData: any) => {
-    if (!permissions.includes(USER_PERMISSIONS.CLIENTS)) return;
+    if (
+      !user?.is_admin &&
+      !user?.permissions.includes(USER_PERMISSIONS.CLIENTS)
+    )
+      return;
     loadingHandler(true);
     // create backend form
     const data = Object.fromEntries(formData);
@@ -41,7 +52,11 @@ export function useClients() {
     loadingHandler(false);
   };
   const delete_clients_data = async (id: number) => {
-    if (!permissions.includes(USER_PERMISSIONS.CLIENTS)) return;
+    if (
+      !user?.is_admin &&
+      !user?.permissions.includes(USER_PERMISSIONS.CLIENTS)
+    )
+      return;
     loadingHandler(true);
     const response = await axiosUser.delete("clients/", { params: { id } });
     get_clients_list_list();
