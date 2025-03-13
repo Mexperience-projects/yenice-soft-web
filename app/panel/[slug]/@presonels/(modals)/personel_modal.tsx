@@ -40,7 +40,6 @@ export default function PersonnelModal({
   const [payments, setPayments] = useState<PersonelPayments[]>([]);
 
   // State for filters
-  const [showFilters, setShowFilters] = useState(false);
   const [dateFilter, setDateFilter] = useState("all");
   const [minAmount, setMinAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
@@ -53,13 +52,7 @@ export default function PersonnelModal({
   useEffect(() => {
     if (selectedPersonnel) {
       // Ensure all dates are in YYYY-MM-DD format
-      const formattedPayments = selectedPersonnel.payments.map((payment) => ({
-        ...payment,
-        date:
-          typeof payment.date === "string"
-            ? payment.date
-            : format(new Date(payment.date), "yyyy-MM-dd"),
-      }));
+      const formattedPayments = selectedPersonnel.payments;
       setPayments(formattedPayments);
     }
   }, [selectedPersonnel]);
@@ -143,7 +136,7 @@ export default function PersonnelModal({
           ? {
               ...payment,
               price: Number.parseFloat(paymentPrice),
-              date: format(paymentDate, "yyyy-MM-dd"),
+              date: paymentDate,
             }
           : payment
       );
@@ -152,7 +145,7 @@ export default function PersonnelModal({
       const newPayment: PersonelPayments = {
         id: Date.now(), // Use a proper ID generation in production
         price: Number.parseFloat(paymentPrice),
-        date: format(paymentDate, "yyyy-MM-dd"),
+        date: paymentDate,
       };
       updatedPayments = [...payments, newPayment];
     }
