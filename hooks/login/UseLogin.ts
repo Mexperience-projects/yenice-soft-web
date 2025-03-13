@@ -9,8 +9,11 @@ export function useLogin() {
   const [loading, loadingHandler] = useState(false);
   const router = useRouter();
   const dispatch = useAppDispatch();
+
   const login = async (username: string, password: string) => {
     loadingHandler(true);
+    console.log(username, password);
+
     const response = await axiosUser.post("/user/login/", {
       username,
       password,
@@ -19,18 +22,14 @@ export function useLogin() {
     if (response.status === 200) {
       router.push("/panel/analytics");
       toast.success("Login Succesfull");
-    } else if (response.status === 401) {
-      toast.error("Username or Password is Wrong");
-    } else {
-      toast.error("Can't Login Yet");
+      const token = response.data["access"];
+      const refresh = response.data["refresh"];
+      // set response of server on state
+      localStorage.setItem("token", token);
+      localStorage.setItem("refresh", refresh);
+      dispatch(setAuth(response.data.user));
     }
 
-    const token = response.data["access"];
-    const refresh = response.data["refresh"];
-    // set response of server on state
-    localStorage.setItem("token", token);
-    localStorage.setItem("refresh", refresh);
-    dispatch(setAuth(response.data.user));
     loadingHandler(false);
   };
 
