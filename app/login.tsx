@@ -7,7 +7,6 @@ import { useLogin } from "@/hooks/login/UseLogin";
 import { Toaster } from "react-hot-toast";
 
 export default function Login() {
-  const [modalOpen, setModalOpen] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login, loading } = useLogin();
@@ -16,22 +15,6 @@ export default function Login() {
     e.preventDefault();
     login(email, password);
     console.log("Login attempt with:", { email, password });
-  };
-
-  const openModal = () => {
-    setModalOpen(true);
-    const modal = document.getElementById(
-      "login_modal"
-    ) as HTMLDialogElement | null;
-    if (modal) modal.showModal();
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-    const modal = document.getElementById(
-      "login_modal"
-    ) as HTMLDialogElement | null;
-    if (modal) modal.close();
   };
 
   return (
@@ -119,11 +102,6 @@ export default function Login() {
           </form>
         </div>
       </div>
-      <form method="dialog" className="modal-backdrop">
-        <button onClick={closeModal} className="hidden">
-          close
-        </button>
-      </form>
     </section>
   );
 }

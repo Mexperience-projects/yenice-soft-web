@@ -11,6 +11,7 @@ import payments from "./slice/payments";
 import visits from "./slice/visits";
 import clients from "./slice/clients";
 import users from "./slice/users";
+import auth from "./slice/auth";
 // import core from "./core/slice";
 
 export const store = configureStore({
@@ -23,6 +24,7 @@ export const store = configureStore({
     payments,
     clients,
     visits,
+    auth,
   },
 });
 

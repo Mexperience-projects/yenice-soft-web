@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { useLogin } from "@/hooks/login/UseLogin";
 import { useTranslation } from "react-i18next";
+import { useAppSelector } from "@/store/HOCs";
+import { USER_PERMISSIONS } from "@/lib/types";
 
 export default function LayoutMenu() {
   const pathname = usePathname();
@@ -23,20 +25,58 @@ export default function LayoutMenu() {
   const { t, i18n } = useTranslation();
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
+  const permissions =
+    useAppSelector((store) => store.auth.user?.permissions) || [];
 
   const menuItems = [
     {
       href: "/panel/analytics",
       label: t("menu.analytics"),
       icon: ClipboardList,
+      permission: USER_PERMISSIONS.ANALYSES,
     },
-    { href: "/panel/visit", label: t("menu.visits"), icon: ClipboardList },
-    { href: "/panel/presonels", label: t("menu.personnel"), icon: Users },
-    { href: "/panel/items", label: t("menu.inventory"), icon: Package },
-    { href: "/panel/services", label: t("menu.services"), icon: HeartPulse },
-    { href: "/panel/payments", label: t("menu.payments"), icon: CreditCard },
-    { href: "/panel/clients", label: t("menu.clients"), icon: UserCircle },
-    { href: "/panel/users", label: t("menu.users"), icon: Users },
+    {
+      href: "/panel/visit",
+      label: t("menu.visits"),
+      icon: ClipboardList,
+      permission: USER_PERMISSIONS.VISITS,
+    },
+    {
+      href: "/panel/presonels",
+      label: t("menu.personnel"),
+      icon: Users,
+      permission: USER_PERMISSIONS.PERSONELS,
+    },
+    {
+      href: "/panel/items",
+      label: t("menu.inventory"),
+      icon: Package,
+      permission: USER_PERMISSIONS.INVENTORY,
+    },
+    {
+      href: "/panel/services",
+      label: t("menu.services"),
+      icon: HeartPulse,
+      permission: USER_PERMISSIONS.SERVICES,
+    },
+    {
+      href: "/panel/payments",
+      label: t("menu.payments"),
+      icon: CreditCard,
+      permission: USER_PERMISSIONS.PAYMENTS,
+    },
+    {
+      href: "/panel/clients",
+      label: t("menu.clients"),
+      icon: UserCircle,
+      permission: USER_PERMISSIONS.CLIENTS,
+    },
+    {
+      href: "/panel/users",
+      label: t("menu.users"),
+      icon: Users,
+      permission: USER_PERMISSIONS.USERS,
+    },
   ];
 
   const changeLanguage = (lang: string) => {
@@ -78,29 +118,31 @@ export default function LayoutMenu() {
       {/* Menu */}
       <div className="px-4 py-6 flex-1 h-full">
         <ul className="space-y-1.5">
-          {menuItems.map((item) => {
-            const isActive = pathname === item.href;
-            const Icon = item.icon;
+          {menuItems
+            .filter((m) => permissions.includes(m.permission))
+            .map((item) => {
+              const isActive = pathname === item.href;
+              const Icon = item.icon;
 
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                    isActive
-                      ? "bg-gradient-to-r from-primary to-secondary text-white shadow-sm"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-primary"
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span className="font-medium">{item.label}</span>
-                  {isActive && (
-                    <span className="ml-auto w-1.5 h-5 rounded-full bg-white opacity-70"></span>
-                  )}
-                </Link>
-              </li>
-            );
-          })}
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                      isActive
+                        ? "bg-gradient-to-r from-primary to-secondary text-white shadow-sm"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-primary"
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="font-medium">{item.label}</span>
+                    {isActive && (
+                      <span className="ml-auto w-1.5 h-5 rounded-full bg-white opacity-70"></span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
         </ul>
       </div>
 
