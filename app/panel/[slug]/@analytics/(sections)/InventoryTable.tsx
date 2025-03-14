@@ -77,7 +77,7 @@ export function InventoryTable({
             <div className="flex items-center gap-2 text-base-content/70">
               <DollarSign className="h-4 w-4" />
               <span className="font-medium">
-                {t("analytics.totalRevenue")}: ${totals.totalRevenue.toLocaleString()}
+                {t("analytics.totalRevenue")}: ₺{totals.totalRevenue.toLocaleString()}
               </span>
             </div>
           </div>
@@ -109,12 +109,12 @@ export function InventoryTable({
                   inventoryStats.map((item) => (
                     <tr key={item.id} className="hover">
                       <td className="font-medium">{item.name}</td>
-                      <td className="text-right">${item.price.toLocaleString()}</td>
+                      <td className="text-right">₺{item.price.toLocaleString()}</td>
                       <td className="text-right">{item.count}</td>
                       <td className="text-right">{item.usage}</td>
                       <td className="text-right">{item.remaining}</td>
                       <td className="text-right font-medium text-success">
-                        ${item.revenue.toLocaleString()}
+                        ₺{item.revenue.toLocaleString()}
                       </td>
                       <td>
                         <div className="flex items-center gap-2">
@@ -148,7 +148,7 @@ export function InventoryTable({
                   <td className="text-right">{totals.totalUsage}</td>
                   <td className="text-right">{totals.totalRemaining}</td>
                   <td className="text-right text-success">
-                    ${totals.totalRevenue.toLocaleString()}
+                    ₺{totals.totalRevenue.toLocaleString()}
                   </td>
                   <td></td>
                 </tr>

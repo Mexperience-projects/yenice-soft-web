@@ -69,7 +69,7 @@ export function LowStockAlert({ items }: LowStockAlertProps) {
                     </span>
                   </div>
                   <div className="text-xs text-gray-500 mt-1">
-                    {t("inventory.itemPrice")}: ${item.price}
+                    {t("inventory.itemPrice")}: ₺{item.price}
                   </div>
                 </div>
               ))}
@@ -140,7 +140,7 @@ export function LowStockAlert({ items }: LowStockAlertProps) {
                     return (
                       <tr key={item.id}>
                         <td className="font-medium">{item.name}</td>
-                        <td>${item.price}</td>
+                        <td>₺{item.price}</td>
                         <td className="text-right">{item.count}</td>
                         <td className="text-right">{item.limit || 10}</td>
                         <td className="text-right">

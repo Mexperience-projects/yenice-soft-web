@@ -66,7 +66,7 @@ export function SummaryCards({
             </div>
           </div>
           <div className="text-2xl font-bold mt-2">
-            ${totalRevenue.toLocaleString()}
+            ₺{totalRevenue.toLocaleString()}
           </div>
           <p className="text-xs text-base-content/70 mt-1">
             {t("analytics.fromAllServices")}
@@ -86,7 +86,7 @@ export function SummaryCards({
             </div>
           </div>
           <div className="text-2xl font-bold mt-2">
-            ${totalPersonnelPayments.toLocaleString()}
+            ₺{totalPersonnelPayments.toLocaleString()}
           </div>
           <p className="text-xs text-base-content/70 mt-1">
             {t("analytics.totalExpensesToPersonnel")}

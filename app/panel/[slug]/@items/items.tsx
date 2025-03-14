@@ -122,7 +122,7 @@ export default function ItemsPage() {
                 </h2>
                 <div className="mt-2">
                   <p className="text-3xl font-bold text-primary">
-                    $
+                    ₺
                     {items_list
                       .reduce(
                         (total, item) => total + item.price * item.count,
@@ -238,7 +238,10 @@ export default function ItemsPage() {
                         {item.name}
                       </td>
                       <td className="px-6 py-4 text-gray-700">
-                        ${item.price.toFixed(2)}
+                        <div className="flex items-center gap-2">
+                          ₺
+                          {item.price.toFixed(2)}
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-gray-700">
                         <span

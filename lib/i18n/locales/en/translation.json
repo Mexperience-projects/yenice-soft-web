@@ -68,7 +68,8 @@
     "administrator": "Administrator",
     "main": "Main",
     "management": "Management",
-    "users": "Users"
+    "users": "Users",
+    "changeLanguage": "Change Language"
   },
   "nav": {
     "analytics": "analytics",
@@ -202,7 +203,11 @@
     "enterFullName": "Enter client's full name",
     "enterNationalId": "Enter national ID number",
     "recentViewComingSoon": "Recent clients view coming soon",
-    "activeViewComingSoon": "Active clients view coming soon"
+    "activeViewComingSoon": "Active clients view coming soon",
+    "clientInformation": "Client Information",
+    "legalFullName": "Legal Full Name",
+    "governmentId": "Government ID",
+    "dateOfBirth": "Date of Birth"
   },
   "inventory": {
     "title": "Inventory Management",

@@ -67,7 +67,8 @@
     "administrator": "Yönetici",
     "main": "Ana",
     "management": "Yönetim",
-    "users": "Kullanıcı"
+    "users": "Kullanıcı",
+    "changeLanguage": "Dil Değiştir"
   },
   "nav": {
     "dashboard": "Gösterge Paneli",
@@ -201,7 +202,11 @@
     "enterFullName": "Müşterinin tam adını girin",
     "enterNationalId": "Kimlik numarasını girin",
     "recentViewComingSoon": "Yakın zamanda müşteri görünümü geliyor",
-    "activeViewComingSoon": "Aktif müşteri görünümü yakında geliyor"
+    "activeViewComingSoon": "Aktif müşteri görünümü yakında geliyor",
+    "clientInformation": "Müşteri Bilgileri",
+    "legalFullName": "Yasal Tam Ad",
+    "governmentId": "TC Kimlik No",
+    "dateOfBirth": "Doğum Tarihi"
   },
   "inventory": {
     "title": "Envanter Yönetimi",

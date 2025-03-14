@@ -178,13 +178,13 @@ export function VisitsTable({
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4" />
                 <span className="font-medium">
-                  ${summary.totalRevenue.toLocaleString()}
+                  {summary.totalRevenue.toLocaleString()} ₺
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <Wallet className="h-4 w-4" />
                 <span className="font-medium text-primary">
-                  ${summary.netRevenue.toLocaleString()}
+                  {summary.netRevenue.toLocaleString()} ₺
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -261,13 +261,13 @@ export function VisitsTable({
                         </div>
                       </td>
                       <td className="text-right font-medium text-warning">
-                        ${visit.totalPersonnelFee.toLocaleString()}
+                        {visit.totalPersonnelFee.toLocaleString()} ₺
                       </td>
                       <td className="text-right font-medium">
-                        ${visit.totalRevenue.toLocaleString()}
+                        {visit.totalRevenue.toLocaleString()} ₺
                       </td>
                       <td className="text-right font-medium text-success">
-                        ${visit.netRevenue.toLocaleString()}
+                        {visit.netRevenue.toLocaleString()} ₺
                       </td>
                     </tr>
                   ))
@@ -279,13 +279,13 @@ export function VisitsTable({
                   <td>{summary.totalServices} {t("analytics.totalServices")}</td>
                   <td></td>
                   <td className="text-right text-warning">
-                    ${summary.totalPersonnelFee.toLocaleString()}
+                    {summary.totalPersonnelFee.toLocaleString()} ₺
                   </td>
                   <td className="text-right">
-                    ${summary.totalRevenue.toLocaleString()}
+                    {summary.totalRevenue.toLocaleString()} ₺
                   </td>
                   <td className="text-right text-success">
-                    ${summary.netRevenue.toLocaleString()}
+                    {summary.netRevenue.toLocaleString()} ₺
                   </td>
                 </tr>
               </tbody>

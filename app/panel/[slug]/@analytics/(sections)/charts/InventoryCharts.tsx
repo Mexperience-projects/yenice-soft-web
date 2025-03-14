@@ -63,7 +63,7 @@ export function InventoryCharts({ items_list, visitItems }: InventoryChartsProps
   // Prepare data for revenue treemap
   const revenueTreemapData = useMemo(() => {
     return inventoryStats.map((item) => ({
-      name: `${item.name}\n$${item.revenue.toLocaleString()}`,
+      name: `${item.name}\n₺${item.revenue.toLocaleString()}`,
       size: item.revenue,
       color: item.remainingPercentage < 20 ? "#ef4444" : "#10b981",
     }));

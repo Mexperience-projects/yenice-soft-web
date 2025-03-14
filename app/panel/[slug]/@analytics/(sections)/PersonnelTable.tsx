@@ -61,10 +61,10 @@ export function PersonnelTable({
                     <td className="text-right">{person.visitCount}</td>
                     <td className="text-right">{person.itemCount}</td>
                     <td className="text-right">
-                      ${person.revenue.toLocaleString()}
+                      ₺{person.revenue.toLocaleString()}
                     </td>
                     <td className="text-right">
-                      ${person.expense.toLocaleString()}
+                      ₺{person.expense.toLocaleString()}
                     </td>
                     <td className="text-right">
                       <span
@@ -74,7 +74,7 @@ export function PersonnelTable({
                             : "text-error font-medium"
                         }
                       >
-                        ${(person.revenue - person.expense).toLocaleString()}
+                        ₺{(person.revenue - person.expense).toLocaleString()}
                       </span>
                     </td>
                     <td className="text-right">
