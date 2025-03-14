@@ -56,6 +56,7 @@ export interface ClientType {
   nationalCo: string;
   birthdate: Date;
   gender: number;
+  phone?: string;
 }
 
 export interface ItemsType {

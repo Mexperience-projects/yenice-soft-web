@@ -2,38 +2,35 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ClientType } from "@/lib/types";
-import { User, Users, CreditCard, CalendarDays } from "lucide-react";
+import { User, Users, CreditCard, CalendarDays, Phone } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface ClientFormProps {
-  client?: ClientType;
   onSubmit?: (formData: FormData) => void;
   isSubmitting?: boolean;
+  defaultValues?: ClientType;
 }
 
-export default function ClientForm({
-  client,
-  onSubmit,
-  isSubmitting = false,
-}: ClientFormProps) {
+export default function ClientForm({ defaultValues }: ClientFormProps) {
   const { t } = useTranslation();
 
-  const [formData, setFormData] = useState({
-    name: client?.name || "",
-    nationalCo: client?.nationalCo || "",
-    birthdate: client?.birthdate
-      ? new Date(client.birthdate).toISOString().split("T")[0]
-      : "",
-    gender: client?.gender?.toString() || "1",
+  const [formData, setFormData] = useState<Omit<ClientType, "id">>({
+    name: "",
+    nationalCo: "",
+    birthdate: new Date(),
+    gender: 1,
+    phone: "",
   });
 
   const [errors, setErrors] = useState({
     name: "",
     nationalCo: "",
     birthdate: "",
+    phone: "",
   });
+  console.log(formData);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -45,59 +42,13 @@ export default function ClientForm({
     }
   };
 
-  const validateForm = () => {
-    let isValid = true;
-    const newErrors = { ...errors };
-
-    if (!formData.name.trim()) {
-      newErrors.name = t("clients.nameRequired");
-      isValid = false;
+  useEffect(() => {
+    if (defaultValues) {
+      setFormData(defaultValues);
     }
+  }, [defaultValues]);
 
-    if (!formData.nationalCo.trim()) {
-      newErrors.nationalCo = t("clients.nationalIdRequired");
-      isValid = false;
-    }
-
-    if (!formData.birthdate) {
-      newErrors.birthdate = t("clients.birthdateRequired");
-      isValid = false;
-    } else {
-      const selectedDate = new Date(formData.birthdate);
-      const today = new Date();
-
-      if (selectedDate > today) {
-        newErrors.birthdate = t("clients.birthdateFuture");
-        isValid = false;
-      }
-    }
-
-    setErrors(newErrors);
-    return isValid;
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    if (onSubmit) {
-      const formDataObj = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        formDataObj.append(key, value);
-      });
-
-      if (client?.id) {
-        formDataObj.append("id", client.id.toString());
-      }
-
-      onSubmit(formDataObj);
-    }
-  };
-
-  const calculateAge = (birthdate: string) => {
+  const calculateAge = (birthdate: Date) => {
     if (!birthdate) return "";
 
     const birthDate = new Date(birthdate);
@@ -119,13 +70,6 @@ export default function ClientForm({
     <div className="space-y-6">
       <div className="card bg-base-100 shadow-sm">
         <div className="card-body">
-          <h2 className="card-title text-lg flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            {t("clients.clientInformation")}
-          </h2>
-
-          <div className="divider my-0"></div>
-
           {/* Name Field */}
           <div className="form-control w-full">
             <label className="label">
@@ -180,6 +124,32 @@ export default function ClientForm({
             </label>
           </div>
 
+          {/* Phone Field */}
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text flex items-center gap-1">
+                <Phone className="h-4 w-4" />
+                {t("clients.phone")}
+              </span>
+              <span className="label-text-alt text-error">{errors.phone}</span>
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone || ""}
+              onChange={handleChange}
+              placeholder={t("clients.enterPhone")}
+              className={`input input-bordered w-full ${
+                errors.phone ? "input-error" : ""
+              }`}
+            />
+            <label className="label">
+              <span className="label-text-alt text-base-content opacity-60">
+                {t("clients.contactNumber")}
+              </span>
+            </label>
+          </div>
+
           {/* Birthdate Field */}
           <div className="form-control w-full">
             <label className="label">
@@ -195,7 +165,11 @@ export default function ClientForm({
               <input
                 type="date"
                 name="birthdate"
-                value={formData.birthdate}
+                value={
+                  formData.birthdate
+                    ? new Date(formData.birthdate).toISOString().split("T")[0]
+                    : ""
+                }
                 onChange={handleChange}
                 className={`input input-bordered w-full ${
                   errors.birthdate ? "input-error" : ""
@@ -227,7 +201,7 @@ export default function ClientForm({
                   name="gender"
                   value="1"
                   className="radio radio-primary"
-                  checked={formData.gender === "1"}
+                  checked={formData.gender === 1}
                   onChange={handleChange}
                 />
                 <span className="label-text">{t("clients.male")}</span>
@@ -238,7 +212,7 @@ export default function ClientForm({
                   name="gender"
                   value="2"
                   className="radio radio-secondary"
-                  checked={formData.gender === "2"}
+                  checked={formData.gender === 2}
                   onChange={handleChange}
                 />
                 <span className="label-text">{t("clients.female")}</span>

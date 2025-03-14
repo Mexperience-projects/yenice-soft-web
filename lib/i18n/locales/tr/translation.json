@@ -214,7 +214,11 @@
     "clientInformation": "Müşteri Bilgileri",
     "legalFullName": "Yasal Tam Ad",
     "governmentId": "TC Kimlik No",
-    "dateOfBirth": "Doğum Tarihi"
+    "dateOfBirth": "Doğum Tarihi",
+    "age": "Yaş",
+    "phone": "Telefon",
+    "enterPhone": "Telefon numarası girin",
+    "contactNumber": "İletişim Numarası"
   },
   "inventory": {
     "title": "Envanter Yönetimi",

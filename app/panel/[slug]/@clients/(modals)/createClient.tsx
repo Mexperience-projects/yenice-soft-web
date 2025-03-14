@@ -2,14 +2,20 @@
 
 import ClientForm from "@/components/client/client-form";
 import { useTranslation } from "react-i18next";
-
+import { ClientType } from "@/lib/types";
 interface CreateClientModal {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (form_: FormData) => void;
+  defaultValues?: ClientType;
 }
 
-export default function ({ isOpen, onClose, onSubmit }: CreateClientModal) {
+export default function CreateClientModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  defaultValues,
+}: CreateClientModal) {
   const { t } = useTranslation();
 
   return (
@@ -42,7 +48,8 @@ export default function ({ isOpen, onClose, onSubmit }: CreateClientModal) {
           }}
           className="mt-4 "
         >
-          <ClientForm />
+          <input type="hidden" name="id" value={defaultValues?.id} />
+          <ClientForm defaultValues={defaultValues} />
           <div className="flex justify-end gap-2 mt-6 ">
             <button
               type="button"

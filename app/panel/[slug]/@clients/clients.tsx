@@ -20,7 +20,7 @@ import { useClients } from "@/hooks/clients/main";
 import type { ClientType } from "@/lib/types";
 import { Modal } from "@/components/ui/modal";
 import { useTranslation } from "react-i18next";
-
+import ClientModal from "./(modals)/createClient";
 export default function ClientManagement() {
   const { t } = useTranslation();
 
@@ -88,7 +88,7 @@ export default function ClientManagement() {
   });
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen relative">
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
         <div className="mb-6">
@@ -367,75 +367,15 @@ export default function ClientManagement() {
         </div>
       </div>
 
-      {/* Create Client Modal */}
-      <Modal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-      >
-        <div className="p-6">
-          <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
-            <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            {t("clients.addNewClient")}
-          </h3>
-          <p className="text-gray-600 mb-4">{t("clients.enterFullName")}</p>
-
-          <form
-            action={create_clients_data}
-            onSubmit={() => setIsCreateModalOpen(false)}
-          >
-            <ClientForm />
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                type="button"
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
-                onClick={() => setIsCreateModalOpen(false)}
-              >
-                {t("common.cancel")}
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
-              >
-                {t("common.create")}
-              </button>
-            </div>
-          </form>
-        </div>
-      </Modal>
-
-      {/* Update Client Modal */}
-      <Modal
-        isOpen={isUpdateModalOpen}
-        onClose={() => setIsUpdateModalOpen(false)}
-      >
-        <div className="p-6">
-          <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
-            <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-            {t("clients.updateClient")}
-          </h3>
-          <p className="text-gray-600 mb-4">{t("clients.editClientInfo")}</p>
-
-          <form action={handleUpdateSubmit}>
-            <input name="id" type="hidden" value={selectedClient?.id} />
-            {selectedClient && <ClientForm client={selectedClient} />}
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                type="button"
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
-                onClick={() => setIsUpdateModalOpen(false)}
-              >
-                {t("common.cancel")}
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
-              >
-                {t("common.update")}
-              </button>
-            </div>
-          </form>
-        </div>
-      </Modal>
+      <ClientModal
+        isOpen={isCreateModalOpen || isUpdateModalOpen}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setIsUpdateModalOpen(false);
+        }}
+        onSubmit={selectedClient ? update_clients_data : create_clients_data}
+        defaultValues={selectedClient || undefined}
+      />
 
       {/* Delete Client Modal */}
       <Modal

@@ -217,7 +217,11 @@
     "clientInformation": "Client Information",
     "legalFullName": "Legal Full Name",
     "governmentId": "Government ID",
-    "dateOfBirth": "Date of Birth"
+    "dateOfBirth": "Date of Birth",
+    "age": "Age",
+    "phone": "Phone",
+    "enterPhone": "Enter phone number",
+    "contactNumber": "Contact Number"
   },
   "inventory": {
     "title": "Inventory Management",
