@@ -4,7 +4,7 @@ import { useServices_10cd39 } from "@/hooks/services/10cd39";
 import type { ServicesType, PersonelType, ItemsType } from "@/lib/types";
 import { useTranslation } from "react-i18next";
 import { Modal } from "@/components/ui/modal";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Plus,
   X,
@@ -13,9 +13,6 @@ import {
   Package,
   FileText,
   Tag,
-  Check,
-  ChevronDown,
-  Search,
 } from "lucide-react";
 
 interface ModalProps {
@@ -35,17 +32,12 @@ export default function ServiceModal({
 }: ModalProps) {
   const { create_services_data, update_services_data } = useServices_10cd39();
   const { t } = useTranslation();
-  const [selectedPersonnel, setSelectedPersonnel] = useState<number[]>([]);
   const [serviceItems, setServiceItems] = useState<
     { item_id: number; count: number }[]
   >([]);
-  const [isPersonnelDropdownOpen, setIsPersonnelDropdownOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (selectedService) {
-      setSelectedPersonnel(selectedService.personel.map((p) => p.id));
       setServiceItems(
         selectedService.items.map((item) => ({
           item_id: item.item.id,
@@ -53,25 +45,9 @@ export default function ServiceModal({
         }))
       );
     } else {
-      setSelectedPersonnel([]);
       setServiceItems([]);
     }
   }, [selectedService]);
-
-  useEffect(() => {
-    if (!isPersonnelDropdownOpen) return;
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setIsPersonnelDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, [isPersonnelDropdownOpen]);
 
   const addServiceItem = () => {
     setServiceItems([...serviceItems, { item_id: 0, count: 1 }]);
@@ -88,38 +64,6 @@ export default function ServiceModal({
     newItems[index] = { item_id, count };
     setServiceItems(newItems);
   };
-
-  const togglePersonnel = (id: number) => {
-    if (selectedPersonnel.includes(id)) {
-      setSelectedPersonnel(
-        selectedPersonnel.filter((personId) => personId !== id)
-      );
-    } else {
-      setSelectedPersonnel([...selectedPersonnel, id]);
-    }
-  };
-
-  const getSelectedPersonnelNames = () => {
-    if (selectedPersonnel.length === 0)
-      return t("services.noPersonnelSelected");
-
-    const names = selectedPersonnel
-      .map((id) => {
-        const person = personnel.find((p) => p.id === id);
-        return person?.name;
-      })
-      .filter(Boolean);
-
-    if (names.length <= 2) return names.join(", ");
-    return `${names.length} ${t("services.personnelSelected")}`;
-  };
-
-  const filteredPersonnel = personnel.filter(
-    (person) =>
-      person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (person.description &&
-        person.description.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -144,11 +88,7 @@ export default function ServiceModal({
             name="items"
             value={JSON.stringify(serviceItems)}
           />
-          <input
-            type="hidden"
-            name="personel"
-            value={selectedPersonnel as any}
-          />
+          <input type="hidden" name="personel" value={[]} />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Left Column - Basic Information */}
@@ -221,158 +161,6 @@ export default function ServiceModal({
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-
-              {/* Personnel Selection - Dropdown with Checkboxes */}
-              <div className="card bg-base-100 shadow-lg rounded-xl overflow-hidden border border-base-300/30">
-                <div className="bg-gradient-to-r from-primary/10 to-secondary/10 px-6 py-4 border-b border-base-300/30">
-                  <h3 className="font-semibold flex items-center text-base">
-                    <Users className="h-4 w-4 mr-2 text-primary" />
-                    {t("services.personnel")}
-                  </h3>
-                </div>
-                <div className="p-6">
-                  <div className="relative" ref={dropdownRef}>
-                    <button
-                      type="button"
-                      className={`input input-bordered w-full flex items-center justify-between text-left transition-all ${
-                        isPersonnelDropdownOpen
-                          ? "border-primary ring-2 ring-primary/20"
-                          : ""
-                      }`}
-                      onClick={() =>
-                        setIsPersonnelDropdownOpen(!isPersonnelDropdownOpen)
-                      }
-                    >
-                      <span
-                        className={
-                          selectedPersonnel.length === 0 ? "text-gray-500" : ""
-                        }
-                      >
-                        {getSelectedPersonnelNames()}
-                      </span>
-                      <ChevronDown
-                        className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
-                          isPersonnelDropdownOpen ? "transform rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-
-                    {isPersonnelDropdownOpen && (
-                      <div
-                        className="fixed inset-0 z-[60]"
-                        onClick={() => setIsPersonnelDropdownOpen(false)}
-                      >
-                        <div
-                          className="absolute z-[70]"
-                          style={{
-                            top:
-                              dropdownRef.current?.getBoundingClientRect()
-                                .bottom + "px",
-                            left:
-                              dropdownRef.current?.getBoundingClientRect()
-                                .left + "px",
-                            width: dropdownRef.current?.offsetWidth + "px",
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <div className="bg-base-100 border border-base-300 rounded-lg shadow-xl max-h-60 overflow-auto animate-in fade-in-0 zoom-in-95 duration-100 w-full">
-                            <div className="p-3 sticky top-0 bg-base-100 border-b border-base-300 z-10">
-                              <div className="relative">
-                                <input
-                                  type="text"
-                                  placeholder={t("services.searchPersonnel")}
-                                  className="input input-sm input-bordered w-full pl-8"
-                                  value={searchTerm}
-                                  onChange={(e) =>
-                                    setSearchTerm(e.target.value)
-                                  }
-                                />
-                                <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500" />
-                              </div>
-                            </div>
-
-                            {filteredPersonnel.length > 0 ? (
-                              <ul className="py-1">
-                                {filteredPersonnel.map((person) => (
-                                  <li key={person.id}>
-                                    <button
-                                      type="button"
-                                      className="w-full px-3 py-2 text-left hover:bg-base-200 flex items-center justify-between transition-colors"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        togglePersonnel(person.id);
-                                      }}
-                                    >
-                                      <div className="flex items-center">
-                                        <div
-                                          className={`w-5 h-5 rounded-md flex items-center justify-center mr-2 transition-all ${
-                                            selectedPersonnel.includes(
-                                              person.id
-                                            )
-                                              ? "bg-primary border-primary"
-                                              : "border border-gray-400"
-                                          }`}
-                                        >
-                                          {selectedPersonnel.includes(
-                                            person.id
-                                          ) && (
-                                            <Check className="h-3 w-3 text-white" />
-                                          )}
-                                        </div>
-                                        <div>
-                                          <div className="font-medium">
-                                            {person.name}
-                                          </div>
-                                          {person.description && (
-                                            <div className="text-xs text-gray-500">
-                                              {person.description}
-                                            </div>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </button>
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : (
-                              <div className="p-3 text-center text-gray-500 text-sm">
-                                {searchTerm
-                                  ? t("services.noPersonnelFound")
-                                  : t("services.noPersonnelAvailable")}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {selectedPersonnel.length > 0 && (
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {selectedPersonnel.map((id) => {
-                        const person = personnel.find((p) => p.id === id);
-                        if (!person) return null;
-
-                        return (
-                          <div
-                            key={id}
-                            className="badge badge-primary badge-lg gap-1 p-3 bg-primary/10 text-primary border-primary/20"
-                          >
-                            {person.name}
-                            <button
-                              type="button"
-                              className="ml-1 hover:bg-primary/20 rounded-full p-0.5 transition-colors"
-                              onClick={() => togglePersonnel(id)}
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
