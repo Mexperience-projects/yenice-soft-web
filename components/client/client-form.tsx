@@ -43,9 +43,15 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
   };
 
   useEffect(() => {
-    if (defaultValues) {
-      setFormData(defaultValues);
-    }
+    setFormData(
+      defaultValues || {
+        name: "",
+        nationalCo: "",
+        birthdate: new Date(),
+        phone: "",
+        gender: 1,
+      }
+    );
   }, [defaultValues]);
 
   const calculateAge = (birthdate: Date) => {

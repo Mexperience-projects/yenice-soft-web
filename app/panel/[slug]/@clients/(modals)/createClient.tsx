@@ -45,6 +45,7 @@ export default function CreateClientModal({
             e.preventDefault();
             const formData = new FormData(e.currentTarget);
             onSubmit(formData);
+            onClose();
           }}
           className="mt-4 "
         >

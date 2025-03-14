@@ -101,7 +101,10 @@ export default function ClientManagement() {
 
         <div className="flex justify-end mb-6">
           <button
-            onClick={() => setIsCreateModalOpen(true)}
+            onClick={() => {
+              setIsCreateModalOpen(true);
+              setSelectedClient(null);
+            }}
             className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300"
           >
             <Plus className="h-4 w-4" />
@@ -372,6 +375,7 @@ export default function ClientManagement() {
         onClose={() => {
           setIsCreateModalOpen(false);
           setIsUpdateModalOpen(false);
+          setSelectedClient(null);
         }}
         onSubmit={selectedClient ? update_clients_data : create_clients_data}
         defaultValues={selectedClient || undefined}

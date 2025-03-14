@@ -3,8 +3,9 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Package, AlertTriangle, DollarSign } from "lucide-react";
-import type { ItemsType } from "@/lib/types";
+import type { ItemsType, OperationType } from "@/lib/types";
 import type { InventoryTableProps } from "./types";
+import { useAppSelector } from "@/store/HOCs";
 
 export function InventoryTable({
   items_list,
@@ -12,12 +13,49 @@ export function InventoryTable({
   filters,
 }: InventoryTableProps) {
   const { t } = useTranslation();
+  const noFilter =
+    filters.minStock === undefined &&
+    filters.maxStock === undefined &&
+    filters.showLowStock === false &&
+    filters.sortBy === "name" &&
+    filters.sortOrder === "asc";
 
+  const operation_list = useAppSelector((store) => store.visits);
+
+  const itemsOperations = (item: ItemsType) =>
+    operation_list.reduce((value, curren) => {
+      const operations = curren.operations.filter((o) =>
+        o.items.some((i) => i.item.id === item.id)
+      );
+
+      return [...value, ...operations];
+    }, [] as OperationType[]);
   // Calculate inventory statistics with filters
   const inventoryStats = useMemo(() => {
     // First calculate base stats
     let stats = items_list.map((item) => {
-      const usage = item.used;
+      const operations = itemsOperations(item).filter((o) => {
+        const visitDate = new Date(o.datetime).toISOString().split("T")[0];
+
+        if (filters?.dateRange?.from && filters?.dateRange?.to) {
+          return (
+            visitDate >= filters.dateRange.from &&
+            visitDate <= filters.dateRange.to
+          );
+        } else if (filters?.dateRange?.from) {
+          return visitDate >= filters.dateRange.from;
+        } else if (filters?.dateRange?.to) {
+          return visitDate <= filters.dateRange.to;
+        }
+        return true;
+      });
+
+      const usage = operations.reduce((value, current) => {
+        return (
+          value + (current.items.find((i) => i.item.id === item.id)?.count || 0)
+        );
+      }, 0);
+
       const revenue = usage * item.price;
       const remainingPercentage =
         item.count > 0 ? ((item.count - usage) / item.count) * 100 : 0;
@@ -28,7 +66,7 @@ export function InventoryTable({
         revenue,
         remaining: Math.max(0, item.count - usage),
         remainingPercentage,
-        isLowStock: remainingPercentage < (item.limit || 20),
+        isLowStock: item.count - usage < (item.limit || 0),
       };
     });
 

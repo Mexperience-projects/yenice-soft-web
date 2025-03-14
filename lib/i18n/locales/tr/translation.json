@@ -172,7 +172,11 @@
     "status": "Durum",
     "itemsUsageDistribution": "Ürün Kullanım Dağılımı",
     "itemsRevenue": "Ürün Gelirleri",
-    "paid": "Ödendi"
+    "paid": "Ödendi",
+    "totalUsage": "Toplam Kullanım",
+    "revenueRange": "Gelir Aralığı",
+    "selectDateRange": "Tarih Aralığı Seçin",
+    "showLowStock": "Düşük Stoklu Ürünleri Göster"
   },
   "clients": {
     "title": "Müşteri Yönetimi",

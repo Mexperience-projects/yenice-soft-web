@@ -175,7 +175,9 @@
     "itemsRevenue": "Items Revenue",
     "paid": "Paid",
     "totalUsage": "Total Usage",
-    "revenueRange": "Revenue Range"
+    "revenueRange": "Revenue Range",
+    "selectDateRange": "Select Date Range",
+    "showLowStock": "Show Low Stock Items"
   },
   "clients": {
     "title": "Client Management",
