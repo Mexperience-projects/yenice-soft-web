@@ -360,19 +360,13 @@ export default function VisitCreateForm({
     if (!formData) return { total: 0, remainingWithPaid: 0, remainingTotal: 0 };
 
     // Calculate services total
-    const servicesTotal = formData.service.reduce(
-      (total, service) => total + (service.price || 0),
-      0
-    );
-
-    // Calculate items total
-    const itemsTotal = formData.items.reduce(
-      (total, item) => total + (item.item.price || 0) * item.count,
-      0
-    );
-
-    // Combined total of services and items
-    const combinedTotal = servicesTotal + itemsTotal;
+    const servicesTotal =
+      formData.service.reduce(
+        (total, service) => total + (service.price || 0),
+        0
+      ) +
+      (formData.extraPrice || 0) -
+      (formData.discount || 0);
 
     const paidAmount = formData.payments
       .filter((payment) => payment.paid)
@@ -384,9 +378,9 @@ export default function VisitCreateForm({
     );
 
     return {
-      total: combinedTotal,
-      remainingWithPaid: combinedTotal - paidAmount,
-      remainingTotal: combinedTotal - totalPayments,
+      total: servicesTotal,
+      remainingWithPaid: servicesTotal - paidAmount,
+      remainingTotal: servicesTotal - totalPayments,
     };
   };
 
