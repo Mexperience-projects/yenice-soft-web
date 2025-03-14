@@ -96,7 +96,7 @@ export function PersonnelTable({
           personel_list.find((p) => p.id.toString() === person.id.toString())
             ?.services || [];
         return personnelServices.some(
-          (service: number) => service.toString() === filters.selectedService
+          (service) => service.id.toString() === filters.selectedService
         );
       });
     }

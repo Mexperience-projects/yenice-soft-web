@@ -337,7 +337,7 @@ export default function PersonnelPage() {
           closeModal(); // This will set isModalOpen to false
           setSelectedPersonnel(null); // This will clear the selected personnel
         }}
-        selectedPersonnel={selectedPersonnel}
+        selectedPersonnel={selectedPersonnel as PersonelType}
         isOpen={isModalOpen}
       />
     </div>

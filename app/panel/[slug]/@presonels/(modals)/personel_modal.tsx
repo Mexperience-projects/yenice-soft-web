@@ -17,7 +17,7 @@ import { format, subMonths } from "date-fns";
 interface PersonelModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedPersonnel: PersonelType | null;
+  selectedPersonnel?: PersonelType;
 }
 
 export default function PersonnelModal({
@@ -30,9 +30,9 @@ export default function PersonnelModal({
 
   // State for payment form
   const [isAddingPayment, setIsAddingPayment] = useState(false);
-  const [editingPayment, setEditingPayment] = useState<PersonelPayments | null>(
-    null
-  );
+  const [editingPayment, setEditingPayment] = useState<
+    PersonelPayments | undefined
+  >(undefined);
   const [paymentPrice, setPaymentPrice] = useState("");
   const [paymentDate, setPaymentDate] = useState<Date | undefined>(new Date());
 
@@ -185,7 +185,7 @@ export default function PersonnelModal({
   // Reset payment form
   const resetPaymentForm = () => {
     setIsAddingPayment(false);
-    setEditingPayment(null);
+    setEditingPayment(undefined);
     setPaymentPrice("");
     setPaymentDate(new Date());
   };
@@ -222,7 +222,7 @@ export default function PersonnelModal({
     setMaxAmount("");
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) return undefined;
 
   // If no personnel is selected, show the same layout but with empty fields
   if (!selectedPersonnel) {

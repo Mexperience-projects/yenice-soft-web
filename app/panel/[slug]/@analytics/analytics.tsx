@@ -539,7 +539,7 @@ export default function Analytics() {
 
         {/* Personnel Detail Modal */}
         <PersonnelModal
-          selectedPersonnel={selectedPersonnel}
+          selectedPersonnel={selectedPersonnel as PersonelType}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
         />

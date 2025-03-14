@@ -776,12 +776,15 @@ export default function VisitCreateForm({
               disabled={readonly}
               type="number"
               name="extraPrice"
-              value={formData?.extraPrice || 0}
+              value={formData?.extraPrice ?? 0}
               onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  extraPrice: parseInt(e.target.value) || 0,
-                }))
+                setFormData((prev) => {
+                  if (!prev) return prev;
+                  return {
+                    ...prev,
+                    extraPrice: parseInt(e.target.value) || 0,
+                  };
+                })
               }
               min="0"
               className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
@@ -802,12 +805,15 @@ export default function VisitCreateForm({
               disabled={readonly}
               type="number"
               name="discount"
-              value={formData?.discount || 0}
+              value={formData?.discount ?? 0}
               onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  discount: parseInt(e.target.value) || 0,
-                }))
+                setFormData((prev) => {
+                  if (!prev) return prev;
+                  return {
+                    ...prev,
+                    discount: parseInt(e.target.value) || 0,
+                  };
+                })
               }
               min="0"
               className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-secondary focus:ring-secondary"

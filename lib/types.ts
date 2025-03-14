@@ -26,7 +26,7 @@ export interface PersonelType {
   revenue: number;
   visitCount: number;
   doctorExpense: number;
-  services: number[];
+  services:   ServicesType[];
 }
 
 export interface UsersType {
