@@ -22,20 +22,18 @@ import type { ItemsType, Visit_itemType } from "@/lib/types";
 
 interface InventoryChartsProps {
   items_list: ItemsType[];
-  visitItems: Visit_itemType[];
 }
 
 const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
 
-export function InventoryCharts({ items_list, visitItems }: InventoryChartsProps) {
+export function InventoryCharts({ items_list }: InventoryChartsProps) {
   const { t } = useTranslation();
 
   // Calculate inventory statistics
   const inventoryStats = useMemo(() => {
     return items_list.map((item) => {
-      const itemUsage = visitItems.filter((vi) => vi.item.id === item.id);
-      const usage = itemUsage.reduce((sum, vi) => sum + (vi.count || 1), 0);
-      const revenue = itemUsage.reduce((sum, vi) => sum + ((vi.count || 1) * item.price), 0);
+      const usage = item.used;
+      const revenue = usage * item.price;
       const remaining = Math.max(0, item.count - usage);
       const remainingPercentage = item.count > 0 ? (remaining / item.count) * 100 : 0;
 
@@ -48,7 +46,7 @@ export function InventoryCharts({ items_list, visitItems }: InventoryChartsProps
         remainingPercentage,
       };
     });
-  }, [items_list, visitItems]);
+  }, [items_list]);
 
   // Prepare data for stock status radar chart
   const stockStatusData = useMemo(() => {

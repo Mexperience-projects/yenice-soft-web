@@ -164,7 +164,9 @@
     "personnel": "Personel",
     "inventory": "Envanter",
     "status": "Durum",
-    "itemsUsageDistribution": "Ürün Kullanım Dağılımı"
+    "itemsUsageDistribution": "Ürün Kullanım Dağılımı",
+    "itemsRevenue": "Ürün Gelirleri",
+    "paid": "Ödendi"
   },
   "clients": {
     "title": "Müşteri Yönetimi",
@@ -274,7 +276,16 @@
     "paymentAmount": "Ödeme miktarı",
     "total": "Toplam",
     "table": {
-      "noPayments": "Ödeme bulunamadı"
+      "noPayments": "Ödeme bulunamadı",
+      "date": "Tarih",
+      "description": "Açıklama",
+      "amount": "Tutar",
+      "status": "Durum",
+      "type": "Tür",
+      "paid": "Ödendi"
+    },
+    "types": {
+      "debit_card": "Banka Kartı"
     }
   },
   "personnel": {

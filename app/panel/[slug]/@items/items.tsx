@@ -26,7 +26,6 @@ export default function ItemsPage() {
     delete_items_data,
     items_list,
   } = useItems_691d50();
-  console.log(items_list);
 
   const [createModal, setCreateModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
@@ -246,14 +245,14 @@ export default function ItemsPage() {
                       <td className="px-6 py-4 text-gray-700">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            item.count > 10
+                            item.count - item.used > item.limit
                               ? "bg-green-100 text-green-800"
-                              : item.count > 0
+                              : item.count - item.used > 0
                               ? "bg-yellow-100 text-yellow-800"
                               : "bg-red-100 text-red-800"
                           }`}
                         >
-                          {item.count}
+                          {item.count - item.used}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">

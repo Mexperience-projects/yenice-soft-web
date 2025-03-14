@@ -11,14 +11,7 @@ import type {
 } from "@/lib/types";
 
 export interface PersonnelWithMetrics extends PersonelType {
-  visitCount: number;
-  itemCount: number;
-  revenue: number;
-  expense: number;
   services: ServicesType[];
-  visits: VisitType[];
-  visitItems: Visit_itemType[];
-  payments: PaymentsType[];
 }
 
 export interface FilterProps {

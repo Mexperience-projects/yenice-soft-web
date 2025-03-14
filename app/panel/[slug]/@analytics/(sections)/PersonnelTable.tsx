@@ -18,6 +18,8 @@ export function PersonnelTable({
     return [...personnelWithMetrics].sort((a, b) => b.revenue - a.revenue);
   }, [personnelWithMetrics]);
 
+
+
   return (
     <div className="card bg-white shadow-lg border border-gray-100">
       <div className="card-body">
@@ -40,17 +42,17 @@ export function PersonnelTable({
               <tr>
                 <th>{t("analytics.name")}</th>
                 <th className="text-right">{t("analytics.visits")}</th>
-                <th className="text-right">{t("analytics.itemsUsed")}</th>
+                <th className="text-right">{t("analytics.itemsRevenue")}</th>
                 <th className="text-right">{t("analytics.revenue")}</th>
-                <th className="text-right">{t("analytics.payments")}</th>
-                <th className="text-right">{t("analytics.profit")}</th>
-                <th className="text-right">{t("analytics.actions")}</th>
+                <th className="text-right">{t("analytics.expense")}</th>
+                <th className="text-right">{t("analytics.paid")}</th>
+                <th className="text-right">{t("analytics.remaining")}</th>
               </tr>
             </thead>
             <tbody>
               {sortedPersonnel.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-8 text-base-content/50">
+                  <td colSpan={8} className="text-center py-8 text-base-content/50">
                     {t("analytics.noPersonnelFound")}
                   </td>
                 </tr>
@@ -59,35 +61,48 @@ export function PersonnelTable({
                   <tr key={person.id} className="hover">
                     <td className="font-medium">{person.name}</td>
                     <td className="text-right">{person.visitCount}</td>
-                    <td className="text-right">{person.itemCount}</td>
-                    <td className="text-right">
-                      ₺{person.revenue.toLocaleString()}
-                    </td>
-                    <td className="text-right">
-                      ₺{person.expense.toLocaleString()}
-                    </td>
+                    <td className="text-right">₺{person.itemsPrice.toLocaleString()}</td>
+                    <td className="text-right">₺{person.revenue.toLocaleString()}</td>
+                    <td className="text-right">₺{person.expense.toLocaleString()}</td>
+                    <td className="text-right">₺{person.paid.toLocaleString()}</td>
                     <td className="text-right">
                       <span
                         className={
-                          person.revenue - person.expense > 0
-                            ? "text-success font-medium"
-                            : "text-error font-medium"
+                          person.expense - person.paid > 0
+                            ? "text-error font-medium"
+                            : "text-success font-medium"
                         }
                       >
-                        ₺{(person.revenue - person.expense).toLocaleString()}
+                        ₺{(person.expense - person.paid).toLocaleString()}
                       </span>
-                    </td>
-                    <td className="text-right">
-                      <button
-                        className="btn btn-ghost btn-sm bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90"
-                        onClick={() => onPersonnelClick(person)}
-                      >
-                        <Eye className="h-4 w-4 mr-2" />
-                        {t("analytics.details")}
-                      </button>
                     </td>
                   </tr>
                 ))
+              )}
+              {/* Totals row */}
+              {sortedPersonnel.length > 0 && (
+                <tr className="font-medium bg-base-200">
+                  <td>{t("analytics.totals")}</td>
+                  <td className="text-right">
+                    {sortedPersonnel.reduce((sum, p) => sum + p.visitCount, 0)}
+                  </td>
+                  <td className="text-right">
+                    ₺{sortedPersonnel.reduce((sum, p) => sum + p.itemsPrice, 0).toLocaleString()}
+                  </td>
+                  <td className="text-right">
+                    ₺{sortedPersonnel.reduce((sum, p) => sum + p.revenue, 0).toLocaleString()}
+                  </td>
+                  <td className="text-right">
+                    ₺{sortedPersonnel.reduce((sum, p) => sum + p.expense, 0).toLocaleString()}
+                  </td>
+                  <td className="text-right">
+                    ₺{sortedPersonnel.reduce((sum, p) => sum + p.paid, 0).toLocaleString()}
+                  </td>
+                  <td className="text-right">
+                    ₺{sortedPersonnel.reduce((sum, p) => sum + (p.expense - p.paid), 0).toLocaleString()}
+                  </td>
+                  <td></td>
+                </tr>
               )}
             </tbody>
           </table>

@@ -115,31 +115,11 @@ export default function Analytics() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        console.log("Starting to fetch data...");
-
-        // Call each data fetching function individually to better track issues
-        console.log("Fetching personnel data...");
-        await get_personel_list_list();
-        console.log("Personnel data fetched, count:", personel_list.length);
-
-        console.log("Fetching services data...");
-        await get_services_list_list();
-        console.log("Services data fetched, count:", services_list.length);
-
-        console.log("Fetching visits data...");
-        await get_visit_list_list();
-        console.log("Visits data fetched, count:", visit_list.length);
-
-        console.log("Fetching payments data...");
-        await get_payments_list_list();
-        console.log("Payments data fetched, count:", payments_list.length);
-
-        console.log("Fetching items data...");
-        await get_items_list_list();
-        console.log("Items data fetched, count:", items_list.length);
-
-        console.log("All data fetched successfully!");
-
+         get_personel_list_list();
+         get_services_list_list();
+         get_visit_list_list();
+         get_payments_list_list();
+         get_items_list_list();
         // Set animate in after data is loaded
         setAnimateIn(true);
       } catch (error) {
@@ -209,8 +189,8 @@ export default function Analytics() {
   const totalVisits = useMemo(() => visit_list.length, [visit_list]);
 
   const totalItems = useMemo(
-    () => visitItems.reduce((total, item) => total + (item.count || 1), 0),
-    [visitItems]
+    () => items_list.reduce((total, item) => total + item.used, 0),
+    [items_list]
   );
 
   const totalRevenue = useMemo(
@@ -221,7 +201,7 @@ export default function Analytics() {
   const totalPersonnelPayments = useMemo(
     () =>
       personel_list.reduce(
-        (total, person) => total + (person.doctorExpense || 0),
+        (total, person) => total + (person.expense || 0),
         0
       ),
     [personel_list]
@@ -299,98 +279,28 @@ export default function Analytics() {
       "personnel"
     );
 
-    // Create a map to store metrics for each personnel
-    const personnelMetrics = new Map();
+    // Map personnel data directly since metrics are now part of PersonelType
+    const result = filteredPersonnel.map((person) => {
+      // Get services provided by this personnel
+      const personServices = services_list.filter(
+        (service) => service.personel?.some((p) => p.id === person.id)
+      );
 
-    // Process all visits to extract personnel metrics
-    visit_list.forEach((visit) => {
-      if (!visit.operations) return;
-
-      visit.operations.forEach((operation) => {
-        if (!operation.service) return;
-
-        // Find the personnel associated with each service in this operation
-        operation.service.forEach((service) => {
-          if (!service.personel) return;
-
-          service.personel.forEach((personel) => {
-            const personnelId = personel.id;
-
-            // Initialize metrics for this personnel if not already done
-            if (!personnelMetrics.has(personnelId)) {
-              personnelMetrics.set(personnelId, {
-                visitCount: 0,
-                itemCount: 0,
-                revenue: 0,
-                visits: [],
-                visitItems: [],
-                payments: [],
-              });
-            }
-
-            const metrics = personnelMetrics.get(personnelId);
-
-            // Count this as a visit for the personnel
-            if (!metrics.visits.some((v: VisitType) => v.id === visit.id)) {
-              metrics.visits.push(visit);
-              metrics.visitCount++;
-            }
-
-            // Add items used in this operation
-            if (operation.items) {
-              operation.items.forEach((item) => {
-                metrics.visitItems.push(item);
-                metrics.itemCount += item.count || 1;
-              });
-            }
-
-            // Add revenue from this operation
-            if (operation.payments) {
-              operation.payments.forEach((payment) => {
-                if (payment.personel_id?.includes(personnelId)) {
-                  metrics.payments.push(payment);
-                  metrics.revenue += payment.price || 0;
-                }
-              });
-            }
-          });
-        });
-      });
-    });
-
-    // Combine the metrics with personnel data
-    const result = filteredPersonnel
-      .map((person) => {
-        const metrics = personnelMetrics.get(person.id) || {
-          visitCount: 0,
-          itemCount: 0,
-          revenue: 0,
-          visits: [],
-          visitItems: [],
-          payments: [],
-        };
-
-        // Get services provided by this personnel
-        const personServices = services_list.filter(
-          (service) => service.personel?.some((p) => p.id === person.id)
-        );
-
-        return {
-          ...person,
-          visitCount: metrics.visitCount,
-          itemCount: metrics.itemCount,
-          revenue: metrics.revenue,
-          expense: person.doctorExpense || 0,
-          services: personServices,
-          visits: metrics.visits,
-          visitItems: metrics.visitItems,
-          payments: metrics.payments,
-        };
-      })
-      .sort((a, b) => b.revenue - a.revenue); // Sort by revenue (highest first)
+      return {
+        ...person,
+        services: personServices,
+      };
+    }).sort((a, b) => b.revenue - a.revenue); // Sort by revenue (highest first)
 
     return result;
-  }, [filteredPersonnel, visit_list, services_list]);
+  }, [filteredPersonnel, services_list]);
+
+  // Calculate metrics for filtered personnel
+  const filteredPersonnelWithMetrics = useMemo(() => {
+    return personnelWithMetrics.filter(person =>
+      filteredPersonnel.some(fp => fp.id === person.id)
+    );
+  }, [personnelWithMetrics, filteredPersonnel]);
 
   // Get current filters based on active tab
   const getCurrentFilters = () => {
@@ -463,6 +373,12 @@ export default function Analytics() {
   // Check if any data is still loading
   const isDataLoading =
     personnelLoading || servicesLoading || paymentsLoading || itemsLoading;
+
+  // Handle personnel click for details modal
+  const handlePersonnelClick = (personnel: PersonnelWithMetrics) => {
+    setSelectedPersonnel(personnel);
+    setIsModalOpen(true);
+  };
 
   return (
     <div
@@ -573,46 +489,48 @@ export default function Analytics() {
 
         {/* Tab Content */}
         <div className="mt-6">
-          {activeTab === "personnel" && (
-            <div className="space-y-6">
-              <PersonnelCharts personnelWithMetrics={personnelWithMetrics} />
-              <PersonnelTable
-                personnelWithMetrics={personnelWithMetrics}
-                filteredPersonnel={personnelWithMetrics}
-                personel_list={personel_list}
-                onPersonnelClick={(personnel) => {
-                  setSelectedPersonnel(personnel);
-                  setIsModalOpen(true);
-                }}
+          {/* Charts */}
+          <div className="mb-6">
+            {activeTab === "personnel" && (
+              <PersonnelCharts
+                personnelWithMetrics={filteredPersonnelWithMetrics}
               />
-            </div>
-          )}
-
-          {activeTab === "inventory" && (
-            <div className="space-y-6">
+            )}
+            {activeTab === "inventory" && (
               <InventoryCharts
                 items_list={items_list}
-                visitItems={visitItems}
               />
-              <InventoryTable
-                items_list={items_list}
-                visitItems={visitItems}
-                animateIn={animateIn}
+            )}
+            {activeTab === "visits" && (
+              <VisitsCharts
+                visits={visit_list}
               />
-            </div>
-          )}
+            )}
+          </div>
 
+          {/* Tables */}
+          {activeTab === "personnel" && (
+            <PersonnelTable
+              personnelWithMetrics={filteredPersonnelWithMetrics}
+              filteredPersonnel={filteredPersonnelWithMetrics}
+              personel_list={personel_list}
+              onPersonnelClick={handlePersonnelClick}
+            />
+          )}
+          {activeTab === "inventory" && (
+            <InventoryTable
+              items_list={items_list}
+              animateIn={animateIn}
+            />
+          )}
           {activeTab === "visits" && (
-            <div className="space-y-6">
-              <VisitsCharts visits={visit_list} />
-              <VisitsTable
-                visit_list={visit_list}
-                services_list={services_list}
-                personel_list={personel_list}
-                animateIn={animateIn}
-                filters={visitFilters}
-              />
-            </div>
+            <VisitsTable
+              visit_list={visit_list}
+              services_list={services_list}
+              personel_list={personel_list}
+              animateIn={animateIn}
+              filters={visitFilters}
+            />
           )}
         </div>
 

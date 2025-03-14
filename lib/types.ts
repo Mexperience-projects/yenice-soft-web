@@ -14,13 +14,18 @@ export interface PersonelPayments {
 }
 
 export interface PersonelType {
-  precent: number;
-  id: number;
-  name: string;
+  author_id: number;
   description: string;
-  visits: VisitType[];
-  doctorExpense: number;
+  expense: number;
+  id: number;
+  itemsPrice: number;
+  name: string;
+  paid: number;
   payments: PersonelPayments[];
+  precent: number;
+  revenue: number;
+  visitCount: number;
+  doctorExpense: number;
 }
 
 export interface UsersType {
@@ -60,6 +65,7 @@ export interface ItemsType {
   price: number;
   count: number;
   limit: number;
+  used: number;
 }
 
 export interface Service_itemsType {

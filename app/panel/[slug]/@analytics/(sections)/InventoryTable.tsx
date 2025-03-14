@@ -7,13 +7,11 @@ import type { ItemsType, Visit_itemType } from "@/lib/types";
 
 interface InventoryTableProps {
   items_list: ItemsType[];
-  visitItems: Visit_itemType[];
   animateIn: boolean;
 }
 
 export function InventoryTable({
   items_list,
-  visitItems,
   animateIn,
 }: InventoryTableProps) {
   const { t } = useTranslation();
@@ -21,12 +19,11 @@ export function InventoryTable({
   // Calculate inventory statistics
   const inventoryStats = useMemo(() => {
     const stats = items_list.map((item) => {
-      // Calculate total usage
-      const itemUsage = visitItems.filter((vi) => vi.item.id === item.id);
-      const usage = itemUsage.reduce((sum, vi) => sum + (vi.count || 1), 0);
+      // Use the used field directly instead of calculating from visitItems
+      const usage = item.used;
 
       // Calculate revenue from this item
-      const revenue = itemUsage.reduce((sum, vi) => sum + ((vi.count || 1) * item.price), 0);
+      const revenue = usage * item.price;
 
       // Calculate remaining stock percentage
       const remainingPercentage = item.count > 0 
@@ -44,7 +41,7 @@ export function InventoryTable({
     }).sort((a, b) => b.revenue - a.remainingPercentage); // Sort by revenue first, then low stock
 
     return stats;
-  }, [items_list, visitItems]);
+  }, [items_list]);
 
   // Calculate totals
   const totals = useMemo(() => {

@@ -51,21 +51,6 @@ export function PersonnelCharts({ personnelWithMetrics }: PersonnelChartsProps) 
     const stats = new Map<string, { name: string; revenue: number; expense: number }>();
     
     personnelWithMetrics.forEach((person) => {
-      person.visits.forEach((visit) => {
-        visit.operations.forEach((operation) => {
-          if (operation.personel?.id !== person.id) return;
-          const date = new Date(operation.datetime).toLocaleDateString();
-          const revenue = operation.service.reduce((sum, s) => sum + s.price, 0) +
-                         operation.items.reduce((sum, i) => sum + (i.count * i.item.price), 0);
-          
-          const existing = stats.get(date) || { name: date, revenue: 0, expense: 0 };
-          stats.set(date, {
-            name: date,
-            revenue: existing.revenue + revenue,
-            expense: existing.expense,
-          });
-        });
-      });
 
       person.payments.forEach((payment) => {
         const date = new Date(payment.date).toLocaleDateString();
@@ -90,7 +75,7 @@ export function PersonnelCharts({ personnelWithMetrics }: PersonnelChartsProps) 
       expense: person.expense,
       profit: person.revenue - person.expense,
       visits: person.visitCount,
-      items: person.itemCount,
+      items: person.itemsPrice,
     }));
   }, [personnelWithMetrics]);
 

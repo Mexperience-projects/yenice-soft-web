@@ -165,7 +165,11 @@
     "personnel": "Personnel",
     "inventory": "Inventory",
     "status": "Status",
-    "itemsUsageDistribution": "Items Usage Distribution"
+    "itemsUsageDistribution": "Items Usage Distribution",
+    "itemsRevenue": "Items Revenue",
+    "paid": "Paid",
+    "totalUsage": "Total Usage",
+    "revenueRange": "Revenue Range"
   },
   "clients": {
     "title": "Client Management",
@@ -275,7 +279,16 @@
     "paymentAmount": "Payment amount",
     "total": "Total",
     "table": {
-      "noPayments": "No payments found"
+      "noPayments": "No payments found",
+      "date": "Date",
+      "description": "Description",
+      "amount": "Amount",
+      "status": "Status",
+      "type": "Type",
+      "paid": "Paid"
+    },
+    "types": {
+      "debit_card": "Debit Card"
     }
   },
   "personnel": {
