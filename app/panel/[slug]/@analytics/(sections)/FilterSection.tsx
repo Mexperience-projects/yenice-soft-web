@@ -1,125 +1,373 @@
 "use client";
 
-import { Search, X } from "lucide-react";
-import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
-import type { FilterProps } from "./types";
+import { X, Filter, ArrowUpDown } from "lucide-react";
+import { DayPicker } from "react-day-picker";
+import type { FilterSectionProps, PersonnelFilters, InventoryFilters, VisitFilters } from "./types";
+import { PAYMENT_TYPE } from "@/lib/types";
 
 export function FilterSection({
-  searchQuery,
-  setSearchQuery,
-  dateRange,
-  setDateRange,
-  selectedService,
-  setSelectedService,
+  filters,
+  onFilterChange,
   services_list,
+  personel_list,
   showFilters,
   setShowFilters,
   activeFilters,
   resetFilters,
   applyFilters,
-}: FilterProps) {
+  tableType,
+}: FilterSectionProps) {
   const { t } = useTranslation();
+
+  const handleFilterChange = <T extends PersonnelFilters | InventoryFilters | VisitFilters>(
+    changes: Partial<T>
+  ) => {
+    onFilterChange({ ...filters, ...changes } as T);
+  };
 
   if (!showFilters) return null;
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-4 transition-all duration-300 ease-in-out opacity-100 translate-y-0">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="font-semibold text-lg">{t("analytics.filterData")}</h3>
-        <button
-          className="btn btn-ghost btn-sm p-1 h-8 w-8"
-          onClick={() => setShowFilters(false)}
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
+    <div className="card bg-base-100 shadow-lg border border-base-200 mb-6">
+      <div className="card-body">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="card-title text-lg">
+            <Filter className="w-5 h-5 mr-2" />
+            {t("analytics.filters")}
+          </h3>
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => setShowFilters(false)}
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            {t("analytics.searchPersonnel")}
-          </label>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/50" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Common Filters */}
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">{t("analytics.search")}</span>
+            </label>
             <input
               type="text"
-              placeholder={t("analytics.searchPersonnel")}
-              className="input input-bordered w-full pl-10"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              className="input input-bordered w-full"
+              value={filters.searchQuery}
+              onChange={(e) => handleFilterChange({ searchQuery: e.target.value })}
+              placeholder={t("analytics.searchPlaceholder")}
             />
           </div>
-        </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            {t("analytics.filterByDate")}
-          </label>
-          <div className="flex flex-wrap gap-2">
-            <div className="relative">
-              <input
-                type="date"
-                className="input input-bordered w-full pl-12"
-                value={dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : ""}
-                onChange={(e) => {
-                  const fromDate = e.target.value
-                    ? new Date(e.target.value)
-                    : undefined;
-                  setDateRange({ from: fromDate, to: dateRange?.to });
-                }}
-                placeholder="From"
-              />
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-base-content/50 text-sm">
-                {!dateRange?.from && "From"}
-              </span>
-            </div>
-            <div className="relative">
-              <input
-                type="date"
-                className="input input-bordered w-full pl-10"
-                value={dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : ""}
-                onChange={(e) => {
-                  const toDate = e.target.value
-                    ? new Date(e.target.value)
-                    : undefined;
-                  setDateRange({ from: dateRange?.from, to: toDate });
-                }}
-                placeholder="To"
-              />
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-base-content/50 text-sm">
-                {!dateRange?.to && "To"}
-              </span>
-            </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">{t("analytics.dateRange")}</span>
+            </label>
+            <DayPicker
+              mode="range"
+              selected={filters.dateRange}
+              onSelect={(range) => handleFilterChange({ dateRange: range })}
+              className="bg-base-200 p-2 rounded-lg"
+            />
           </div>
+
+          {/* Personnel Filters */}
+          {tableType === "personnel" && (
+            <>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">{t("analytics.service")}</span>
+                </label>
+                <select
+                  className="select select-bordered w-full"
+                  value={(filters as PersonnelFilters).selectedService}
+                  onChange={(e) =>
+                    handleFilterChange({ selectedService: e.target.value })
+                  }
+                >
+                  <option value="all">{t("analytics.allServices")}</option>
+                  {services_list.map((service) => (
+                    <option key={service.id} value={service.id}>
+                      {service.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">{t("analytics.revenueRange")}</span>
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    value={(filters as PersonnelFilters).minRevenue || ""}
+                    onChange={(e) =>
+                      handleFilterChange({
+                        minRevenue: e.target.value ? Number(e.target.value) : undefined,
+                      })
+                    }
+                    placeholder={t("analytics.min")}
+                  />
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    value={(filters as PersonnelFilters).maxRevenue || ""}
+                    onChange={(e) =>
+                      handleFilterChange({
+                        maxRevenue: e.target.value ? Number(e.target.value) : undefined,
+                      })
+                    }
+                    placeholder={t("analytics.max")}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Inventory Filters */}
+          {tableType === "inventory" && (
+            <>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">{t("analytics.stockRange")}</span>
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    value={(filters as InventoryFilters).minStock || ""}
+                    onChange={(e) =>
+                      handleFilterChange({
+                        minStock: e.target.value ? Number(e.target.value) : undefined,
+                      })
+                    }
+                    placeholder={t("analytics.min")}
+                  />
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    value={(filters as InventoryFilters).maxStock || ""}
+                    onChange={(e) =>
+                      handleFilterChange({
+                        maxStock: e.target.value ? Number(e.target.value) : undefined,
+                      })
+                    }
+                    placeholder={t("analytics.max")}
+                  />
+                </div>
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">{t("analytics.sortBy")}</span>
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    className="select select-bordered flex-1"
+                    value={(filters as InventoryFilters).sortBy}
+                    onChange={(e) =>
+                      handleFilterChange({
+                        sortBy: e.target.value as InventoryFilters["sortBy"],
+                      })
+                    }
+                  >
+                    <option value="name">{t("analytics.name")}</option>
+                    <option value="stock">{t("analytics.stock")}</option>
+                    <option value="usage">{t("analytics.usage")}</option>
+                    <option value="revenue">{t("analytics.revenue")}</option>
+                  </select>
+                  <button
+                    className="btn btn-square"
+                    onClick={() =>
+                      handleFilterChange({
+                        sortOrder:
+                          (filters as InventoryFilters).sortOrder === "asc"
+                            ? "desc"
+                            : "asc",
+                      })
+                    }
+                  >
+                    <ArrowUpDown
+                      className={`w-4 h-4 transform ${
+                        (filters as InventoryFilters).sortOrder === "asc"
+                          ? ""
+                          : "rotate-180"
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+              <div className="form-control">
+                <label className="label cursor-pointer">
+                  <span className="label-text">{t("analytics.showLowStock")}</span>
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-primary"
+                    checked={(filters as InventoryFilters).showLowStock}
+                    onChange={(e) =>
+                      handleFilterChange({ showLowStock: e.target.checked })
+                    }
+                  />
+                </label>
+              </div>
+            </>
+          )}
+
+          {/* Visit Filters */}
+          {tableType === "visits" && (
+            <>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">{t("analytics.service")}</span>
+                </label>
+                <select
+                  className="select select-bordered w-full"
+                  value={(filters as VisitFilters).selectedService}
+                  onChange={(e) =>
+                    handleFilterChange({ selectedService: e.target.value })
+                  }
+                >
+                  <option value="all">{t("analytics.allServices")}</option>
+                  {services_list.map((service) => (
+                    <option key={service.id} value={service.id}>
+                      {service.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">{t("analytics.personnel")}</span>
+                </label>
+                <select
+                  className="select select-bordered w-full"
+                  value={(filters as VisitFilters).selectedPersonnel}
+                  onChange={(e) =>
+                    handleFilterChange({ selectedPersonnel: e.target.value })
+                  }
+                >
+                  <option value="all">{t("analytics.allPersonnel")}</option>
+                  {personel_list?.map((person) => (
+                    <option key={person.id} value={person.id}>
+                      {person.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">{t("analytics.paymentType")}</span>
+                </label>
+                <select
+                  className="select select-bordered w-full"
+                  value={(filters as VisitFilters).paymentType}
+                  onChange={(e) =>
+                    handleFilterChange({
+                      paymentType: e.target.value as PAYMENT_TYPE | "all",
+                    })
+                  }
+                >
+                  <option value="all">{t("analytics.allPaymentTypes")}</option>
+                  {Object.values(PAYMENT_TYPE)
+                    .filter((v) => typeof v === "string")
+                    .map((type) => (
+                      <option key={type} value={type}>
+                        {t(`analytics.paymentTypes.${type}`)}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">{t("analytics.revenueRange")}</span>
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    value={(filters as VisitFilters).minRevenue || ""}
+                    onChange={(e) =>
+                      handleFilterChange({
+                        minRevenue: e.target.value ? Number(e.target.value) : undefined,
+                      })
+                    }
+                    placeholder={t("analytics.min")}
+                  />
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    value={(filters as VisitFilters).maxRevenue || ""}
+                    onChange={(e) =>
+                      handleFilterChange({
+                        maxRevenue: e.target.value ? Number(e.target.value) : undefined,
+                      })
+                    }
+                    placeholder={t("analytics.max")}
+                  />
+                </div>
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">{t("analytics.sortBy")}</span>
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    className="select select-bordered flex-1"
+                    value={(filters as VisitFilters).sortBy}
+                    onChange={(e) =>
+                      handleFilterChange({
+                        sortBy: e.target.value as VisitFilters["sortBy"],
+                      })
+                    }
+                  >
+                    <option value="date">{t("analytics.date")}</option>
+                    <option value="revenue">{t("analytics.revenue")}</option>
+                    <option value="personnel_fee">
+                      {t("analytics.personnelFee")}
+                    </option>
+                    <option value="net_revenue">
+                      {t("analytics.netRevenue")}
+                    </option>
+                  </select>
+                  <button
+                    className="btn btn-square"
+                    onClick={() =>
+                      handleFilterChange({
+                        sortOrder:
+                          (filters as VisitFilters).sortOrder === "asc"
+                            ? "desc"
+                            : "asc",
+                      })
+                    }
+                  >
+                    <ArrowUpDown
+                      className={`w-4 h-4 transform ${
+                        (filters as VisitFilters).sortOrder === "asc"
+                          ? ""
+                          : "rotate-180"
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            {t("analytics.filterByService")}
-          </label>
-          <select
-            className="select select-bordered w-full"
-            value={selectedService}
-            onChange={(e) => setSelectedService(e.target.value)}
+        <div className="flex justify-end gap-2 mt-6">
+          <button
+            className="btn btn-ghost"
+            onClick={resetFilters}
           >
-            <option value="all">{t("analytics.allServices")}</option>
-            {services_list.map((service) => (
-              <option key={service.id} value={service.id.toString()}>
-                {service.name}
-              </option>
-            ))}
-          </select>
+            {t("analytics.resetFilters")}
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={applyFilters}
+          >
+            {t("analytics.applyFilters")}
+          </button>
         </div>
-      </div>
-
-      <div className="flex justify-end mt-4 gap-2">
-        <button className="btn btn-outline btn-sm" onClick={resetFilters}>
-          {t("analytics.resetFilters")}
-        </button>
-        <button className="btn btn-primary btn-sm" onClick={applyFilters}>
-          {t("analytics.applyFilters")}
-        </button>
       </div>
     </div>
   );

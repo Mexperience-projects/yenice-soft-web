@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { Eye } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { PersonnelTableProps } from "./types";
@@ -11,6 +12,11 @@ export function PersonnelTable({
   onPersonnelClick,
 }: PersonnelTableProps) {
   const { t } = useTranslation();
+
+  // Sort personnel by revenue (highest first)
+  const sortedPersonnel = useMemo(() => {
+    return [...personnelWithMetrics].sort((a, b) => b.revenue - a.revenue);
+  }, [personnelWithMetrics]);
 
   return (
     <div className="card bg-white shadow-lg border border-gray-100">
@@ -42,14 +48,14 @@ export function PersonnelTable({
               </tr>
             </thead>
             <tbody>
-              {personnelWithMetrics.length === 0 ? (
+              {sortedPersonnel.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-8 text-base-content/50">
                     {t("analytics.noPersonnelFound")}
                   </td>
                 </tr>
               ) : (
-                personnelWithMetrics.map((person) => (
+                sortedPersonnel.map((person) => (
                   <tr key={person.id} className="hover">
                     <td className="font-medium">{person.name}</td>
                     <td className="text-right">{person.visitCount}</td>

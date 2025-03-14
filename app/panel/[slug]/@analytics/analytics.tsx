@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, Users, Package, Calendar } from "lucide-react";
 import { isWithinInterval } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import { useTranslation } from "react-i18next";
@@ -27,17 +27,27 @@ import { useAppSelector } from "@/store/HOCs";
 import { SummaryCards } from "./(sections)/SummaryCards";
 import { FilterSection } from "./(sections)/FilterSection";
 import { PersonnelTable } from "./(sections)/PersonnelTable";
+import { InventoryTable } from "./(sections)/InventoryTable";
+import { VisitsTable } from "./(sections)/VisitsTable";
 import type { PersonnelWithMetrics } from "./(sections)/types";
 import PersonnelModal from "../@presonels/(modals)/personel_modal";
+import type {
+  PersonnelFilters,
+  InventoryFilters,
+  VisitFilters,
+} from "./(sections)/types";
+import { PersonnelCharts } from "./(sections)/charts/PersonnelCharts";
+import { InventoryCharts } from "./(sections)/charts/InventoryCharts";
+import { VisitsCharts } from "./(sections)/charts/VisitsCharts";
+
+// Add TabType for type safety
+type TabType = "personnel" | "inventory" | "visits";
 
 export default function Analytics() {
   // Use the translation hook
   const { t } = useTranslation();
 
   // State management
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedService, setSelectedService] = useState("all");
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedPersonnel, setSelectedPersonnel] =
     useState<PersonnelWithMetrics | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,6 +55,38 @@ export default function Analytics() {
   const [isLoading, setIsLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilters, setActiveFilters] = useState(0);
+  const [activeTab, setActiveTab] = useState<TabType>("personnel");
+  
+  // Filter states for each table type
+  const [personnelFilters, setPersonnelFilters] = useState<PersonnelFilters>({
+    dateRange: undefined,
+    searchQuery: "",
+    selectedService: "all",
+    minRevenue: undefined,
+    maxRevenue: undefined,
+  });
+
+  const [inventoryFilters, setInventoryFilters] = useState<InventoryFilters>({
+    dateRange: undefined,
+    searchQuery: "",
+    minStock: undefined,
+    maxStock: undefined,
+    showLowStock: false,
+    sortBy: "name",
+    sortOrder: "asc",
+  });
+
+  const [visitFilters, setVisitFilters] = useState<VisitFilters>({
+    dateRange: undefined,
+    searchQuery: "",
+    selectedService: "all",
+    selectedPersonnel: "all",
+    paymentType: "all",
+    minRevenue: undefined,
+    maxRevenue: undefined,
+    sortBy: "date",
+    sortOrder: "desc",
+  });
 
   // Use our custom hooks with Redux
   const { loading: personnelLoading, get_personel_list_list } =
@@ -110,14 +152,39 @@ export default function Analytics() {
     fetchData();
   }, []);
 
-  // Count active filters
+  // Update active filters count based on current tab's filters
   useEffect(() => {
+    const currentFilters = getCurrentFilters();
     let count = 0;
-    if (searchQuery) count++;
-    if (dateRange?.from && dateRange?.to) count++;
-    if (selectedService !== "all") count++;
+    
+    // Count common filters
+    if (currentFilters.searchQuery) count++;
+    if (currentFilters.dateRange?.from && currentFilters.dateRange?.to) count++;
+
+    // Count tab-specific filters
+    switch (activeTab) {
+      case "personnel":
+        if ((currentFilters as PersonnelFilters).selectedService !== "all") count++;
+        if ((currentFilters as PersonnelFilters).minRevenue !== undefined) count++;
+        if ((currentFilters as PersonnelFilters).maxRevenue !== undefined) count++;
+        break;
+      case "inventory":
+        if ((currentFilters as InventoryFilters).minStock !== undefined) count++;
+        if ((currentFilters as InventoryFilters).maxStock !== undefined) count++;
+        if ((currentFilters as InventoryFilters).showLowStock) count++;
+        if ((currentFilters as InventoryFilters).sortBy !== "name") count++;
+        break;
+      case "visits":
+        if ((currentFilters as VisitFilters).selectedService !== "all") count++;
+        if ((currentFilters as VisitFilters).selectedPersonnel !== "all") count++;
+        if ((currentFilters as VisitFilters).paymentType !== "all") count++;
+        if ((currentFilters as VisitFilters).minRevenue !== undefined) count++;
+        if ((currentFilters as VisitFilters).maxRevenue !== undefined) count++;
+        break;
+    }
+    
     setActiveFilters(count);
-  }, [searchQuery, dateRange, selectedService]);
+  }, [activeTab, personnelFilters, inventoryFilters, visitFilters]);
 
   // Extract visit items from the visits data structure
   const visitItems = useMemo(() => {
@@ -160,32 +227,28 @@ export default function Analytics() {
     [personel_list]
   );
 
-  // Filter personnel based on search query and service
+  // Update filteredPersonnel to use personnelFilters
   const filteredPersonnel = useMemo(() => {
     console.log("Filtering personnel from", personel_list.length, "records");
-    console.log("Current search query:", searchQuery);
-    console.log("Selected service:", selectedService);
-    console.log("Date range:", dateRange);
-
+    
     return personel_list.filter((person) => {
       // Filter by search query
       const matchesSearch =
-        searchQuery === "" ||
-        person.name.toLowerCase().includes(searchQuery.toLowerCase());
+        !personnelFilters.searchQuery ||
+        person.name.toLowerCase().includes(personnelFilters.searchQuery.toLowerCase());
 
       // Filter by service
       const matchesService =
-        selectedService === "all" ||
+        personnelFilters.selectedService === "all" ||
         services_list.some(
           (service) =>
             service.personel?.some((p) => p.id === person.id) &&
-            (selectedService === "all" ||
-              service.id.toString() === selectedService)
+            service.id.toString() === personnelFilters.selectedService
         );
 
       // Filter by date range
       let matchesDateRange = true;
-      if (dateRange?.from && dateRange?.to) {
+      if (personnelFilters.dateRange?.from && personnelFilters.dateRange?.to) {
         const personVisits = visit_list.filter(
           (visit) =>
             visit.operations &&
@@ -205,21 +268,25 @@ export default function Analytics() {
               if (!op.datetime) return false;
               const opDate = new Date(op.datetime);
               return isWithinInterval(opDate, {
-                start: dateRange.from!,
-                end: dateRange.to!,
+                start: personnelFilters.dateRange!.from!,
+                end: personnelFilters.dateRange!.to!,
               });
             })
         );
       }
 
-      const result = matchesSearch && matchesService && matchesDateRange;
-      return result;
+      // Filter by revenue range
+      const matchesRevenue =
+        (!personnelFilters.minRevenue ||
+          person.doctorExpense >= personnelFilters.minRevenue) &&
+        (!personnelFilters.maxRevenue ||
+          person.doctorExpense <= personnelFilters.maxRevenue);
+
+      return matchesSearch && matchesService && matchesDateRange && matchesRevenue;
     });
   }, [
     personel_list,
-    searchQuery,
-    selectedService,
-    dateRange,
+    personnelFilters,
     services_list,
     visit_list,
   ]);
@@ -325,17 +392,72 @@ export default function Analytics() {
     return result;
   }, [filteredPersonnel, visit_list, services_list]);
 
-  // Reset all filters
-  const resetFilters = () => {
-    setSearchQuery("");
-    setSelectedService("all");
-    setDateRange(undefined);
+  // Get current filters based on active tab
+  const getCurrentFilters = () => {
+    switch (activeTab) {
+      case "personnel":
+        return personnelFilters;
+      case "inventory":
+        return inventoryFilters;
+      case "visits":
+        return visitFilters;
+    }
   };
 
-  // Apply filters and close filter section
-  const applyFilters = () => {
-    setShowFilters(false);
-    // Filters are already applied reactively through state changes
+  // Handle filter changes based on active tab
+  const handleFilterChange = (
+    filters: PersonnelFilters | InventoryFilters | VisitFilters
+  ) => {
+    switch (activeTab) {
+      case "personnel":
+        setPersonnelFilters(filters as PersonnelFilters);
+        break;
+      case "inventory":
+        setInventoryFilters(filters as InventoryFilters);
+        break;
+      case "visits":
+        setVisitFilters(filters as VisitFilters);
+        break;
+    }
+  };
+
+  // Reset filters for current tab
+  const resetFilters = () => {
+    switch (activeTab) {
+      case "personnel":
+        setPersonnelFilters({
+          dateRange: undefined,
+          searchQuery: "",
+          selectedService: "all",
+          minRevenue: undefined,
+          maxRevenue: undefined,
+        });
+        break;
+      case "inventory":
+        setInventoryFilters({
+          dateRange: undefined,
+          searchQuery: "",
+          minStock: undefined,
+          maxStock: undefined,
+          showLowStock: false,
+          sortBy: "name",
+          sortOrder: "asc",
+        });
+        break;
+      case "visits":
+        setVisitFilters({
+          dateRange: undefined,
+          searchQuery: "",
+          selectedService: "all",
+          selectedPersonnel: "all",
+          paymentType: "all",
+          minRevenue: undefined,
+          maxRevenue: undefined,
+          sortBy: "date",
+          sortOrder: "desc",
+        });
+        break;
+    }
   };
 
   // Check if any data is still loading
@@ -394,18 +516,16 @@ export default function Analytics() {
 
         {/* Filters Section */}
         <FilterSection
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          dateRange={dateRange}
-          setDateRange={setDateRange}
-          selectedService={selectedService}
-          setSelectedService={setSelectedService}
+          filters={getCurrentFilters()}
+          onFilterChange={handleFilterChange}
           services_list={services_list}
+          personel_list={personel_list}
           showFilters={showFilters}
           setShowFilters={setShowFilters}
           activeFilters={activeFilters}
           resetFilters={resetFilters}
-          applyFilters={applyFilters}
+          applyFilters={() => setShowFilters(false)}
+          tableType={activeTab}
         />
 
         {/* Summary Cards */}
@@ -423,22 +543,77 @@ export default function Analytics() {
           />
         </div>
 
-        {/* Personnel Table */}
-        <div
-          className={`transition-all duration-500 ease-out ${
-            animateIn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-          style={{ transitionDelay: "300ms" }}
-        >
-          <PersonnelTable
-            personnelWithMetrics={personnelWithMetrics}
-            filteredPersonnel={filteredPersonnel}
-            personel_list={personel_list}
-            onPersonnelClick={(person) => {
-              setSelectedPersonnel(person);
-              setIsModalOpen(true);
-            }}
-          />
+        {/* Tabs */}
+        <div role="tablist" className="tabs tabs-boxed bg-base-200/50 p-1 justify-center">
+          <button
+            role="tab"
+            className={`tab tab-lg gap-2 ${activeTab === "personnel" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("personnel")}
+          >
+            <Users className="w-4 h-4" />
+            {t("analytics.personnel")}
+          </button>
+          <button
+            role="tab"
+            className={`tab tab-lg gap-2 ${activeTab === "inventory" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("inventory")}
+          >
+            <Package className="w-4 h-4" />
+            {t("analytics.inventory")}
+          </button>
+          <button
+            role="tab"
+            className={`tab tab-lg gap-2 ${activeTab === "visits" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("visits")}
+          >
+            <Calendar className="w-4 h-4" />
+            {t("analytics.visits")}
+          </button>
+        </div>
+
+        {/* Tab Content */}
+        <div className="mt-6">
+          {activeTab === "personnel" && (
+            <div className="space-y-6">
+              <PersonnelCharts personnelWithMetrics={personnelWithMetrics} />
+              <PersonnelTable
+                personnelWithMetrics={personnelWithMetrics}
+                filteredPersonnel={personnelWithMetrics}
+                personel_list={personel_list}
+                onPersonnelClick={(personnel) => {
+                  setSelectedPersonnel(personnel);
+                  setIsModalOpen(true);
+                }}
+              />
+            </div>
+          )}
+
+          {activeTab === "inventory" && (
+            <div className="space-y-6">
+              <InventoryCharts
+                items_list={items_list}
+                visitItems={visitItems}
+              />
+              <InventoryTable
+                items_list={items_list}
+                visitItems={visitItems}
+                animateIn={animateIn}
+              />
+            </div>
+          )}
+
+          {activeTab === "visits" && (
+            <div className="space-y-6">
+              <VisitsCharts visits={visit_list} />
+              <VisitsTable
+                visit_list={visit_list}
+                services_list={services_list}
+                personel_list={personel_list}
+                animateIn={animateIn}
+                filters={visitFilters}
+              />
+            </div>
+          )}
         </div>
 
         {/* Personnel Detail Modal */}

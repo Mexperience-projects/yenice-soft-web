@@ -5,6 +5,9 @@ import type {
   VisitType,
   Visit_itemType,
   PaymentsType,
+  ClientType,
+  PAYMENT_TYPE,
+  ItemsType,
 } from "@/lib/types";
 
 export interface PersonnelWithMetrics extends PersonelType {
@@ -42,7 +45,7 @@ export interface SummaryCardsProps {
 
 export interface PersonnelTableProps {
   personnelWithMetrics: PersonnelWithMetrics[];
-  filteredPersonnel: PersonelType[];
+  filteredPersonnel: PersonnelWithMetrics[];
   personel_list: PersonelType[];
   onPersonnelClick: (person: PersonnelWithMetrics) => void;
 }
@@ -52,4 +55,79 @@ export interface PersonnelModalProps {
   isModalOpen: boolean;
   setIsModalOpen: (open: boolean) => void;
   visit_list: VisitType[];
+}
+
+export interface VisitWithStats extends VisitType {
+  totalRevenue: number;
+  totalPersonnelFee: number;
+  netRevenue: number;
+  services: ServicesType[];
+  personnel: PersonelType[];
+  startTime: Date | null;
+}
+
+export interface VisitSummaryStats {
+  totalRevenue: number;
+  totalPersonnelFee: number;
+  netRevenue: number;
+  totalServices: number;
+  uniqueClientIds: Set<ClientType["id"]>;
+  uniqueClientCount: number;
+}
+
+export interface TableFilters {
+  dateRange: DateRange | undefined;
+  searchQuery: string;
+}
+
+export interface PersonnelFilters extends TableFilters {
+  selectedService: string;
+  minRevenue: number | undefined;
+  maxRevenue: number | undefined;
+}
+
+export interface InventoryFilters extends TableFilters {
+  minStock: number | undefined;
+  maxStock: number | undefined;
+  showLowStock: boolean;
+  sortBy: 'name' | 'stock' | 'usage' | 'revenue';
+  sortOrder: 'asc' | 'desc';
+}
+
+export interface VisitFilters extends TableFilters {
+  selectedService: string;
+  selectedPersonnel: string;
+  paymentType: PAYMENT_TYPE | 'all';
+  minRevenue: number | undefined;
+  maxRevenue: number | undefined;
+  sortBy: 'date' | 'revenue' | 'personnel_fee' | 'net_revenue';
+  sortOrder: 'asc' | 'desc';
+}
+
+export interface FilterSectionProps {
+  filters: PersonnelFilters | InventoryFilters | VisitFilters;
+  onFilterChange: (filters: PersonnelFilters | InventoryFilters | VisitFilters) => void;
+  services_list: ServicesType[];
+  personel_list?: PersonelType[];
+  showFilters: boolean;
+  setShowFilters: (show: boolean) => void;
+  activeFilters: number;
+  resetFilters: () => void;
+  applyFilters: () => void;
+  tableType: 'personnel' | 'inventory' | 'visits';
+}
+
+export interface InventoryTableProps {
+  items_list: ItemsType[];
+  visitItems: Visit_itemType[];
+  animateIn: boolean;
+  filters: InventoryFilters;
+}
+
+export interface VisitsTableProps {
+  visit_list: VisitType[];
+  services_list: ServicesType[];
+  personel_list: PersonelType[];
+  animateIn: boolean;
+  filters: VisitFilters;
 } 
