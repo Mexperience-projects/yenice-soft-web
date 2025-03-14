@@ -355,13 +355,13 @@ export default function ClientManagement() {
 
           {currentTab === "recent" && (
             <div className="p-12 text-center text-gray-500">
-              Recent clients view coming soon
+              {t("clients.recentViewComingSoon")}
             </div>
           )}
 
           {currentTab === "active" && (
             <div className="p-12 text-center text-gray-500">
-              Active clients view coming soon
+              {t("clients.activeViewComingSoon")}
             </div>
           )}
         </div>

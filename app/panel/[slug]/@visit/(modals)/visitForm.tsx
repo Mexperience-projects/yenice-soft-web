@@ -253,7 +253,7 @@ export default function VisitForm({
               >
                 {t("visits.saveData")}
                 <p className="absolute text-red-700 bg-white/80 rounded-xl w-40 p-2 right-5 top-0 group-disabled:group-hover:flex hidden">
-                  please select client first
+                  {t("visits.pleaseSelectClient")}
                 </p>
               </button>
             </div>

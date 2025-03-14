@@ -24,6 +24,9 @@ export default function VisitManagement() {
   const { t } = useTranslation();
   const { get_visit_list_list, visit_list, delete_visit_data } = useVisits();
 
+  console.log(visit_list);
+  
+
   const [selectedVisit, setSelectedVisit] = useState<VisitType | undefined>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);

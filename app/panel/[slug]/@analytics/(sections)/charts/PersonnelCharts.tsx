@@ -168,23 +168,23 @@ export function PersonnelCharts({ personnelWithMetrics }: PersonnelChartsProps) 
         </div>
       </div>
 
-      {/* Service Distribution Pie Chart */}
+      {/* Items Usage Distribution Pie Chart */}
       <div className="card bg-white shadow-lg border border-gray-100">
         <div className="card-body">
-          <h3 className="card-title text-lg mb-4">{t("analytics.serviceDistribution")}</h3>
+          <h3 className="card-title text-lg mb-4">{t("analytics.itemsUsageDistribution")}</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={serviceStats}
-                  dataKey="revenue"
+                  data={performanceStats}
+                  dataKey="items"
                   nameKey="name"
                   cx="50%"
                   cy="50%"
                   outerRadius={100}
-                  label={(entry) => `${entry.name}: $${entry.revenue}`}
+                  label={(entry) => `${entry.name}: ${entry.items}`}
                 >
-                  {serviceStats.map((entry, index) => (
+                  {performanceStats.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>

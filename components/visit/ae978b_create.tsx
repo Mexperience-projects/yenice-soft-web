@@ -824,16 +824,16 @@ export default function VisitCreateForm({
                       className="select select-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
                     >
                       <option value={PAYMENT_TYPE.credit_card}>
-                        {t("credit card")}
+                        {t("common.paymentTypes.creditCard")}
                       </option>
                       <option value={PAYMENT_TYPE.debit_card}>
-                        {t("debit card")}
+                        {t("common.paymentTypes.debitCard")}
                       </option>
                       <option value={PAYMENT_TYPE.cash_pay}>
-                        {t("cash pay")}
+                        {t("common.paymentTypes.cashPay")}
                       </option>
                       <option value={PAYMENT_TYPE.card_to_card}>
-                        {t("card to card")}
+                        {t("common.paymentTypes.cardToCard")}
                       </option>
                     </select>
                   </div>

@@ -40,7 +40,13 @@
     "paymentType":"Ödeme Türü",
     "paid":"Ücretli",
     "updateButton":"Düğmeyi Güncelle",
-    "addButton":"Düğme ekle"
+    "addButton":"Düğme ekle",
+    "paymentTypes": {
+      "creditCard": "Kredi Kartı",
+      "debitCard": "Banka Kartı",
+      "cashPay": "Nakit Ödeme",
+      "cardToCard": "Karttan Karta"
+    }
   },
   "menu": {
     "adminPanel": "Yönetim Paneli",
@@ -119,7 +125,45 @@
     "noItemsFound": "Bu personel tarafından kullanılan ürün bulunamadı",
     "close": "Kapat",
     "notApplicable": "Uygulanamaz",
-    "unknown": "Bilinmiyor"
+    "unknown": "Bilinmiyor",
+    "search": "Ara",
+    "searchPlaceholder": "Ara...",
+    "dateRange": "Tarih Aralığı",
+    "min": "Min",
+    "max": "Maks",
+    "stockRange": "Stok Aralığı",
+    "sortBy": "Sırala",
+    "stock": "Stok",
+    "usage": "Kullanım",
+    "netRevenue": "Net Gelir",
+    "personnelFee": "Personel Ücreti",
+    "goodStock": "İyi Stok",
+    "mediumStock": "Orta Stok",
+    "lowStock": "Düşük Stok",
+    "stockStatus": "Stok Durumu",
+    "currentStock": "Mevcut Stok",
+    "revenueByItem": "Ürüne Göre Gelir",
+    "stockVsUsage": "Stok ve Kullanım",
+    "totalStock": "Toplam Stok",
+    "remaining": "Kalan",
+    "expense": "Gider",
+    "revenueAndExpenseTrends": "Gelir ve Gider Trendleri",
+    "serviceDistribution": "Hizmet Dağılımı",
+    "paymentDistribution": "Ödeme Dağılımı",
+    "dailyVisitsAndRevenue": "Günlük Ziyaret ve Gelir",
+    "uniqueClients": "Tekil Müşteriler",
+    "initialStock": "Başlangıç Stoğu",
+    "used": "Kullanılan",
+    "inventoryStatus": "Envanter Durumu",
+    "totals": "Toplamlar",
+    "totalServices": "Toplam Hizmetler",
+    "unknownClient": "Bilinmeyen Müşteri",
+    "notAvailable": "Mevcut Değil",
+    "clients": "Müşteriler",
+    "personnel": "Personel",
+    "inventory": "Envanter",
+    "status": "Durum",
+    "itemsUsageDistribution": "Ürün Kullanım Dağılımı"
   },
   "clients": {
     "title": "Müşteri Yönetimi",
@@ -155,7 +199,9 @@
     "deleteClientConfirm": "Bu müşteriyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
     "fullName": "Tam İsim",
     "enterFullName": "Müşterinin tam adını girin",
-    "enterNationalId": "Kimlik numarasını girin"
+    "enterNationalId": "Kimlik numarasını girin",
+    "recentViewComingSoon": "Yakın zamanda müşteri görünümü geliyor",
+    "activeViewComingSoon": "Aktif müşteri görünümü yakında geliyor"
   },
   "inventory": {
     "title": "Envanter Yönetimi",
@@ -221,7 +267,10 @@
     "addPayment": "Ödeme Ekle",
     "noPaymentsAdded": "Henüz ödeme eklenmedi",
     "paymentAmount": "Ödeme miktarı",
-    "total": "Toplam"
+    "total": "Toplam",
+    "table": {
+      "noPayments": "Ödeme bulunamadı"
+    }
   },
   "personnel": {
     "title": "Personel Yönetimi",
@@ -286,7 +335,8 @@
     "noServicesFound": "Hizmet bulunamadı",
     "selectClient": "Müşteri seçin",
     "selectService": "Hizmet seçin",
-    "numberOfItems": "Öğe sayısı"
+    "numberOfItems": "Öğe sayısı",
+    "pleaseSelectClient": "Lütfen önce müşteri seçin"
   },
   "services": {
     "management": "Hizmet Yönetimi",
