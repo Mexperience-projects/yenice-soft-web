@@ -43,6 +43,8 @@ export interface OperationType {
   items: Visit_itemType[];
   payments: PaymentsType[];
   personel?: PersonelType;
+  extraPrice?: number;
+  discount?: number;
 }
 
 export interface VisitType {

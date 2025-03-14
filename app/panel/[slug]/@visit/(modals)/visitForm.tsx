@@ -52,6 +52,8 @@ export default function VisitForm({
         items: [] as Visit_itemType[],
         payments: [] as PaymentsType[],
         service: [] as ServicesType[],
+        extraPrice: 0,
+        discount: 0,
       },
     ] as OperationType[],
   };
@@ -171,6 +173,8 @@ export default function VisitForm({
                       items: [],
                       payments: [],
                       service: [],
+                      extraPrice: 0,
+                      discount: 0,
                     };
                     setFormData((f) => ({
                       ...f,

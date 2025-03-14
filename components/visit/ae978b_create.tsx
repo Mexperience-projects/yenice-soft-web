@@ -141,10 +141,10 @@ export default function VisitCreateForm({
         type === "checkbox"
           ? (e.target as HTMLInputElement).checked
           : name === "price"
-          ? Number.parseFloat(value)
-          : name === "type"
-          ? (Number(value) as PAYMENT_TYPE)
-          : value,
+            ? Number.parseFloat(value)
+            : name === "type"
+              ? (Number(value) as PAYMENT_TYPE)
+              : value,
     }));
   };
 
@@ -358,31 +358,35 @@ export default function VisitCreateForm({
 
   const calculateServiceTotals = () => {
     if (!formData) return { total: 0, remainingWithPaid: 0, remainingTotal: 0 };
-    
+
     // Calculate services total
-    const servicesTotal = formData.service.reduce((total, service) => 
-      total + (service.price || 0), 0
+    const servicesTotal = formData.service.reduce(
+      (total, service) => total + (service.price || 0),
+      0
     );
-    
+
     // Calculate items total
-    const itemsTotal = formData.items.reduce((total, item) => 
-      total + ((item.item.price || 0) * item.count), 0
+    const itemsTotal = formData.items.reduce(
+      (total, item) => total + (item.item.price || 0) * item.count,
+      0
     );
-    
+
     // Combined total of services and items
     const combinedTotal = servicesTotal + itemsTotal;
-    
+
     const paidAmount = formData.payments
-      .filter(payment => payment.paid)
+      .filter((payment) => payment.paid)
       .reduce((total, payment) => total + payment.price, 0);
-      
-    const totalPayments = formData.payments
-      .reduce((total, payment) => total + payment.price, 0);
-    
+
+    const totalPayments = formData.payments.reduce(
+      (total, payment) => total + payment.price,
+      0
+    );
+
     return {
       total: combinedTotal,
       remainingWithPaid: combinedTotal - paidAmount,
-      remainingTotal: combinedTotal - totalPayments
+      remainingTotal: combinedTotal - totalPayments,
     };
   };
 
@@ -764,33 +768,97 @@ export default function VisitCreateForm({
             )}
           </div>
 
+          {/* Extra Price Field */}
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text flex items-center gap-2 text-gray-700 font-medium">
+                <div className="bg-primary/10 p-1 rounded-full">
+                  <Plus className="h-4 w-4 text-primary" />
+                </div>
+                {t("common.extraPrice")}
+              </span>
+            </label>
+            <input
+              disabled={readonly}
+              type="number"
+              name="extraPrice"
+              value={formData?.extraPrice || 0}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  extraPrice: parseInt(e.target.value) || 0,
+                }))
+              }
+              min="0"
+              className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
+            />
+          </div>
+
+          {/* Discount Field */}
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text flex items-center gap-2 text-gray-700 font-medium">
+                <div className="bg-secondary/10 p-1 rounded-full">
+                  <Minus className="h-4 w-4 text-secondary" />
+                </div>
+                {t("common.discount")}
+              </span>
+            </label>
+            <input
+              disabled={readonly}
+              type="number"
+              name="discount"
+              value={formData?.discount || 0}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  discount: parseInt(e.target.value) || 0,
+                }))
+              }
+              min="0"
+              className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-secondary focus:ring-secondary"
+            />
+          </div>
+
           {/* Service Price Summary */}
           <div className="col-span-1 md:col-span-2 mb-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {formData && formData.service.length > 0 && (
                 <>
                   <div className="stat bg-white shadow-sm rounded-lg border border-gray-100">
-                    <div className="stat-title text-gray-600">{t("common.totalServices")}</div>
+                    <div className="stat-title text-gray-600">
+                      {t("common.totalServices")}
+                    </div>
                     <div className="stat-value text-primary text-2xl">
                       {calculateServiceTotals().total}
                     </div>
-                    <div className="stat-desc text-gray-500">{t("common.totalAmount")}</div>
+                    <div className="stat-desc text-gray-500">
+                      {t("common.totalAmount")}
+                    </div>
                   </div>
-                  
+
                   <div className="stat bg-white shadow-sm rounded-lg border border-gray-100">
-                    <div className="stat-title text-gray-600">{t("common.remainingAfterPaid")}</div>
+                    <div className="stat-title text-gray-600">
+                      {t("common.remainingAfterPaid")}
+                    </div>
                     <div className="stat-value text-secondary text-2xl">
                       {calculateServiceTotals().remainingWithPaid}
                     </div>
-                    <div className="stat-desc text-gray-500">{t("common.excludingUnpaid")}</div>
+                    <div className="stat-desc text-gray-500">
+                      {t("common.excludingUnpaid")}
+                    </div>
                   </div>
-                  
+
                   <div className="stat bg-white shadow-sm rounded-lg border border-gray-100">
-                    <div className="stat-title text-gray-600">{t("common.remainingTotal")}</div>
+                    <div className="stat-title text-gray-600">
+                      {t("common.remainingTotal")}
+                    </div>
                     <div className="stat-value text-accent text-2xl">
                       {calculateServiceTotals().remainingTotal}
                     </div>
-                    <div className="stat-desc text-gray-500">{t("common.includingUnpaid")}</div>
+                    <div className="stat-desc text-gray-500">
+                      {t("common.includingUnpaid")}
+                    </div>
                   </div>
                 </>
               )}

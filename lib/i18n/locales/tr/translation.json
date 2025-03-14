@@ -52,7 +52,9 @@
     "remainingTotal": "Toplam Kalan",
     "totalAmount": "Toplam Tutar",
     "excludingUnpaid": "Ödenmeyen Hariç",
-    "includingUnpaid": "Ödenmeyen Dahil"
+    "includingUnpaid": "Ödenmeyen Dahil",
+    "extraPrice": "Ek Ücret",
+    "discount": "İndirim"
   },
   "menu": {
     "adminPanel": "Yönetim Paneli",
@@ -176,7 +178,18 @@
     "totalUsage": "Toplam Kullanım",
     "revenueRange": "Gelir Aralığı",
     "selectDateRange": "Tarih Aralığı Seçin",
-    "showLowStock": "Düşük Stoklu Ürünleri Göster"
+    "showLowStock": "Düşük Stoklu Ürünleri Göster",
+    "allPersonnel": "Tüm Personel",
+    "paymentType": "Ödeme Türü",
+    "allPaymentTypes": "Tüm Ödeme Türleri",
+    "paymentTypes": {
+      "credit_card": "Kredi Kartı",
+      "debit_card": "Banka Kartı",
+      "cash_pay": "Nakit Ödeme",
+      "card_to_card": "Karttan Karta"
+    },
+    "extraPrice": "Ek Ücret",
+    "discount": "İndirim"
   },
   "clients": {
     "title": "Müşteri Yönetimi",
@@ -296,10 +309,12 @@
       "amount": "Tutar",
       "status": "Durum",
       "type": "Tür",
-      "paid": "Ödendi"
+      "paid": "Ödendi",
+      "unpaid": "Ödenmedi"
     },
     "types": {
-      "debit_card": "Banka Kartı"
+      "debit_card": "Banka Kartı",
+      "credit_card": "Kredi Kartı"
     }
   },
   "personnel": {

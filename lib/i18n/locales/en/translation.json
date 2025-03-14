@@ -53,7 +53,9 @@
     "remainingTotal": "Remaining Total",
     "totalAmount": "Total Amount",
     "excludingUnpaid": "Excluding Unpaid",
-    "includingUnpaid": "Including Unpaid"
+    "includingUnpaid": "Including Unpaid",
+    "extraPrice": "Extra Price",
+    "discount": "Discount"
   },
   "menu": {
     "adminPanel": "Admin Panel",
@@ -177,7 +179,18 @@
     "totalUsage": "Total Usage",
     "revenueRange": "Revenue Range",
     "selectDateRange": "Select Date Range",
-    "showLowStock": "Show Low Stock Items"
+    "showLowStock": "Show Low Stock Items",
+    "allPersonnel": "All Personnel",
+    "paymentType": "Payment Type",
+    "allPaymentTypes": "All Payment Types",
+    "paymentTypes": {
+      "credit_card": "Credit Card",
+      "debit_card": "Debit Card",
+      "cash_pay": "Cash Payment",
+      "card_to_card": "Card to Card"
+    },
+    "extraPrice": "Extra Price",
+    "discount": "Discount"
   },
   "clients": {
     "title": "Client Management",
@@ -297,10 +310,12 @@
       "amount": "Amount",
       "status": "Status",
       "type": "Type",
-      "paid": "Paid"
+      "paid": "Paid",
+      "unpaid": "Unpaid"
     },
     "types": {
-      "debit_card": "Debit Card"
+      "debit_card": "Debit Card",
+      "credit_card": "Credit Card"
     }
   },
   "personnel": {

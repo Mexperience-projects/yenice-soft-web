@@ -27,9 +27,11 @@ export function VisitsTable({
       // Calculate total revenue for this visit
       const totalRevenue =
         visit.operations?.reduce((sum, op) => {
-          return (
-            sum + (op.payments?.reduce((pSum, p) => pSum + p.price, 0) || 0)
-          );
+          const paymentsSum =
+            op.payments?.reduce((pSum, p) => pSum + p.price, 0) || 0;
+          const extraPrice = op.extraPrice || 0;
+          const discount = op.discount || 0;
+          return sum + paymentsSum + extraPrice - discount;
         }, 0) || 0;
 
       // Get all services provided in this visit
@@ -230,6 +232,8 @@ export function VisitsTable({
                   <th>{t("analytics.client")}</th>
                   <th>{t("analytics.services")}</th>
                   <th>{t("analytics.personnel")}</th>
+                  <th className="text-right">{t("analytics.extraPrice")}</th>
+                  <th className="text-right">{t("analytics.discount")}</th>
                   <th className="text-right">{t("analytics.personnelFee")}</th>
                   <th className="text-right">{t("analytics.revenue")}</th>
                   <th className="text-right">{t("analytics.netRevenue")}</th>
@@ -239,7 +243,7 @@ export function VisitsTable({
                 {visitStats.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={7}
+                      colSpan={9}
                       className="text-center py-8 text-base-content/50"
                     >
                       {t("analytics.noVisitsFound")}
@@ -286,6 +290,18 @@ export function VisitsTable({
                           ))}
                         </div>
                       </td>
+                      <td className="text-right font-medium text-primary">
+                        {(
+                          visit.operations?.[0]?.extraPrice || 0
+                        ).toLocaleString()}{" "}
+                        ₺
+                      </td>
+                      <td className="text-right font-medium text-secondary">
+                        {(
+                          visit.operations?.[0]?.discount || 0
+                        ).toLocaleString()}{" "}
+                        ₺
+                      </td>
                       <td className="text-right font-medium text-warning">
                         {visit.totalPersonnelFee.toLocaleString()} ₺
                       </td>
@@ -308,6 +324,26 @@ export function VisitsTable({
                     {summary.totalServices} {t("analytics.totalServices")}
                   </td>
                   <td></td>
+                  <td className="text-right text-primary">
+                    {visitStats
+                      .reduce(
+                        (sum, visit) =>
+                          sum + (visit.operations?.[0]?.extraPrice || 0),
+                        0
+                      )
+                      .toLocaleString()}{" "}
+                    ₺
+                  </td>
+                  <td className="text-right text-secondary">
+                    {visitStats
+                      .reduce(
+                        (sum, visit) =>
+                          sum + (visit.operations?.[0]?.discount || 0),
+                        0
+                      )
+                      .toLocaleString()}{" "}
+                    ₺
+                  </td>
                   <td className="text-right text-warning">
                     {summary.totalPersonnelFee.toLocaleString()} ₺
                   </td>
