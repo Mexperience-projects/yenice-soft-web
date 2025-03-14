@@ -46,7 +46,13 @@
       "debitCard": "Banka Kartı",
       "cashPay": "Nakit Ödeme",
       "cardToCard": "Karttan Karta"
-    }
+    },
+    "totalServices": "Toplam Hizmetler",
+    "remainingAfterPaid": "Ödeme Sonrası Kalan",
+    "remainingTotal": "Toplam Kalan",
+    "totalAmount": "Toplam Tutar",
+    "excludingUnpaid": "Ödenmeyen Hariç",
+    "includingUnpaid": "Ödenmeyen Dahil"
   },
   "menu": {
     "adminPanel": "Yönetim Paneli",

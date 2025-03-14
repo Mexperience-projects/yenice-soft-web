@@ -47,7 +47,13 @@
       "debitCard": "Debit Card",
       "cashPay": "Cash Payment",
       "cardToCard": "Card to Card"
-    }
+    },
+    "totalServices": "Total Services",
+    "remainingAfterPaid": "Remaining After Paid",
+    "remainingTotal": "Remaining Total",
+    "totalAmount": "Total Amount",
+    "excludingUnpaid": "Excluding Unpaid",
+    "includingUnpaid": "Including Unpaid"
   },
   "menu": {
     "adminPanel": "Admin Panel",

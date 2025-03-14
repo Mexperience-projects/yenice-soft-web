@@ -349,11 +349,32 @@ export default function VisitCreateForm({
   };
 
   const calculateTotalPayment = () => {
-    if (!formData) return;
+    if (!formData) return 0;
     return formData.payments.reduce(
       (total, payment) => total + payment.price,
       0
     );
+  };
+
+  const calculateServiceTotals = () => {
+    if (!formData) return { total: 0, remainingWithPaid: 0, remainingTotal: 0 };
+    
+    const servicesTotal = formData.service.reduce((total, service) => 
+      total + (service.price || 0), 0
+    );
+    
+    const paidAmount = formData.payments
+      .filter(payment => payment.paid)
+      .reduce((total, payment) => total + payment.price, 0);
+      
+    const totalPayments = formData.payments
+      .reduce((total, payment) => total + payment.price, 0);
+    
+    return {
+      total: servicesTotal,
+      remainingWithPaid: servicesTotal - paidAmount,
+      remainingTotal: servicesTotal - totalPayments
+    };
   };
 
   const handlePersonelSelect = (personel: PersonelType) => {
@@ -732,6 +753,39 @@ export default function VisitCreateForm({
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Service Price Summary */}
+          <div className="col-span-1 md:col-span-2 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {formData && formData.service.length > 0 && (
+                <>
+                  <div className="stat bg-white shadow-sm rounded-lg border border-gray-100">
+                    <div className="stat-title text-gray-600">{t("common.totalServices")}</div>
+                    <div className="stat-value text-primary text-2xl">
+                      {calculateServiceTotals().total}
+                    </div>
+                    <div className="stat-desc text-gray-500">{t("common.totalAmount")}</div>
+                  </div>
+                  
+                  <div className="stat bg-white shadow-sm rounded-lg border border-gray-100">
+                    <div className="stat-title text-gray-600">{t("common.remainingAfterPaid")}</div>
+                    <div className="stat-value text-secondary text-2xl">
+                      {calculateServiceTotals().remainingWithPaid}
+                    </div>
+                    <div className="stat-desc text-gray-500">{t("common.excludingUnpaid")}</div>
+                  </div>
+                  
+                  <div className="stat bg-white shadow-sm rounded-lg border border-gray-100">
+                    <div className="stat-title text-gray-600">{t("common.remainingTotal")}</div>
+                    <div className="stat-value text-accent text-2xl">
+                      {calculateServiceTotals().remainingTotal}
+                    </div>
+                    <div className="stat-desc text-gray-500">{t("common.includingUnpaid")}</div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Payments Section - Full Width */}
