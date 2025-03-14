@@ -1,4 +1,3 @@
-import type { DateRange } from "react-day-picker";
 import type {
   PersonelType,
   ServicesType,
@@ -38,9 +37,9 @@ export interface SummaryCardsProps {
 
 export interface PersonnelTableProps {
   personnelWithMetrics: PersonnelWithMetrics[];
-  filteredPersonnel: PersonnelWithMetrics[];
   personel_list: PersonelType[];
   onPersonnelClick: (person: PersonnelWithMetrics) => void;
+  filters: PersonnelFilters;
 }
 
 export interface PersonnelModalProps {
@@ -68,15 +67,27 @@ export interface VisitSummaryStats {
   uniqueClientCount: number;
 }
 
+export interface DateRange {
+  from?: string;
+  to?: string;
+}
+
 export interface TableFilters {
   dateRange: DateRange | undefined;
   searchQuery: string;
 }
 
-export interface PersonnelFilters extends TableFilters {
+export interface PersonnelFilters {
+  searchQuery: string;
   selectedService: string;
-  minRevenue: number | undefined;
-  maxRevenue: number | undefined;
+  minRevenue?: number;
+  maxRevenue?: number;
+  minRemaining?: number;
+  maxRemaining?: number;
+  dateRange?: {
+    from?: string;
+    to?: string;
+  };
 }
 
 export interface InventoryFilters extends TableFilters {

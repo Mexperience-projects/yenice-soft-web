@@ -3,32 +3,24 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Package, AlertTriangle, DollarSign } from "lucide-react";
-import type { ItemsType, Visit_itemType } from "@/lib/types";
-
-interface InventoryTableProps {
-  items_list: ItemsType[];
-  animateIn: boolean;
-}
+import type { ItemsType } from "@/lib/types";
+import type { InventoryTableProps } from "./types";
 
 export function InventoryTable({
   items_list,
   animateIn,
+  filters,
 }: InventoryTableProps) {
   const { t } = useTranslation();
 
-  // Calculate inventory statistics
+  // Calculate inventory statistics with filters
   const inventoryStats = useMemo(() => {
-    const stats = items_list.map((item) => {
-      // Use the used field directly instead of calculating from visitItems
+    // First calculate base stats
+    let stats = items_list.map((item) => {
       const usage = item.used;
-
-      // Calculate revenue from this item
       const revenue = usage * item.price;
-
-      // Calculate remaining stock percentage
-      const remainingPercentage = item.count > 0 
-        ? ((item.count - usage) / item.count) * 100 
-        : 0;
+      const remainingPercentage =
+        item.count > 0 ? ((item.count - usage) / item.count) * 100 : 0;
 
       return {
         ...item,
@@ -36,24 +28,66 @@ export function InventoryTable({
         revenue,
         remaining: Math.max(0, item.count - usage),
         remainingPercentage,
-        isLowStock: remainingPercentage < (item.limit || 20), // Use item's limit or default to 20%
+        isLowStock: remainingPercentage < (item.limit || 20),
       };
-    }).sort((a, b) => b.revenue - a.remainingPercentage); // Sort by revenue first, then low stock
+    });
+
+    // Apply search filter
+    if (filters.searchQuery) {
+      const query = filters.searchQuery.toLowerCase();
+      stats = stats.filter((item) => item.name.toLowerCase().includes(query));
+    }
+
+    // Apply stock range filters
+    if (filters.minStock !== undefined) {
+      stats = stats.filter((item) => item.remaining >= filters.minStock!);
+    }
+    if (filters.maxStock !== undefined) {
+      stats = stats.filter((item) => item.remaining <= filters.maxStock!);
+    }
+
+    // Apply low stock filter
+    if (filters.showLowStock) {
+      stats = stats.filter((item) => item.isLowStock);
+    }
+
+    // Apply sorting
+    stats.sort((a, b) => {
+      let comparison = 0;
+      switch (filters.sortBy) {
+        case "name":
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case "stock":
+          comparison = a.remaining - b.remaining;
+          break;
+        case "usage":
+          comparison = a.usage - b.usage;
+          break;
+        case "revenue":
+          comparison = a.revenue - b.revenue;
+          break;
+      }
+      return filters.sortOrder === "asc" ? comparison : -comparison;
+    });
 
     return stats;
-  }, [items_list]);
+  }, [items_list, filters]);
 
   // Calculate totals
   const totals = useMemo(() => {
-    return inventoryStats.reduce((acc, item) => ({
-      totalRevenue: acc.totalRevenue + item.revenue,
-      totalUsage: acc.totalUsage + item.usage,
-      totalRemaining: acc.totalRemaining + item.remaining,
-    }), {
-      totalRevenue: 0,
-      totalUsage: 0,
-      totalRemaining: 0,
-    });
+    return inventoryStats.reduce(
+      (acc, item) => ({
+        totalRevenue: acc.totalRevenue + item.revenue,
+        totalUsage: acc.totalUsage + item.usage,
+        totalRemaining: acc.totalRemaining + item.remaining,
+      }),
+      {
+        totalRevenue: 0,
+        totalUsage: 0,
+        totalRemaining: 0,
+      }
+    );
   }, [inventoryStats]);
 
   return (
@@ -74,7 +108,8 @@ export function InventoryTable({
             <div className="flex items-center gap-2 text-base-content/70">
               <DollarSign className="h-4 w-4" />
               <span className="font-medium">
-                {t("analytics.totalRevenue")}: ₺{totals.totalRevenue.toLocaleString()}
+                {t("analytics.totalRevenue")}: ₺
+                {totals.totalRevenue.toLocaleString()}
               </span>
             </div>
           </div>
@@ -106,7 +141,9 @@ export function InventoryTable({
                   inventoryStats.map((item) => (
                     <tr key={item.id} className="hover">
                       <td className="font-medium">{item.name}</td>
-                      <td className="text-right">₺{item.price.toLocaleString()}</td>
+                      <td className="text-right">
+                        ₺{item.price.toLocaleString()}
+                      </td>
                       <td className="text-right">{item.count}</td>
                       <td className="text-right">{item.usage}</td>
                       <td className="text-right">{item.remaining}</td>
@@ -121,8 +158,8 @@ export function InventoryTable({
                                 item.isLowStock
                                   ? "bg-error"
                                   : item.remainingPercentage < 50
-                                  ? "bg-warning"
-                                  : "bg-success"
+                                    ? "bg-warning"
+                                    : "bg-success"
                               }`}
                               style={{ width: `${item.remainingPercentage}%` }}
                             ></div>
@@ -172,4 +209,4 @@ export function InventoryTable({
       </div>
     </div>
   );
-} 
+}

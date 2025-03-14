@@ -5,7 +5,11 @@ import { useTranslation } from "react-i18next";
 import { Calendar, DollarSign, Users, Wallet } from "lucide-react";
 import { format } from "date-fns";
 import type { VisitType, ServicesType, PersonelType } from "@/lib/types";
-import type { VisitWithStats, VisitSummaryStats, VisitsTableProps } from "./types";
+import type {
+  VisitWithStats,
+  VisitSummaryStats,
+  VisitsTableProps,
+} from "./types";
 
 export function VisitsTable({
   visit_list,
@@ -21,19 +25,23 @@ export function VisitsTable({
     // First calculate base stats
     let stats = visit_list.map((visit) => {
       // Calculate total revenue for this visit
-      const totalRevenue = visit.operations?.reduce((sum, op) => {
-        return sum + (op.payments?.reduce((pSum, p) => pSum + p.price, 0) || 0);
-      }, 0) || 0;
+      const totalRevenue =
+        visit.operations?.reduce((sum, op) => {
+          return (
+            sum + (op.payments?.reduce((pSum, p) => pSum + p.price, 0) || 0)
+          );
+        }, 0) || 0;
 
       // Get all services provided in this visit
-      const services = visit.operations?.flatMap((op) => op.service || []) || [];
+      const services =
+        visit.operations?.flatMap((op) => op.service || []) || [];
 
       // Get all personnel involved in this visit
       const personnel = services.flatMap((s) => s.personel || []);
 
       // Calculate personnel fees
       const totalPersonnelFee = personnel.reduce((sum, person) => {
-        return sum + (totalRevenue * (person.precent / 100));
+        return sum + totalRevenue * (person.precent / 100);
       }, 0);
 
       // Calculate net revenue
@@ -57,54 +65,67 @@ export function VisitsTable({
     // Apply filters
     if (filters.searchQuery) {
       const query = filters.searchQuery.toLowerCase();
-      stats = stats.filter(visit => {
+      stats = stats.filter((visit) => {
         const clientName = visit.client?.name?.toLowerCase() || "";
-        const serviceNames = visit.services.map(s => s.name.toLowerCase());
-        const personnelNames = visit.personnel.map(p => p.name.toLowerCase());
-        return clientName.includes(query) ||
-               serviceNames.some(name => name.includes(query)) ||
-               personnelNames.some(name => name.includes(query));
+        const serviceNames = visit.services.map((s) => s.name.toLowerCase());
+        const personnelNames = visit.personnel.map((p) => p.name.toLowerCase());
+        return (
+          clientName.includes(query) ||
+          serviceNames.some((name) => name.includes(query)) ||
+          personnelNames.some((name) => name.includes(query))
+        );
       });
     }
 
     // Apply date range filter
     if (filters.dateRange?.from && filters.dateRange?.to) {
-      stats = stats.filter(visit => {
+      const fromDate = new Date(filters.dateRange.from);
+      const toDate = new Date(filters.dateRange.to);
+      toDate.setHours(23, 59, 59, 999); // Set to end of day
+
+      stats = stats.filter((visit) => {
         if (!visit.startTime) return false;
-        return visit.startTime >= filters.dateRange!.from! &&
-               visit.startTime <= filters.dateRange!.to!;
+        return visit.startTime >= fromDate && visit.startTime <= toDate;
       });
     }
 
     // Apply service filter
     if (filters.selectedService !== "all") {
-      stats = stats.filter(visit =>
-        visit.services.some(service => service.id.toString() === filters.selectedService)
+      stats = stats.filter((visit) =>
+        visit.services.some(
+          (service) => service.id.toString() === filters.selectedService
+        )
       );
     }
 
     // Apply personnel filter
     if (filters.selectedPersonnel !== "all") {
-      stats = stats.filter(visit =>
-        visit.personnel.some(person => person.id.toString() === filters.selectedPersonnel)
+      stats = stats.filter((visit) =>
+        visit.personnel.some(
+          (person) => person.id.toString() === filters.selectedPersonnel
+        )
       );
     }
 
     // Apply payment type filter
     if (filters.paymentType !== "all") {
-      stats = stats.filter(visit =>
-        visit.operations?.some(op =>
-          op.payments?.some(payment => payment.type === filters.paymentType)
+      stats = stats.filter((visit) =>
+        visit.operations?.some((op) =>
+          op.payments?.some((payment) => payment.type === filters.paymentType)
         )
       );
     }
 
     // Apply revenue filters
     if (filters.minRevenue !== undefined) {
-      stats = stats.filter(visit => visit.totalRevenue >= filters.minRevenue!);
+      stats = stats.filter(
+        (visit) => visit.totalRevenue >= filters.minRevenue!
+      );
     }
     if (filters.maxRevenue !== undefined) {
-      stats = stats.filter(visit => visit.totalRevenue <= filters.maxRevenue!);
+      stats = stats.filter(
+        (visit) => visit.totalRevenue <= filters.maxRevenue!
+      );
     }
 
     // Apply sorting
@@ -133,25 +154,30 @@ export function VisitsTable({
     });
 
     return stats;
-  }, [visit_list, filters]);
+  }, [visit_list, filters, services_list, personel_list]);
 
   // Calculate summary statistics from filtered data
   const summary = useMemo<VisitSummaryStats>(() => {
-    const stats = visitStats.reduce((acc, visit) => ({
-      totalRevenue: acc.totalRevenue + visit.totalRevenue,
-      totalPersonnelFee: acc.totalPersonnelFee + visit.totalPersonnelFee,
-      netRevenue: acc.netRevenue + visit.netRevenue,
-      totalServices: acc.totalServices + visit.services.length,
-      uniqueClientIds: visit.client ? acc.uniqueClientIds.add(visit.client.id) : acc.uniqueClientIds,
-      uniqueClientCount: 0,
-    }), {
-      totalRevenue: 0,
-      totalPersonnelFee: 0,
-      netRevenue: 0,
-      totalServices: 0,
-      uniqueClientIds: new Set<number>(),
-      uniqueClientCount: 0,
-    });
+    const stats = visitStats.reduce(
+      (acc, visit) => ({
+        totalRevenue: acc.totalRevenue + visit.totalRevenue,
+        totalPersonnelFee: acc.totalPersonnelFee + visit.totalPersonnelFee,
+        netRevenue: acc.netRevenue + visit.netRevenue,
+        totalServices: acc.totalServices + visit.services.length,
+        uniqueClientIds: visit.client
+          ? acc.uniqueClientIds.add(visit.client.id)
+          : acc.uniqueClientIds,
+        uniqueClientCount: 0,
+      }),
+      {
+        totalRevenue: 0,
+        totalPersonnelFee: 0,
+        netRevenue: 0,
+        totalServices: 0,
+        uniqueClientIds: new Set<number>(),
+        uniqueClientCount: 0,
+      }
+    );
 
     stats.uniqueClientCount = stats.uniqueClientIds.size;
     return stats;
@@ -172,7 +198,7 @@ export function VisitsTable({
                 {t("analytics.visitHistory")}
               </h2>
             </div>
-            
+
             {/* Summary Stats */}
             <div className="flex gap-6 text-base-content/70">
               <div className="flex items-center gap-2">
@@ -275,8 +301,12 @@ export function VisitsTable({
                 {/* Summary row */}
                 <tr className="font-medium bg-base-200">
                   <td>{t("analytics.totals")}</td>
-                  <td>{summary.uniqueClientCount} {t("analytics.uniqueClients")}</td>
-                  <td>{summary.totalServices} {t("analytics.totalServices")}</td>
+                  <td>
+                    {summary.uniqueClientCount} {t("analytics.uniqueClients")}
+                  </td>
+                  <td>
+                    {summary.totalServices} {t("analytics.totalServices")}
+                  </td>
                   <td></td>
                   <td className="text-right text-warning">
                     {summary.totalPersonnelFee.toLocaleString()} ₺
@@ -295,4 +325,4 @@ export function VisitsTable({
       </div>
     </div>
   );
-} 
+}

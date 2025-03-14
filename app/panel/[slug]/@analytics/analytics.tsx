@@ -56,7 +56,7 @@ export default function Analytics() {
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilters, setActiveFilters] = useState(0);
   const [activeTab, setActiveTab] = useState<TabType>("personnel");
-  
+
   // Filter states for each table type
   const [personnelFilters, setPersonnelFilters] = useState<PersonnelFilters>({
     dateRange: undefined,
@@ -115,11 +115,11 @@ export default function Analytics() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-         get_personel_list_list();
-         get_services_list_list();
-         get_visit_list_list();
-         get_payments_list_list();
-         get_items_list_list();
+        get_personel_list_list();
+        get_services_list_list();
+        get_visit_list_list();
+        get_payments_list_list();
+        get_items_list_list();
         // Set animate in after data is loaded
         setAnimateIn(true);
       } catch (error) {
@@ -136,7 +136,7 @@ export default function Analytics() {
   useEffect(() => {
     const currentFilters = getCurrentFilters();
     let count = 0;
-    
+
     // Count common filters
     if (currentFilters.searchQuery) count++;
     if (currentFilters.dateRange?.from && currentFilters.dateRange?.to) count++;
@@ -144,25 +144,31 @@ export default function Analytics() {
     // Count tab-specific filters
     switch (activeTab) {
       case "personnel":
-        if ((currentFilters as PersonnelFilters).selectedService !== "all") count++;
-        if ((currentFilters as PersonnelFilters).minRevenue !== undefined) count++;
-        if ((currentFilters as PersonnelFilters).maxRevenue !== undefined) count++;
+        if ((currentFilters as PersonnelFilters).selectedService !== "all")
+          count++;
+        if ((currentFilters as PersonnelFilters).minRevenue !== undefined)
+          count++;
+        if ((currentFilters as PersonnelFilters).maxRevenue !== undefined)
+          count++;
         break;
       case "inventory":
-        if ((currentFilters as InventoryFilters).minStock !== undefined) count++;
-        if ((currentFilters as InventoryFilters).maxStock !== undefined) count++;
+        if ((currentFilters as InventoryFilters).minStock !== undefined)
+          count++;
+        if ((currentFilters as InventoryFilters).maxStock !== undefined)
+          count++;
         if ((currentFilters as InventoryFilters).showLowStock) count++;
         if ((currentFilters as InventoryFilters).sortBy !== "name") count++;
         break;
       case "visits":
         if ((currentFilters as VisitFilters).selectedService !== "all") count++;
-        if ((currentFilters as VisitFilters).selectedPersonnel !== "all") count++;
+        if ((currentFilters as VisitFilters).selectedPersonnel !== "all")
+          count++;
         if ((currentFilters as VisitFilters).paymentType !== "all") count++;
         if ((currentFilters as VisitFilters).minRevenue !== undefined) count++;
         if ((currentFilters as VisitFilters).maxRevenue !== undefined) count++;
         break;
     }
-    
+
     setActiveFilters(count);
   }, [activeTab, personnelFilters, inventoryFilters, visitFilters]);
 
@@ -200,22 +206,21 @@ export default function Analytics() {
 
   const totalPersonnelPayments = useMemo(
     () =>
-      personel_list.reduce(
-        (total, person) => total + (person.expense || 0),
-        0
-      ),
+      personel_list.reduce((total, person) => total + (person.expense || 0), 0),
     [personel_list]
   );
 
   // Update filteredPersonnel to use personnelFilters
   const filteredPersonnel = useMemo(() => {
     console.log("Filtering personnel from", personel_list.length, "records");
-    
+
     return personel_list.filter((person) => {
       // Filter by search query
       const matchesSearch =
         !personnelFilters.searchQuery ||
-        person.name.toLowerCase().includes(personnelFilters.searchQuery.toLowerCase());
+        person.name
+          .toLowerCase()
+          .includes(personnelFilters.searchQuery.toLowerCase());
 
       // Filter by service
       const matchesService =
@@ -235,8 +240,8 @@ export default function Analytics() {
             visit.operations.some(
               (op) =>
                 op.service &&
-                op.service.some(
-                  (s) => s.personel?.some((p) => p.id === person.id)
+                op.service.some((s) =>
+                  s.personel?.some((p) => p.id === person.id)
                 )
             )
         );
@@ -262,14 +267,11 @@ export default function Analytics() {
         (!personnelFilters.maxRevenue ||
           person.doctorExpense <= personnelFilters.maxRevenue);
 
-      return matchesSearch && matchesService && matchesDateRange && matchesRevenue;
+      return (
+        matchesSearch && matchesService && matchesDateRange && matchesRevenue
+      );
     });
-  }, [
-    personel_list,
-    personnelFilters,
-    services_list,
-    visit_list,
-  ]);
+  }, [personel_list, personnelFilters, services_list, visit_list]);
 
   // Calculate metrics for each personnel
   const personnelWithMetrics = useMemo(() => {
@@ -280,25 +282,27 @@ export default function Analytics() {
     );
 
     // Map personnel data directly since metrics are now part of PersonelType
-    const result = filteredPersonnel.map((person) => {
-      // Get services provided by this personnel
-      const personServices = services_list.filter(
-        (service) => service.personel?.some((p) => p.id === person.id)
-      );
+    const result = filteredPersonnel
+      .map((person) => {
+        // Get services provided by this personnel
+        const personServices = services_list.filter((service) =>
+          service.personel?.some((p) => p.id === person.id)
+        );
 
-      return {
-        ...person,
-        services: personServices,
-      };
-    }).sort((a, b) => b.revenue - a.revenue); // Sort by revenue (highest first)
+        return {
+          ...person,
+          services: personServices,
+        };
+      })
+      .sort((a, b) => b.revenue - a.revenue); // Sort by revenue (highest first)
 
     return result;
   }, [filteredPersonnel, services_list]);
 
   // Calculate metrics for filtered personnel
   const filteredPersonnelWithMetrics = useMemo(() => {
-    return personnelWithMetrics.filter(person =>
-      filteredPersonnel.some(fp => fp.id === person.id)
+    return personnelWithMetrics.filter((person) =>
+      filteredPersonnel.some((fp) => fp.id === person.id)
     );
   }, [personnelWithMetrics, filteredPersonnel]);
 
@@ -460,7 +464,10 @@ export default function Analytics() {
         </div>
 
         {/* Tabs */}
-        <div role="tablist" className="tabs tabs-boxed bg-base-200/50 p-1 justify-center">
+        <div
+          role="tablist"
+          className="tabs tabs-boxed bg-base-200/50 p-1 justify-center"
+        >
           <button
             role="tab"
             className={`tab tab-lg gap-2 ${activeTab === "personnel" ? "tab-active" : ""}`}
@@ -497,30 +504,26 @@ export default function Analytics() {
               />
             )}
             {activeTab === "inventory" && (
-              <InventoryCharts
-                items_list={items_list}
-              />
+              <InventoryCharts items_list={items_list} />
             )}
-            {activeTab === "visits" && (
-              <VisitsCharts
-                visits={visit_list}
-              />
-            )}
+            {activeTab === "visits" && <VisitsCharts visits={visit_list} />}
           </div>
 
           {/* Tables */}
           {activeTab === "personnel" && (
             <PersonnelTable
               personnelWithMetrics={filteredPersonnelWithMetrics}
-              filteredPersonnel={filteredPersonnelWithMetrics}
               personel_list={personel_list}
               onPersonnelClick={handlePersonnelClick}
+              filters={personnelFilters}
             />
           )}
           {activeTab === "inventory" && (
             <InventoryTable
               items_list={items_list}
+              visitItems={visitItems}
               animateIn={animateIn}
+              filters={inventoryFilters}
             />
           )}
           {activeTab === "visits" && (
