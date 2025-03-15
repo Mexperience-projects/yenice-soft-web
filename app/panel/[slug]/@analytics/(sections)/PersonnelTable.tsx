@@ -68,7 +68,15 @@ export function PersonnelTable({
           );
           return value + paymentSum;
         }, 0);
-        return [...value, { ...personel, totalPayments, totalItemsPrice }];
+        return [
+          ...value,
+          {
+            ...personel,
+            totalPayments,
+            totalItemsPrice,
+            visitCount: operations.length,
+          },
+        ];
       },
       [] as (PersonelType & {
         totalPayments: number;

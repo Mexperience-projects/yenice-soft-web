@@ -55,7 +55,9 @@
     "excludingUnpaid": "Excluding Unpaid",
     "includingUnpaid": "Including Unpaid",
     "extraPrice": "Extra Price",
-    "discount": "Discount"
+    "discount": "Discount",
+    "seeMore": "See More",
+    "saving": "Saving..."
   },
   "menu": {
     "adminPanel": "Admin Panel",
@@ -190,7 +192,43 @@
       "card_to_card": "Card to Card"
     },
     "extraPrice": "Extra Price",
-    "discount": "Discount"
+    "discount": "Discount",
+    "sortOptions": {
+      "date": "Date",
+      "revenue": "Revenue",
+      "personnel_fee": "Personnel Fee",
+      "net_revenue": "Net Revenue"
+    },
+    "filterOptions": {
+      "all": "All",
+      "today": "Today",
+      "thisWeek": "This Week",
+      "thisMonth": "This Month",
+      "custom": "Custom"
+    },
+    "metrics": {
+      "totalRevenue": "Total Revenue",
+      "netRevenue": "Net Revenue",
+      "uniqueClients": "Unique Clients"
+    },
+    "table": {
+      "date": "Date",
+      "client": "Client",
+      "services": "Services",
+      "personnel": "Personnel",
+      "extraPrice": "Extra Price",
+      "discount": "Discount",
+      "personnelFee": "Personnel Fee",
+      "revenue": "Revenue",
+      "netRevenue": "Net Revenue",
+      "noVisits": "No visits found"
+    },
+    "clear": "Clear",
+    "itemPrice": "Item Price",
+    "lowStockWarning": "Low Stock Warning",
+    "lowStockItems": "Low Stock Items",
+    "lowStockDescription": "The following items are running low on stock",
+    "minimumRequired": "Minimum Required"
   },
   "clients": {
     "title": "Client Management",
@@ -256,7 +294,13 @@
     "deleteItem": "Delete Item",
     "deleteItemConfirm": "Are you sure you want to delete this item? This action cannot be undone.",
     "saveItem": "Save Item",
-    "enterItemName":"Enter Item Name"
+    "enterItemName":"Enter Item Name",
+    "lowStockWarning": "Low Stock Warning",
+    "itemPrice": "Item Price",
+    "lowStockItems": "Low Stock Items",
+    "lowStockDescription": "The following items are running low on stock",
+    "itemName": "Item Name",
+    "minimumRequired": "Minimum Required"
   },
   "payments": {
     "title": "Payments Management",
@@ -314,8 +358,10 @@
       "unpaid": "Unpaid"
     },
     "types": {
+      "credit_card": "Credit Card",
       "debit_card": "Debit Card",
-      "credit_card": "Credit Card"
+      "cash_pay": "Cash Payment",
+      "card_to_card": "Card to Card"
     }
   },
   "personnel": {
@@ -339,7 +385,8 @@
     "enterPosition": "Enter position or role",
     "saveChanges": "Save Changes",
     "deleteConfirm": "Are you sure you want to delete this personnel?",
-    "noPaymentsFound":"No Payments Found"
+    "noPaymentsFound":"No Payments Found",
+    "noResults": "No personnel found"
   },
   "visits": {
     "enterClientName": "Enter client name",

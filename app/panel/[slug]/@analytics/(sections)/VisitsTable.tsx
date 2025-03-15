@@ -39,7 +39,8 @@ export function VisitsTable({
         visit.operations?.flatMap((op) => op.service || []) || [];
 
       // Get all personnel involved in this visit
-      const personnel = services.flatMap((s) => s.personel || []);
+      const personnel =
+        visit.operations?.flatMap((op) => op.personel || []) || [];
 
       // Calculate personnel fees
       const totalPersonnelFee = personnel.reduce((sum, person) => {

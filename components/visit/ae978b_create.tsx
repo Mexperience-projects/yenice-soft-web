@@ -50,19 +50,19 @@ export default function VisitCreateForm({
   const { t } = useTranslation();
   const [formData, setFormData] = useState(initial);
 
-  // New payment form state
-  const [newPayment, setNewPayment] = useState<PaymentsType>({
-    id: -1,
+  const newPaymentTemp = {
+    id: (formData?.payments.length || 0) * -1,
     date: new Date(),
     description: "",
     price: 0,
     paid: false,
     type: PAYMENT_TYPE.credit_card, // Add default payment type
-  });
+  };
+  // New payment form state
+  const [newPayment, setNewPayment] = useState<PaymentsType>(newPaymentTemp);
 
   useEffect(() => {
     setFormData(initial);
-    console.log(initial);
   }, [initial]);
 
   useEffect(() => {
@@ -133,8 +133,6 @@ export default function VisitCreateForm({
   ) => {
     const { name, value, type } = e.target;
 
-    console.log(value);
-
     setNewPayment((prev) => ({
       ...prev,
       [name]:
@@ -145,6 +143,7 @@ export default function VisitCreateForm({
             : name === "type"
               ? (Number(value) as PAYMENT_TYPE)
               : value,
+      id: (formData?.payments.length || 0) * -1,
     }));
   };
 
@@ -252,7 +251,8 @@ export default function VisitCreateForm({
   const addPayment = () => {
     if (!formData) return;
     if (newPayment.description && newPayment.price > 0) {
-      const paymentId = editingPayment?.id || -1;
+      const paymentId =
+        editingPayment?.id || (formData?.payments.length || 0) * -1;
 
       setFormData((prev: any) => {
         let updatedPayments;
@@ -276,15 +276,7 @@ export default function VisitCreateForm({
       });
 
       // Reset form
-      setNewPayment({
-        id: -1,
-        date: new Date(),
-        description: "",
-        price: 0,
-        paid: false,
-        type: PAYMENT_TYPE.credit_card, // Reset payment type
-      });
-
+      setNewPayment(newPaymentTemp);
       setEditingPayment(null);
     }
   };
@@ -310,14 +302,7 @@ export default function VisitCreateForm({
 
     if (editingPayment?.id === paymentId) {
       setEditingPayment(null);
-      setNewPayment({
-        id: -1,
-        date: new Date(),
-        description: "",
-        price: 0,
-        paid: false,
-        type: PAYMENT_TYPE.credit_card,
-      });
+      setNewPayment(newPaymentTemp);
     }
   };
 

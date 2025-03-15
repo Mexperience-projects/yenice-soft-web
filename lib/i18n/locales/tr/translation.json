@@ -54,7 +54,9 @@
     "excludingUnpaid": "Ödenmeyen Hariç",
     "includingUnpaid": "Ödenmeyen Dahil",
     "extraPrice": "Ek Ücret",
-    "discount": "İndirim"
+    "discount": "İndirim",
+    "seeMore": "Daha Fazla Gör",
+    "saving": "Kaydediliyor..."
   },
   "menu": {
     "adminPanel": "Yönetim Paneli",
@@ -189,7 +191,43 @@
       "card_to_card": "Karttan Karta"
     },
     "extraPrice": "Ek Ücret",
-    "discount": "İndirim"
+    "discount": "İndirim",
+    "sortOptions": {
+      "date": "Tarih",
+      "revenue": "Gelir",
+      "personnel_fee": "Personel Ücreti",
+      "net_revenue": "Net Gelir"
+    },
+    "filterOptions": {
+      "all": "Tümü",
+      "today": "Bugün",
+      "thisWeek": "Bu Hafta",
+      "thisMonth": "Bu Ay",
+      "custom": "Özel"
+    },
+    "metrics": {
+      "totalRevenue": "Toplam Gelir",
+      "netRevenue": "Net Gelir",
+      "uniqueClients": "Tekil Müşteriler"
+    },
+    "table": {
+      "date": "Tarih",
+      "client": "Müşteri",
+      "services": "Hizmetler",
+      "personnel": "Personel",
+      "extraPrice": "Ek Ücret",
+      "discount": "İndirim",
+      "personnelFee": "Personel Ücreti",
+      "revenue": "Gelir",
+      "netRevenue": "Net Gelir",
+      "noVisits": "Ziyaret bulunamadı"
+    },
+    "clear": "Temizle",
+    "itemPrice": "Ürün Fiyatı",
+    "lowStockWarning": "Düşük Stok Uyarısı",
+    "lowStockItems": "Düşük Stoklu Ürünler",
+    "lowStockDescription": "Aşağıdaki ürünlerin stok seviyesi düşüktür",
+    "minimumRequired": "Minimum Gerekli"
   },
   "clients": {
     "title": "Müşteri Yönetimi",
@@ -255,7 +293,13 @@
     "deleteItem": "Öğeyi Sil",
     "deleteItemConfirm": "Bu öğeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
     "saveItem": "Öğeyi Kaydet",
-    "enterItemName":"Öğe Adını Gir"
+    "enterItemName":"Öğe Adını Gir",
+    "lowStockWarning": "Düşük Stok Uyarısı",
+    "itemPrice": "Ürün Fiyatı",
+    "lowStockItems": "Düşük Stoklu Ürünler",
+    "lowStockDescription": "Aşağıdaki ürünlerin stok seviyesi düşüktür",
+    "itemName": "Ürün Adı",
+    "minimumRequired": "Minimum Gerekli"
   },
   "payments": {
     "title": "Ödeme Yönetimi",
@@ -313,8 +357,10 @@
       "unpaid": "Ödenmedi"
     },
     "types": {
+      "credit_card": "Kredi Kartı",
       "debit_card": "Banka Kartı",
-      "credit_card": "Kredi Kartı"
+      "cash_pay": "Nakit Ödeme",
+      "card_to_card": "Karttan Karta"
     }
   },
   "personnel": {
@@ -338,7 +384,8 @@
     "enterPosition": "Pozisyon veya rol girin",
     "saveChanges": "Değişiklikleri Kaydet",
     "deleteConfirm": "Bu personeli silmek istediğinizden emin misiniz?",
-    "noPaymentsFound":"Ödeme Bulunamadı"
+    "noPaymentsFound":"Ödeme Bulunamadı",
+    "noResults": "Personel bulunamadı"
   },
   "visits": {
     "enterClientName": "Müşteri adını girin",
