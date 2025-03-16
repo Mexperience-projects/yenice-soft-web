@@ -88,6 +88,7 @@
     "personnel": "Personel"
   },
   "analytics": {
+    "noDataToDisplay":"Görüntülenecek Veri Yok",
     "analysis": "Analiz Paneli",
     "personnelAnalytics": "Personel Performans Analizi",
     "loading": "Veriler yükleniyor...",

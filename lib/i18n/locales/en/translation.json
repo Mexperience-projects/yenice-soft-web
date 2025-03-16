@@ -89,6 +89,7 @@
     "personnel": "Personnel"
   },
   "analytics": {
+    "noDataToDisplay":"No Data To Display",
     "analysis": "Analytics Dashboard",
     "personnelAnalytics": "Personnel Performance Analytics",
     "loading": "Loading data...",
