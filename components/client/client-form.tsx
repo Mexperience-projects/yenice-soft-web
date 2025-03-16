@@ -34,6 +34,8 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    console.log(name, value);
+
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear error when user types
@@ -207,7 +209,7 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
                   name="gender"
                   value="1"
                   className="radio radio-primary"
-                  checked={formData.gender === 1}
+                  checked={formData.gender == 1}
                   onChange={handleChange}
                 />
                 <span className="label-text">{t("clients.male")}</span>
@@ -218,7 +220,7 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
                   name="gender"
                   value="2"
                   className="radio radio-secondary"
-                  checked={formData.gender === 2}
+                  checked={formData.gender == 2}
                   onChange={handleChange}
                 />
                 <span className="label-text">{t("clients.female")}</span>

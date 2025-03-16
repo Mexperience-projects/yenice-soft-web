@@ -183,18 +183,7 @@ export default function VisitCreateForm({
           };
         } else {
           // Add item with default quantity of 1
-          return {
-            ...prev,
-            items: [
-              ...prev.items,
-              {
-                id: item.id,
-                count: item.count,
-                visit: -1,
-                item: item.item,
-              },
-            ],
-          };
+          return prev;
         }
       });
     });

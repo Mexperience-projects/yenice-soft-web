@@ -210,33 +210,6 @@ export default function ClientManagement() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-
-                {/* Export Button */}
-                <div className="dropdown dropdown-end">
-                  <div
-                    tabIndex={0}
-                    role="button"
-                    className="px-4 py-2.5 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg flex items-center gap-2 transition-colors"
-                  >
-                    <Download className="h-4 w-4" />
-                    {t("common.export")}
-                    <ChevronDown className="h-4 w-4" />
-                  </div>
-                  <ul
-                    tabIndex={0}
-                    className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-                  >
-                    <li>
-                      <a>Export as CSV</a>
-                    </li>
-                    <li>
-                      <a>Export as PDF</a>
-                    </li>
-                    <li>
-                      <a>Print List</a>
-                    </li>
-                  </ul>
-                </div>
               </div>
             </div>
           </div>
