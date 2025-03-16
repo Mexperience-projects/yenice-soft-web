@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 import type { ClientType } from "@/lib/types";
 import { User, CreditCard, CalendarDays, Phone } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { format } from "date-fns";
-import { tr } from "date-fns/locale";
 
 interface ClientFormProps {
   onSubmit?: (formData: FormData) => void;
