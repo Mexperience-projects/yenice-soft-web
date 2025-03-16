@@ -1,13 +1,15 @@
+"use client";
+
+import type React from "react";
+
 import { useClients } from "@/hooks/clients/main";
 import { AlertCircle, Edit, Plus, Trash2, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import Visit_ae978b_create from "@/components/visit/ae978b_create";
-import {
+import type {
   ClientType,
-  ItemsType,
   OperationType,
   PaymentsType,
-  PersonelType,
   ServicesType,
   Visit_itemType,
   VisitType,
@@ -87,6 +89,16 @@ export default function VisitForm({
     get_services_list_list();
     get_items_list_list();
   }, []);
+
+  useEffect(() => {
+    if (formData.operations.length > 0) {
+      // Find the current operation in the updated formData
+      const currentOperation =
+        formData.operations.find((op) => op.id === menu?.id) ||
+        formData.operations[0];
+      menuHandler(currentOperation);
+    }
+  }, [formData.operations]);
 
   return (
     <>
