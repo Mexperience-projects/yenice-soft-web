@@ -1,287 +1,373 @@
 "use client";
 
-import type React from "react";
-
-import { useClients } from "@/hooks/clients/main";
-import { AlertCircle, Edit, Plus, Trash2, User } from "lucide-react";
 import { useEffect, useState } from "react";
-import Visit_ae978b_create from "@/components/visit/ae978b_create";
-import type {
-  ClientType,
-  OperationType,
-  PaymentsType,
-  ServicesType,
-  Visit_itemType,
-  VisitType,
-} from "@/lib/types";
+import {
+  Users,
+  FileEdit,
+  Trash2,
+  Plus,
+  Search,
+  User,
+  AlertCircle,
+} from "lucide-react";
+import { useClients } from "@/hooks/clients/main";
+import type { ClientType } from "@/lib/types";
 import { Modal } from "@/components/ui/modal";
-import { cn } from "@/lib/utils";
-import { useVisits } from "@/hooks/visit/ae978b";
 import { useTranslation } from "react-i18next";
-import CreateClient from "../../@clients/(modals)/createClient";
-import { useServices_10cd39 } from "@/hooks/services/10cd39";
-import { useItems_691d50 } from "@/hooks/items/691d50";
+import ClientModal from "./(modals)/createClient";
 
-interface VisitFormProps {
-  isOpen: boolean;
-  onClose: () => void;
-  selectedVisit?: VisitType;
-  onComplete: () => void; // Add this prop
-}
-
-export default function VisitForm({
-  isOpen,
-  onClose: onClose_,
-  selectedVisit,
-  onComplete: onComplete_, // Add this prop
-}: VisitFormProps) {
+export default function ClientManagement() {
   const { t } = useTranslation();
-  const { create_clients_data, clients_list, get_clients_list_list } =
-    useClients();
-  const { create_visit_data } = useVisits();
-  const { get_items_list_list } = useItems_691d50();
-  const { get_services_list_list } = useServices_10cd39();
-  const [isClientCreateModalOpen, setIsClientCreateModalOpen] = useState(false);
-  const [editMode, editModeHandler] = useState(false);
-  const [openDeleteModal, openDeleteModalHandler] = useState(false);
 
-  const emptyForm = {
-    client: undefined as ClientType | undefined,
-    operations: [
-      {
-        id: 1,
-        datetime: new Date(Date.now()),
-        items: [] as Visit_itemType[],
-        payments: [] as PaymentsType[],
-        service: [] as ServicesType[],
-        extraPrice: 0,
-        discount: 0,
-      },
-    ] as OperationType[],
-  };
+  const {
+    get_clients_list_list,
+    create_clients_data,
+    clients_list,
+    update_clients_data,
+    delete_clients_data,
+  } = useClients();
 
-  const [formData, setFormData] = useState(emptyForm);
-  const [menu, menuHandler] = useState<OperationType>(formData.operations[0]);
-
-  useEffect(() => {
-    if (selectedVisit) {
-      setFormData(selectedVisit);
-      menuHandler(selectedVisit.operations[0]);
-    } else {
-      setFormData(emptyForm);
-      menuHandler(emptyForm.operations[0]);
-    }
-  }, [selectedVisit]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const onClose = () => {
-    setFormData(emptyForm);
-    onClose_();
-    onComplete_();
-  };
+  const [selectedClient, setSelectedClient] = useState<ClientType | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterGender, setFilterGender] = useState<number | "all">("all");
+  const [currentTab, setCurrentTab] = useState("all");
 
   useEffect(() => {
     get_clients_list_list();
-    get_services_list_list();
-    get_items_list_list();
   }, []);
 
-  useEffect(() => {
-    if (formData.operations.length > 0) {
-      // Find the current operation in the updated formData
-      const currentOperation =
-        formData.operations.find((op) => op.id === menu?.id) ||
-        formData.operations[0];
-      menuHandler(currentOperation);
+  const handleUpdateSubmit = async (formData: FormData) => {
+    if (selectedClient) {
+      setIsUpdateModalOpen(false);
+      update_clients_data(formData);
+      setSelectedClient(null);
     }
-  }, [formData.operations]);
+  };
+
+  const handleDeleteSubmit = async () => {
+    if (selectedClient) {
+      setIsDeleteModalOpen(false);
+      delete_clients_data(selectedClient.id);
+      setSelectedClient(null);
+    }
+  };
+
+  const formatDate = (dateString: Date) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("tr-TR");
+  };
+
+  // Completely revised format to make the change obvious
+  const formatBirthdate = (dateString: Date) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    let age = today.getFullYear() - date.getFullYear();
+
+    // Adjust age if birthday hasn't occurred yet this year
+    if (
+      today.getMonth() < date.getMonth() ||
+      (today.getMonth() === date.getMonth() && today.getDate() < date.getDate())
+    ) {
+      age--;
+    }
+
+    // Format as DD.MM.YYYY according to Turkish convention with clear separators
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+
+    // Adding a more distinctive format with emoji and different separator
+    return `📅 ${day}-${month}-${year} | ${age} ${t("clients.years")}`;
+  };
+
+  // Filter clients based on search term and gender filter
+  const filteredClients = clients_list.filter((client: ClientType) => {
+    const matchesSearch =
+      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.nationalCo.includes(searchTerm);
+    const matchesGender =
+      filterGender === "all" || client.gender === filterGender;
+
+    if (currentTab === "all") return matchesSearch && matchesGender;
+    // Add more tab filters if needed
+
+    return matchesSearch && matchesGender;
+  });
 
   return (
-    <>
-      {/* create client modal */}
-      <CreateClient
-        onClose={() => setIsClientCreateModalOpen(false)}
-        isOpen={isClientCreateModalOpen}
-        onSubmit={async (form_) => {
-          const client = (await create_clients_data(form_)) as ClientType;
-          setFormData((f) => ({ ...f, client }));
-          setIsClientCreateModalOpen(false);
-        }}
-      />
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <div className="flex flex-row bg-gray-100">
-          {/* Menu bar */}
-          <div className="w-64">
-            <ul className="space-y-2 flex flex-col p-5 pr-0 ">
-              {/* Menu header */}
-              <div className="form-control">
-                <div className="relative group">
-                  <User className="h-6 w-6 text-primary absolute left-5 top-3" />
-                  <input
-                    id="client"
-                    type="char"
-                    value={formData.client?.name}
-                    onChange={handleChange}
-                    placeholder={t("visits.enterClientName")}
-                    className="input input-bordered w-full bg-gray-50 border-gray-200
-                        focus:border-primary focus:ring-primary pl-14"
-                    required
-                  />
-                  <div className="absolute z-30 bg-white shadow-lg rounded-lg w-full hidden group-hover:flex hover:flex flex-col border border-gray-100">
-                    <div className="max-h-60 overflow-y-auto flex flex-col">
-                      {clients_list.map((client) => (
-                        <div
-                          key={client.id}
-                          className="p-2 hover:bg-gray-50 cursor-pointer"
-                          onClick={() => {
-                            setFormData((prev: any) => ({
-                              ...prev,
-                              client: client,
-                            }));
-                          }}
-                        >
-                          {client.name}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="border-t border-gray-100 w-full p-2">
-                      <button
-                        type="button"
-                        className="btn bg-gradient-to-r from-primary/10 to-secondary/10 hover:from-primary/20 hover:to-secondary/20 border-0 text-secondary btn-sm w-full flex items-center justify-center gap-2"
-                        onClick={() => setIsClientCreateModalOpen(true)}
-                      >
-                        <Plus className="h-4 w-4" />{" "}
-                        {t("visits.createNewClient")}
-                      </button>
-                    </div>
-                  </div>
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen relative">
+      <div className="container mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-800 flex items-center">
+            <span className="inline-block w-2 h-8 bg-gradient-to-b from-primary to-secondary rounded-full mr-3"></span>
+            {t("clients.title")}
+          </h1>
+          <p className="text-gray-600 ml-5">{t("clients.subtitle")}</p>
+        </div>
+
+        <div className="flex justify-end mb-6">
+          <button
+            onClick={() => {
+              setIsCreateModalOpen(true);
+              setSelectedClient(null);
+            }}
+            className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300"
+          >
+            <Plus className="h-4 w-4" />
+            <span>{t("clients.addNewClient")}</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          {/* Total Clients Card */}
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">
+                  {t("clients.totalClients")}
+                </h2>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold text-secondary">
+                    {clients_list.length}
+                  </p>
                 </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {t("clients.activeClientRecords")}
+                </p>
               </div>
-
-              {/* Menu Items */}
-              {formData.operations.map((item, i) => (
-                <button
-                  onClick={() => menuHandler(item)}
-                  key={i}
-                  className="btn bg-white disabled:bg-gradient-to-r 
-      from-primary to-secondary shadow disabled:text-white"
-                  disabled={item.id === menu?.id}
-                >
-                  {new Date(item.datetime).toLocaleDateString("tr-TR")} ({i + 1}
-                  )
-                </button>
-              ))}
-
-              {/* add Visit */}
-              {editMode && (
-                <button
-                  onClick={() => {
-                    const newOperation: OperationType = {
-                      id: formData.operations.length + 1,
-                      datetime: new Date(Date.now()),
-                      items: [],
-                      payments: [],
-                      service: [],
-                      extraPrice: 0,
-                      discount: 0,
-                    };
-                    setFormData((f) => ({
-                      ...f,
-                      operations: [...f.operations, newOperation],
-                    }));
-                    menuHandler(newOperation);
-                  }}
-                  className="text-blue-500 border-dashed border-2 flex border-blue-200
-                flex-row items-center justify-center rounded-xl p-3 space-x-3"
-                >
-                  <Plus />
-                  <p className="">{t("visits.addVisit")}</p>
-                </button>
-              )}
-            </ul>
-          </div>
-
-          {/* Menu Body */}
-          <div className="p-6 flex flex-col min-w-[600px] md:min-w-[800px] xl:min-w-[1000px]">
-            <div className="flex flex-row justify-between items-center space-y-2  mb-4">
-              <h2 className="text-xl font-bold text-gray-800 flex">
-                <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-                {t("visits.operation")}{" "}
-                {new Date(menu?.datetime).toLocaleDateString("tr-TR")}
-              </h2>
-              <div className="flex flex-rowitems-center justify-center space-x-2">
-                <button
-                  onClick={() => editModeHandler((e) => !e)}
-                  className={cn(
-                    "px-3 py-1.5 text-secondary hover:bg-secondary/20",
-                    "rounded-lg transition-colors flex items-center gap-1",
-                    { "bg-secondary/10": editMode }
-                  )}
-                >
-                  <Edit className="h-3.5 w-3.5" />
-                  {t("common.edit")}
-                </button>
-                <button
-                  disabled={formData.operations.length === 1}
-                  onClick={() => openDeleteModalHandler(true)}
-                  className="px-3 py-1.5 text-red-500 disabled:text-gray-500 enabled:hover:bg-red-100
-                  rounded-lg transition-colors flex items-center gap-1"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  {t("common.delete")}
-                </button>
+              <div className="flex items-center justify-center bg-secondary/10 rounded-full p-3">
+                <Users className="h-6 w-6 text-secondary" />
               </div>
             </div>
+          </div>
 
-            <Visit_ae978b_create
-              readonly={!editMode}
-              initial={menu}
-              setFormData={(newFormData) =>
-                setFormData((f) => ({
-                  ...f,
-                  operations: f.operations.map((o) =>
-                    o.id === menu.id ? newFormData : o
-                  ),
-                }))
-              }
-            />
-            <div className="flex justify-end gap-2 mt-6">
-              <button
-                type="button"
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
-                onClick={onClose}
-              >
-                {t("common.cancel")}
-              </button>
-              <button
-                onClick={() => {
-                  create_visit_data(formData);
-                  onClose();
-                }}
-                className="px-4 py-2 text-sm font-medium text-white enabled:bg-gradient-to-r from-primary disabled:bg-gray-400
-                to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 group relative"
-                disabled={formData.client === undefined}
-              >
-                {t("visits.saveData")}
-                <p className="absolute text-red-700 bg-white/80 rounded-xl w-40 p-2 right-5 top-0 group-disabled:group-hover:flex hidden">
-                  {t("visits.pleaseSelectClient")}
+          {/* Male Clients Card */}
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">
+                  {t("clients.maleClients")}
+                </h2>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold text-primary">
+                    {
+                      clients_list.filter(
+                        (client: ClientType) => client.gender === 1
+                      ).length
+                    }
+                  </p>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {t("clients.maleClientRecords")}
                 </p>
-              </button>
+              </div>
+              <div className="flex items-center justify-center bg-primary/10 rounded-full p-3">
+                <User className="h-6 w-6 text-primary" />
+              </div>
+            </div>
+          </div>
+
+          {/* Female Clients Card */}
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">
+                  {t("clients.femaleClients")}
+                </h2>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold text-secondary">
+                    {
+                      clients_list.filter(
+                        (client: ClientType) => client.gender === 2
+                      ).length
+                    }
+                  </p>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {t("clients.femaleClientRecords")}
+                </p>
+              </div>
+              <div className="flex items-center justify-center bg-secondary/10 rounded-full p-3">
+                <User className="h-6 w-6 text-secondary" />
+              </div>
             </div>
           </div>
         </div>
-      </Modal>
 
-      {/* Delete Visit Modal */}
-      <Modal
-        isOpen={openDeleteModal}
+        {/* Client Records Card */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-5 border-b border-gray-100">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+                <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
+                {t("clients.clientRecords")}
+              </h2>
+              <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                {/* Search Input */}
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <Search className="w-4 h-4 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pl-10 p-2.5"
+                    placeholder={t("clients.searchByNameOrId")}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Client Table */}
+          {currentTab === "all" && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-6 py-4 font-medium">
+                      {t("clients.name")}
+                    </th>
+                    <th scope="col" className="px-6 py-4 font-medium">
+                      {t("clients.nationalId")}
+                    </th>
+                    <th scope="col" className="px-6 py-4 font-medium">
+                      {t("clients.birthdate")}
+                    </th>
+                    <th scope="col" className="px-6 py-4 font-medium">
+                      {t("clients.gender")}
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-4 font-medium text-right"
+                    >
+                      {t("common.actions")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredClients.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-8 text-center">
+                        <div className="flex flex-col items-center justify-center">
+                          <div className="bg-gray-100 p-3 rounded-full mb-3">
+                            <Users className="h-6 w-6 text-gray-400" />
+                          </div>
+                          <p className="text-gray-500 font-medium">
+                            {t("clients.noClientsFound")}
+                          </p>
+                          <p className="text-gray-400 text-sm mt-1">
+                            {searchTerm || filterGender !== "all"
+                              ? t("clients.noClientsMatch")
+                              : t("clients.addClientToStart")}
+                          </p>
+                          {searchTerm && (
+                            <button
+                              onClick={() => setSearchTerm("")}
+                              className="mt-3 text-primary hover:text-primary/80 text-sm font-medium"
+                            >
+                              {t("common.clearSearch")}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredClients.map((client: ClientType, index) => (
+                      <tr
+                        key={client.id}
+                        className={`bg-white border-b hover:bg-gray-50 transition-colors duration-150 ${
+                          index % 2 === 1 ? "bg-gray-50" : ""
+                        }`}
+                      >
+                        <td className="px-6 py-4 font-medium text-gray-900">
+                          {client.name}
+                        </td>
+                        <td className="px-6 py-4 text-gray-700">
+                          {client.nationalCo}
+                        </td>
+                        <td className="px-6 py-4 text-gray-700">
+                          {formatBirthdate(client.birthdate)}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              client.gender === 1
+                                ? "bg-primary/10 text-primary"
+                                : "bg-secondary/10 text-secondary"
+                            }`}
+                          >
+                            {client.gender === 1
+                              ? t("clients.male")
+                              : t("clients.female")}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex gap-2 justify-end">
+                            <button
+                              className="p-1.5 bg-secondary/10 hover:bg-secondary/20 rounded-lg transition-colors"
+                              onClick={() => {
+                                setSelectedClient(client);
+                                setIsUpdateModalOpen(true);
+                              }}
+                              title={t("common.edit")}
+                            >
+                              <FileEdit className="h-4 w-4 text-secondary" />
+                            </button>
+                            <button
+                              className="p-1.5 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                              onClick={() => {
+                                setSelectedClient(client);
+                                setIsDeleteModalOpen(true);
+                              }}
+                              title={t("common.delete")}
+                            >
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {currentTab === "recent" && (
+            <div className="p-12 text-center text-gray-500">
+              {t("clients.recentViewComingSoon")}
+            </div>
+          )}
+
+          {currentTab === "active" && (
+            <div className="p-12 text-center text-gray-500">
+              {t("clients.activeViewComingSoon")}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <ClientModal
+        isOpen={isCreateModalOpen || isUpdateModalOpen}
         onClose={() => {
-          openDeleteModalHandler(false);
+          setIsCreateModalOpen(false);
+          setIsUpdateModalOpen(false);
+          setSelectedClient(null);
         }}
+        onSubmit={selectedClient ? update_clients_data : create_clients_data}
+        defaultValues={selectedClient || undefined}
+      />
+
+      {/* Delete Client Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
       >
         <div className="p-6">
           <div className="flex items-center justify-center mb-4 text-red-500">
@@ -289,37 +375,58 @@ export default function VisitForm({
               <AlertCircle className="h-6 w-6" />
             </div>
           </div>
-          <h2 className="text-xl font-bold mb-2 text-gray-800 text-center">
-            {t("visits.deleteVisit")}
-          </h2>
+          <h3 className="text-xl font-bold mb-2 text-gray-800 text-center">
+            {t("clients.deleteClient")}
+          </h3>
           <p className="text-gray-600 text-center mb-6">
-            {t("visits.deleteVisitConfirm")}
+            {t("clients.deleteClientConfirm")}
           </p>
-          <div className="flex justify-center gap-3 mt-6">
+
+          {selectedClient && (
+            <div className="bg-gray-50 p-4 rounded-lg mb-6">
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">{t("clients.name")}:</span>
+                  <span className="font-medium text-gray-800">
+                    {selectedClient.name}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">
+                    {t("clients.nationalId")}:
+                  </span>
+                  <span className="font-medium text-gray-800">
+                    {selectedClient.nationalCo}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">
+                    {t("clients.birthdate")}:
+                  </span>
+                  <span className="font-medium text-gray-800">
+                    {formatDate(selectedClient.birthdate)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-center gap-3">
             <button
-              type="button"
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-300"
-              onClick={() => {
-                openDeleteModalHandler(false);
-              }}
+              onClick={() => setIsDeleteModalOpen(false)}
             >
               {t("common.cancel")}
             </button>
             <button
-              onClick={() => {
-                setFormData((f) => ({
-                  ...f,
-                  operations: f.operations.filter((o) => o.id != menu.id),
-                }));
-                openDeleteModalHandler(false);
-              }}
               className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all duration-300"
+              onClick={handleDeleteSubmit}
             >
               {t("common.delete")}
             </button>
           </div>
         </div>
       </Modal>
-    </>
+    </div>
   );
 }
