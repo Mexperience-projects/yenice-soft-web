@@ -15,7 +15,7 @@
     "actions": "Actions",
     "name": "Name",
     "description": "Description",
-    "price": "Price",
+    "price": "Received percentage",
     "count": "Count",
     "status": "Status",
     "date": "Date",

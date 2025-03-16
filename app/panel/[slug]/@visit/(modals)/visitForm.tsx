@@ -168,10 +168,11 @@ export default function VisitForm({
                   onClick={() => menuHandler(item)}
                   key={i}
                   className="btn bg-white disabled:bg-gradient-to-r 
-                    from-primary to-secondary shadow disabled:text-white"
+      from-primary to-secondary shadow disabled:text-white"
                   disabled={item.id === menu?.id}
                 >
-                  {new Date(item.datetime).toLocaleDateString()} ({i + 1})
+                  {new Date(item.datetime).toLocaleDateString("tr-TR")} ({i + 1}
+                  )
                 </button>
               ))}
 
@@ -210,7 +211,7 @@ export default function VisitForm({
               <h2 className="text-xl font-bold text-gray-800 flex">
                 <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
                 {t("visits.operation")}{" "}
-                {new Date(menu?.datetime).toLocaleDateString()}
+                {new Date(menu?.datetime).toLocaleDateString("tr-TR")}
               </h2>
               <div className="flex flex-rowitems-center justify-center space-x-2">
                 <button
@@ -218,9 +219,7 @@ export default function VisitForm({
                   className={cn(
                     "px-3 py-1.5 text-secondary hover:bg-secondary/20",
                     "rounded-lg transition-colors flex items-center gap-1",
-                    {
-                      "bg-secondary/10": editMode,
-                    }
+                    { "bg-secondary/10": editMode }
                   )}
                 >
                   <Edit className="h-3.5 w-3.5" />

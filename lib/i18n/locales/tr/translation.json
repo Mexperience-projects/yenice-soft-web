@@ -15,7 +15,7 @@
     "actions": "İşlemler",
     "name": "İsim",
     "description": "Açıklama",
-    "price": "Fiyat",
+    "price": "Alınan yüzde",
     "count": "Adet",
     "status": "Durum",
     "date": "Tarih",

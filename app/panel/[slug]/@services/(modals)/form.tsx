@@ -5,15 +5,7 @@ import type { ServicesType, PersonelType, ItemsType } from "@/lib/types";
 import { useTranslation } from "react-i18next";
 import { Modal } from "@/components/ui/modal";
 import { useState, useEffect } from "react";
-import {
-  Plus,
-  X,
-  DollarSign,
-  Users,
-  Package,
-  FileText,
-  Tag,
-} from "lucide-react";
+import { Plus, X, Package, FileText, Tag } from "lucide-react";
 
 interface ModalProps {
   onClose: () => void;
@@ -136,8 +128,8 @@ export default function ServiceModal({
                         step="0.01"
                         required
                       />
-                      <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 bg-base-200 rounded-full p-0.5">
-                        <DollarSign className="h-3.5 w-3.5" />
+                      <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 bg-base-200 aspect-square h-5 w-5 rounded-full text-center">
+                        ₺
                       </div>
                     </div>
                   </div>
@@ -203,7 +195,7 @@ export default function ServiceModal({
                             </option>
                             {items.map((item) => (
                               <option key={item.id} value={item.id}>
-                                {item.name} (${item.price})
+                                {item.name} (₺{item.price})
                               </option>
                             ))}
                           </select>

@@ -62,7 +62,7 @@ export default function ClientManagement() {
 
   const formatDate = (dateString: Date) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString();
+    return date.toLocaleDateString("tr-TR");
   };
 
   const formatBirthdate = (dateString: Date) => {
@@ -70,7 +70,7 @@ export default function ClientManagement() {
     const today = new Date();
     const age = today.getFullYear() - date.getFullYear();
 
-    return `${formatDate(dateString)} (${age} ${t("clients.years")})`;
+    return `${date.toLocaleDateString("tr-TR")} (${age} ${t("clients.years")})`;
   };
 
   // Filter clients based on search term and gender filter
