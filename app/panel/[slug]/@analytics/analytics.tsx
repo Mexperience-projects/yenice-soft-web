@@ -3,7 +3,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { SlidersHorizontal, Users, Package, Calendar } from "lucide-react";
 import { isWithinInterval } from "date-fns";
-import type { DateRange } from "react-day-picker";
 import { useTranslation } from "react-i18next";
 import type {
   PersonelType,
@@ -11,7 +10,6 @@ import type {
   VisitType,
   Visit_itemType,
   PaymentsType,
-  OperationType,
   ItemsType,
 } from "@/lib/types";
 
@@ -214,62 +212,82 @@ export default function Analytics() {
   const filteredPersonnel = useMemo(() => {
     console.log("Filtering personnel from", personel_list.length, "records");
 
+    // If no filters are active, return the full list
+    if (
+      !personnelFilters.searchQuery &&
+      !personnelFilters.dateRange?.from &&
+      !personnelFilters.dateRange?.to &&
+      personnelFilters.selectedService === "all" &&
+      personnelFilters.minRevenue === undefined &&
+      personnelFilters.maxRevenue === undefined
+    ) {
+      return personel_list;
+    }
+
     return personel_list.filter((person) => {
-      // Filter by search query
-      const matchesSearch =
-        !personnelFilters.searchQuery ||
-        person.name
-          .toLowerCase()
-          .includes(personnelFilters.searchQuery.toLowerCase());
+      try {
+        // Filter by search query
+        const matchesSearch =
+          !personnelFilters.searchQuery ||
+          person.name
+            .toLowerCase()
+            .includes(personnelFilters.searchQuery.toLowerCase());
 
-      // Filter by service
-      const matchesService =
-        personnelFilters.selectedService === "all" ||
-        services_list.some(
-          (service) =>
-            service.personel?.some((p) => p.id === person.id) &&
-            service.id.toString() === personnelFilters.selectedService
-        );
+        // Filter by service
+        const matchesService =
+          personnelFilters.selectedService === "all" ||
+          services_list.some(
+            (service) =>
+              service.personel?.some((p) => p.id === person.id) &&
+              service.id.toString() === personnelFilters.selectedService
+          );
 
-      // Filter by date range
-      let matchesDateRange = true;
-      if (personnelFilters.dateRange?.from && personnelFilters.dateRange?.to) {
-        const personVisits = visit_list.filter(
-          (visit) =>
-            visit.operations &&
-            visit.operations.some(
-              (op) =>
-                op.service &&
-                op.service.some((s) =>
-                  s.personel?.some((p) => p.id === person.id)
-                )
-            )
-        );
+        // Filter by date range
+        let matchesDateRange = true;
+        if (
+          personnelFilters.dateRange?.from &&
+          personnelFilters.dateRange?.to
+        ) {
+          const personVisits = visit_list.filter(
+            (visit) =>
+              visit.operations &&
+              visit.operations.some(
+                (op) =>
+                  op.service &&
+                  op.service.some((s) =>
+                    s.personel?.some((p) => p.id === person.id)
+                  )
+              )
+          );
 
-        matchesDateRange = personVisits.some(
-          (visit) =>
-            visit.operations &&
-            visit.operations.some((op) => {
-              if (!op.datetime) return false;
-              const opDate = new Date(op.datetime);
-              return isWithinInterval(opDate, {
-                start: personnelFilters.dateRange!.from!,
-                end: personnelFilters.dateRange!.to!,
-              });
-            })
+          matchesDateRange = personVisits.some(
+            (visit) =>
+              visit.operations &&
+              visit.operations.some((op) => {
+                if (!op.datetime) return false;
+                const opDate = new Date(op.datetime);
+                return isWithinInterval(opDate, {
+                  start: new Date(personnelFilters.dateRange!.from!),
+                  end: new Date(personnelFilters.dateRange!.to!),
+                });
+              })
+          );
+        }
+
+        // Filter by revenue range
+        const matchesRevenue =
+          (!personnelFilters.minRevenue ||
+            person.doctorExpense >= personnelFilters.minRevenue) &&
+          (!personnelFilters.maxRevenue ||
+            person.doctorExpense <= personnelFilters.maxRevenue);
+
+        return (
+          matchesSearch && matchesService && matchesDateRange && matchesRevenue
         );
+      } catch (error) {
+        console.error("Personnel filtering error:", error);
+        return true; // In case of error, include this person
       }
-
-      // Filter by revenue range
-      const matchesRevenue =
-        (!personnelFilters.minRevenue ||
-          person.doctorExpense >= personnelFilters.minRevenue) &&
-        (!personnelFilters.maxRevenue ||
-          person.doctorExpense <= personnelFilters.maxRevenue);
-
-      return (
-        matchesSearch && matchesService && matchesDateRange && matchesRevenue
-      );
     });
   }, [personel_list, personnelFilters, services_list, visit_list]);
 
@@ -305,6 +323,173 @@ export default function Analytics() {
       filteredPersonnel.some((fp) => fp.id === person.id)
     );
   }, [personnelWithMetrics, filteredPersonnel]);
+
+  // Filter inventory items based on inventory filters
+  const filteredItems = useMemo(() => {
+    // If no filters are active, return the full list
+    if (
+      !inventoryFilters.searchQuery &&
+      !inventoryFilters.dateRange?.from &&
+      !inventoryFilters.dateRange?.to &&
+      inventoryFilters.minStock === undefined &&
+      inventoryFilters.maxStock === undefined &&
+      !inventoryFilters.showLowStock
+    ) {
+      return items_list;
+    }
+
+    return items_list.filter((item) => {
+      try {
+        // Filter by search query
+        const matchesSearch =
+          !inventoryFilters.searchQuery ||
+          item.name
+            .toLowerCase()
+            .includes(inventoryFilters.searchQuery.toLowerCase());
+
+        // Filter by stock range
+        const matchesStockRange =
+          (inventoryFilters.minStock === undefined ||
+            item.used >= inventoryFilters.minStock) &&
+          (inventoryFilters.maxStock === undefined ||
+            item.used <= inventoryFilters.maxStock);
+
+        // Filter by low stock - using a fixed percentage or value
+        const matchesLowStock =
+          !inventoryFilters.showLowStock ||
+          (item.count > 0 && item.used / item.count >= 0.7); // Consider low stock if 70% or more is used
+
+        return matchesSearch && matchesStockRange && matchesLowStock;
+      } catch (error) {
+        console.error("Item filtering error:", error);
+        return true; // In case of error, include this item
+      }
+    });
+  }, [items_list, inventoryFilters]);
+
+  // Filter visits based on visit filters
+  // Filter visits based on visit filters
+  const filteredVisits = useMemo(() => {
+    // If no filters are active, return the full list
+    if (
+      !visitFilters.searchQuery &&
+      !visitFilters.dateRange?.from &&
+      !visitFilters.dateRange?.to &&
+      visitFilters.selectedService === "all" &&
+      visitFilters.selectedPersonnel === "all" &&
+      visitFilters.paymentType === "all" &&
+      visitFilters.minRevenue === undefined &&
+      visitFilters.maxRevenue === undefined
+    ) {
+      return visit_list;
+    }
+
+    return visit_list.filter((visit) => {
+      try {
+        // Filter by date range
+        let matchesDateRange = true;
+        if (visitFilters.dateRange?.from && visitFilters.dateRange?.to) {
+          matchesDateRange =
+            visit.operations &&
+            visit.operations.some((op) => {
+              if (!op.datetime) return false;
+              const opDate = new Date(op.datetime);
+              return isWithinInterval(opDate, {
+                start: new Date(visitFilters.dateRange!.from!),
+                end: new Date(visitFilters.dateRange!.to!),
+              });
+            });
+        }
+
+        // Filter by search query
+        const matchesSearch =
+          !visitFilters.searchQuery ||
+          visit.operations.some(
+            (op) =>
+              op.service.some((s) =>
+                s.name
+                  .toLowerCase()
+                  .includes(visitFilters.searchQuery.toLowerCase())
+              ) ||
+              op.items.some((i) =>
+                i.item.name
+                  .toLowerCase()
+                  .includes(visitFilters.searchQuery.toLowerCase())
+              )
+          );
+
+        // Filter by selected service
+        const matchesService =
+          visitFilters.selectedService === "all" ||
+          visit.operations.some((op) =>
+            op.service.some(
+              (s) => s.id.toString() === visitFilters.selectedService
+            )
+          );
+
+        // Filter by selected personnel
+        const matchesPersonnel =
+          visitFilters.selectedPersonnel === "all" ||
+          visit.operations.some((op) =>
+            op.service.some((s) =>
+              s.personel?.some(
+                (p) => p.id.toString() === visitFilters.selectedPersonnel
+              )
+            )
+          );
+
+        // Filter by payment type - fixed to handle enum correctly
+        const matchesPaymentType =
+          visitFilters.paymentType === "all" ||
+          visit.operations.some((op) =>
+            op.payments.some((p) => {
+              // If paymentType is "all", match all payments
+              if (visitFilters.paymentType === "all") return true;
+
+              // Otherwise, compare the payment type directly with the enum value
+              return p.type === visitFilters.paymentType;
+            })
+          );
+
+        // Filter by revenue range
+        let matchesRevenue = true;
+        if (
+          visitFilters.minRevenue !== undefined ||
+          visitFilters.maxRevenue !== undefined
+        ) {
+          const visitRevenue = visit.operations.reduce((sum, op) => {
+            const serviceRevenue = op.service.reduce(
+              (sSum, service) => sSum + service.price,
+              0
+            );
+            const itemRevenue = op.items.reduce(
+              (iSum, item) => iSum + item.count * item.item.price,
+              0
+            );
+            return sum + serviceRevenue + itemRevenue;
+          }, 0);
+
+          matchesRevenue =
+            (visitFilters.minRevenue === undefined ||
+              visitRevenue >= visitFilters.minRevenue) &&
+            (visitFilters.maxRevenue === undefined ||
+              visitRevenue <= visitFilters.maxRevenue);
+        }
+
+        return (
+          matchesSearch &&
+          matchesDateRange &&
+          matchesService &&
+          matchesPersonnel &&
+          matchesPaymentType &&
+          matchesRevenue
+        );
+      } catch (error) {
+        console.error("Visit filtering error:", error);
+        return true; // In case of error, include this visit
+      }
+    });
+  }, [visit_list, visitFilters]);
 
   // Get current filters based on active tab
   const getCurrentFilters = () => {
@@ -383,6 +568,17 @@ export default function Analytics() {
     setSelectedPersonnel(personnel);
     setIsModalOpen(true);
   };
+
+  // Create chart data variables that directly use the filtered data
+  console.log("Filtered Personnel:", filteredPersonnelWithMetrics.length);
+  console.log("Filtered Items:", filteredItems.length);
+  console.log("Filtered Visits:", filteredVisits.length);
+
+  // Make sure we're passing the correct filtered data to each chart component
+  // No fallback to full data - charts should handle empty data internally
+  const chartPersonnelData = filteredPersonnelWithMetrics;
+  const chartItemsData = filteredItems;
+  const chartVisitsData = filteredVisits;
 
   return (
     <div
@@ -499,14 +695,14 @@ export default function Analytics() {
           {/* Charts */}
           <div className="mb-6">
             {activeTab === "personnel" && (
-              <PersonnelCharts
-                personnelWithMetrics={filteredPersonnelWithMetrics}
-              />
+              <PersonnelCharts personnelWithMetrics={chartPersonnelData} />
             )}
             {activeTab === "inventory" && (
-              <InventoryCharts items_list={items_list} />
+              <InventoryCharts items_list={chartItemsData} />
             )}
-            {activeTab === "visits" && <VisitsCharts visits={visit_list} />}
+            {activeTab === "visits" && (
+              <VisitsCharts visits={chartVisitsData} />
+            )}
           </div>
 
           {/* Tables */}
