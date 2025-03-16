@@ -47,6 +47,7 @@ export default function PersonnelPage() {
 
   const closeModal = (): void => {
     setIsModalOpen(false);
+    setSelectedPersonnel(null);
   };
 
   const handlePersonnelSelect = (personnel: PersonelType): void => {
