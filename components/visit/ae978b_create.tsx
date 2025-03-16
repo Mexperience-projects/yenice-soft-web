@@ -63,12 +63,12 @@ export default function VisitCreateForm({
 
   useEffect(() => {
     setFormData(initial);
-  }, [initial]);
+  }, []);
 
   useEffect(() => {
     if (!formData) return;
     updateFormData(formData);
-  }, [formData]);
+  }, []);
 
   // Edit payment state
   const [editingPayment, setEditingPayment] = useState<PaymentsType | null>(
@@ -148,9 +148,13 @@ export default function VisitCreateForm({
   };
 
   const handleServiceSelect = (service: ServicesType) => {
+    // Check if the service is already selected
+    const isServiceAlreadySelected = formData?.service.includes(service);
+
+    // Update the service list
     setFormData((prev) => {
       if (!prev) return;
-      if (prev.service.includes(service))
+      if (isServiceAlreadySelected)
         return {
           ...prev,
           service: [
@@ -166,27 +170,43 @@ export default function VisitCreateForm({
       };
     });
 
-    service.items.forEach((item) => {
-      setFormData((prev) => {
-        if (!prev) return;
-        // Check if item is already selected
-        const foundedItem = prev.items.find((i) => item.item.id === i.id);
+    // Only add items if the service is being added (not removed)
+    if (!isServiceAlreadySelected) {
+      service.items.forEach((item) => {
+        setFormData((prev) => {
+          if (!prev) return prev;
+          // Check if item is already selected - fix the comparison to check item.id correctly
+          const foundedItem = prev.items.find(
+            (i) => item.item.id === i.item.id
+          );
 
-        if (foundedItem) {
-          // Remove item if already selected
-          return {
-            ...prev,
-            items: [
-              ...prev.items.filter((i) => item.item.id !== i.id),
-              { ...foundedItem, count: foundedItem.count + item.count },
-            ],
-          };
-        } else {
-          // Add item with default quantity of 1
-          return prev;
-        }
+          if (foundedItem) {
+            // Update item if already selected
+            return {
+              ...prev,
+              items: [
+                ...prev.items.filter((i) => i.id !== foundedItem.id),
+                { ...foundedItem, count: foundedItem.count + item.count },
+              ],
+            };
+          } else {
+            // Add item with count from the service
+            return {
+              ...prev,
+              items: [
+                ...prev.items,
+                {
+                  id: (prev.items.length + 1) * -1,
+                  count: item.count,
+                  visit: -1,
+                  item: item.item,
+                },
+              ],
+            };
+          }
+        });
       });
-    });
+    }
   };
 
   const handleItemSelect = (item_id: ItemsType, count = 1) => {
@@ -756,7 +776,7 @@ export default function VisitCreateForm({
                   if (!prev) return prev;
                   return {
                     ...prev,
-                    extraPrice: parseInt(e.target.value) || 0,
+                    extraPrice: Number.parseInt(e.target.value) || 0,
                   };
                 })
               }
@@ -785,7 +805,7 @@ export default function VisitCreateForm({
                   if (!prev) return prev;
                   return {
                     ...prev,
-                    discount: parseInt(e.target.value) || 0,
+                    discount: Number.parseInt(e.target.value) || 0,
                   };
                 })
               }
