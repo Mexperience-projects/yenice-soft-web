@@ -62,7 +62,9 @@ export function SummaryCards({
               {t("analytics.totalRevenue")}
             </h2>
             <div className="bg-accent/10 p-2 rounded-full">
-              <DollarSign className="h-4 w-4 text-accent" />
+              <p className="flex items-center text-center justify-center h-4 w-4 text-accent">
+                ₺
+              </p>
             </div>
           </div>
           <div className="text-2xl font-bold mt-2">
@@ -95,4 +97,4 @@ export function SummaryCards({
       </div>
     </div>
   );
-} 
+}

@@ -33,6 +33,12 @@ export default function PersonnelPage() {
     useState<PersonelType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
+  // Add state for delete confirmation modal
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [personnelToDelete, setPersonnelToDelete] =
+    useState<PersonelType | null>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
   useEffect(() => {
     get_personel_list_list();
   }, [isModalOpen]);
@@ -55,12 +61,26 @@ export default function PersonnelPage() {
     setActiveTab("update");
   };
 
-  const handleDeletePersonnel = async (
-    personel: PersonelType
-  ): Promise<void> => {
-    if (window.confirm(t("personnel.deleteConfirm"))) {
-      delete_personel_data(personel.id);
+  // Update the delete handler to open the confirmation modal
+  const handleDeletePersonnel = (personnel: PersonelType): void => {
+    setPersonnelToDelete(personnel);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Add a function to confirm deletion
+  const confirmDeletePersonnel = async (): Promise<void> => {
+    if (!personnelToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await delete_personel_data(personnelToDelete.id);
       setActiveTab("list");
+    } catch (error) {
+      console.error("Error deleting personnel:", error);
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
+      setPersonnelToDelete(null);
     }
   };
 
@@ -333,6 +353,8 @@ export default function PersonnelPage() {
           </button>
         </div>
       </div>
+
+      {/* Personnel Modal */}
       <Personel_modal
         onClose={() => {
           closeModal(); // This will set isModalOpen to false
@@ -341,6 +363,47 @@ export default function PersonnelPage() {
         selectedPersonnel={selectedPersonnel as PersonelType}
         isOpen={isModalOpen}
       />
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="modal modal-open z-50">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg text-error">
+              {t("common.warning")}
+            </h3>
+            <p className="py-4">{t("personnel.deleteConfirm")}</p>
+            <div className="modal-action">
+              <button
+                className="btn btn-ghost"
+                onClick={() => {
+                  setIsDeleteModalOpen(false);
+                  setPersonnelToDelete(null);
+                }}
+              >
+                {t("common.cancel")}
+              </button>
+              <button
+                className="btn btn-error"
+                onClick={confirmDeletePersonnel}
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <span className="loading loading-spinner loading-xs"></span>
+                ) : (
+                  t("common.delete")
+                )}
+              </button>
+            </div>
+          </div>
+          <div
+            className="modal-backdrop"
+            onClick={() => {
+              setIsDeleteModalOpen(false);
+              setPersonnelToDelete(null);
+            }}
+          ></div>
+        </div>
+      )}
     </div>
   );
 }

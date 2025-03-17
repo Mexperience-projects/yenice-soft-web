@@ -169,7 +169,7 @@ export default function UserModal({
         </div>
 
         <form method="dialog" className="modal-backdrop">
-          <button onClick={onClose}>close</button>
+          <button onClick={onClose}>{t("common.close")}</button>
         </form>
       </div>
     </div>

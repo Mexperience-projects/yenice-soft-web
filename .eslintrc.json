@@ -1,0 +1,18 @@
+// {
+//   "extends": [
+//     "next/core-web-vitals",
+//     "next/typescript",
+//     "plugin:i18next/recommended"
+//   ],
+//   "plugins": [
+//     "i18n"
+//   ],
+//   "rules": {
+//     "i18n/no-chinese-character": 1,
+//     "i18n/no-greek-character": 1,
+//     "i18n/no-japanese-character": 1,
+//     "i18n/no-korean-character": 1,
+//     "i18n/no-russian-character": 1,
+//     "i18n/no-thai-character": 1
+//   }
+// }

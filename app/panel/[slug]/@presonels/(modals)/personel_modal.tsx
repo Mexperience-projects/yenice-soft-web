@@ -192,9 +192,9 @@ export default function PersonnelModal({
 
   // Format currency
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("tr-TR", {
       style: "currency",
-      currency: "USD",
+      currency: "TRY",
     }).format(amount);
   };
 
@@ -267,7 +267,7 @@ export default function PersonnelModal({
             <div className="p-4 border-t lg:border-t-0 lg:border-r">
               {/* Personnel Details Section */}
               <div className="mt-2">
-                <h4 className="font-semibold mb-2">Details</h4>
+                <h4 className="font-semibold mb-2">{t("analytics.details")}</h4>
                 <form
                   id="create-personnel-form"
                   action={async (formData) => {
@@ -335,22 +335,30 @@ export default function PersonnelModal({
               </div>
 
               {/* Payment Statistics - Empty State */}
-              <h4 className="font-semibold mb-2 mt-4">Payment Analytics</h4>
+              <h4 className="font-semibold mb-2 mt-4">
+                {t("analytics.paymentanalytics")}
+              </h4>
               <div className="stats shadow w-full mb-4 text-sm">
                 <div className="stat py-2">
-                  <div className="stat-title">Total Payments</div>
+                  <div className="stat-title">
+                    {t("analytics.totalPayments")}
+                  </div>
                   <div className="stat-value text-primary text-xl">
                     {formatCurrency(0)}
                   </div>
-                  <div className="stat-desc">0 payments recorded</div>
+                  <div className="stat-desc">
+                    0 {t("analytics.paymentsRecorded")}
+                  </div>
                 </div>
 
                 <div className="stat py-2">
-                  <div className="stat-title">Average Payment</div>
+                  <div className="stat-title">
+                    {t("analytics.averagePayment")}
+                  </div>
                   <div className="stat-value text-secondary text-xl">
                     {formatCurrency(0)}
                   </div>
-                  <div className="stat-desc">per payment</div>
+                  <div className="stat-desc">{t("analytics.perPayment")}</div>
                 </div>
               </div>
             </div>
@@ -358,9 +366,9 @@ export default function PersonnelModal({
             {/* Right Column - Payments List */}
             <div className="p-4 border-t">
               <div className="flex justify-between items-center mb-3">
-                <h4 className="font-semibold">Payments</h4>
+                <h4 className="font-semibold">{t("payments.payments")}</h4>
                 <div className="text-gray-500 text-sm">
-                  Save personnel first to add payments
+                  {t("payments.savePersonnelFirst")}
                 </div>
               </div>
 
@@ -374,7 +382,7 @@ export default function PersonnelModal({
           </div>
 
           <form method="dialog" className="modal-backdrop">
-            <button onClick={onClose}>close</button>
+            <button onClick={onClose}>{t("common.close")}</button>
           </form>
         </div>
       </div>
@@ -422,7 +430,7 @@ export default function PersonnelModal({
           <div className="p-4 lg:border-r">
             {/* Personnel Details Section */}
             <div className="mt-2">
-              <h4 className="font-semibold mb-2">Details</h4>
+              <h4 className="font-semibold mb-2">{t("analytics.details")}</h4>
               <form
                 id="update-personnel-form"
                 action={async (formData) => {
@@ -495,26 +503,30 @@ export default function PersonnelModal({
             </div>
 
             {/* Payment Statistics */}
-            <h4 className="font-semibold mb-2 mt-4">Payment Analytics</h4>
+            <h4 className="font-semibold mb-2 mt-4">
+              {t("analytics.paymentanalytics")}
+            </h4>
             <div className="stats shadow w-full mb-4 text-sm">
               <div className="stat py-2">
-                <div className="stat-title">Total Payments</div>
+                <div className="stat-title">{t("analytics.totalPayments")}</div>
                 <div className="stat-value text-primary text-xl">
                   {formatCurrency(totalPayments)}
                 </div>
                 <div className="stat-desc">
-                  {payments.length} payments recorded
+                  {payments.length} {t("analytics.paymentsRecorded")}
                 </div>
               </div>
 
               <div className="stat py-2">
-                <div className="stat-title">Average Payment</div>
+                <div className="stat-title">
+                  {t("analytics.averagePayment")}
+                </div>
                 <div className="stat-value text-secondary text-xl">
                   {payments.length > 0
                     ? formatCurrency(totalPayments / payments.length)
                     : formatCurrency(0)}
                 </div>
-                <div className="stat-desc">per payment</div>
+                <div className="stat-desc">{t("analytics.perPayment")}</div>
               </div>
             </div>
           </div>
@@ -522,7 +534,7 @@ export default function PersonnelModal({
           {/* Right Column - Payments List */}
           <div className="p-4">
             <div className="flex justify-between items-center mb-3">
-              <h4 className="font-semibold">Payments</h4>
+              <h4 className="font-semibold">{t("payments.payments")}</h4>
 
               <div className="flex gap-2">
                 <button
@@ -532,7 +544,7 @@ export default function PersonnelModal({
                   disabled={isAddingPayment}
                 >
                   <PlusIcon className="h-4 w-4 mr-1" />
-                  Add Payment
+                  {t("payments.addPayment")}
                 </button>
               </div>
             </div>
@@ -661,8 +673,8 @@ export default function PersonnelModal({
               ) : (
                 <div className="text-center py-6 text-gray-500">
                   {payments.length > 0
-                    ? "No payments match filters"
-                    : "No payments found"}
+                    ? t("payments.noPaymentsMatchFilters")
+                    : t("payments.noPaymentsFound")}
                 </div>
               )}
             </div>
@@ -670,7 +682,7 @@ export default function PersonnelModal({
         </div>
 
         <form method="dialog" className="modal-backdrop">
-          <button onClick={onClose}>close</button>
+          <button onClick={onClose}>{t("common.close")}</button>
         </form>
       </div>
     </div>

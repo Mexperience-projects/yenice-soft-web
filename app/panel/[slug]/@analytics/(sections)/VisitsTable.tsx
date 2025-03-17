@@ -139,7 +139,7 @@ export function VisitsTable({
             {/* Summary Stats */}
             <div className="flex gap-6 text-base-content/70">
               <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4" />
+                <p className="flex items-center justify-center h-4 w-4">₺</p>
                 <span className="font-medium">
                   {summary.totalRevenue.toLocaleString()} ₺
                 </span>

@@ -235,7 +235,12 @@
     "noPersonnelData": "Personel Verisi Yok",
     "noPersonnelDataToDisplay": "Görüntülenecek Personel Verisi Yok",
     "noPaymentDataAvailable": "Ödeme verisi bulunamadı",
-    "noVisitData": "Ziyaret Verisi Yok"
+    "noVisitData": "Ziyaret Verisi Yok",
+    "paymentanalytics": "Ödeme Analitiği",
+    "totalPayments": "Toplam Ödemeler",
+    "paymentsRecorded": "ödeme kaydedildi",
+    "averagePayment": "Ortalama Ödeme",
+    "perPayment": "ödeme başına"
   },
   "clients": {
     "title": "Müşteri Yönetimi",
@@ -369,7 +374,10 @@
       "debit_card": "Banka Kartı",
       "cash_pay": "Nakit Ödeme",
       "card_to_card": "Karttan Karta"
-    }
+    },
+    "payments": "Ödemeler",
+    "noPaymentsMatchFilters": "Filtrelere uygun ödeme bulunamadı",
+    "savePersonnelFirst": "Ödeme eklemek için önce personeli kaydedin"
   },
   "personnel": {
     "title": "Personel Yönetimi",
@@ -393,7 +401,9 @@
     "saveChanges": "Değişiklikleri Kaydet",
     "deleteConfirm": "Bu personeli silmek istediğinizden emin misiniz?",
     "noPaymentsFound":"Ödeme Bulunamadı",
-    "noResults": "Personel bulunamadı"
+    "noResults": "Personel bulunamadı",
+    "date": "Tarih",
+    "amount": "Tutar"
   },
   "visits": {
     "enterClientName": "Müşteri adını girin",

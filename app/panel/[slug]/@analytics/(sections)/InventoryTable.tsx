@@ -144,7 +144,7 @@ export function InventoryTable({
               </h2>
             </div>
             <div className="flex items-center gap-2 text-base-content/70">
-              <DollarSign className="h-4 w-4" />
+              <p className="h-4 w-4 flex items-center justify-center">₺</p>
               <span className="font-medium">
                 {t("analytics.totalRevenue")}: ₺
                 {totals.totalRevenue.toLocaleString()}

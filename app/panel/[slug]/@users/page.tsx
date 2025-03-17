@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePersonel_e02ed2 } from "@/hooks/personel/e02ed2";
 import {
   Plus,
   Users,
@@ -33,6 +32,11 @@ export default function usersPage() {
   const [selectedusers, setSelectedusers] = useState<UsersType | undefined>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
+  // Add state for delete confirmation modal
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [userToDelete, setUserToDelete] = useState<UsersType | null>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
   useEffect(() => {
     get_user_list_list();
   }, [isModalOpen]);
@@ -54,10 +58,26 @@ export default function usersPage() {
     setActiveTab("update");
   };
 
-  const handleDeleteusers = async (user: UsersType): Promise<void> => {
-    if (window.confirm(t("users.deleteConfirm"))) {
-      delete_user_data(user.id);
+  // Update the delete handler to open the confirmation modal
+  const handleDeleteusers = (user: UsersType): void => {
+    setUserToDelete(user);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Add a function to confirm deletion
+  const confirmDeleteUser = async (): Promise<void> => {
+    if (!userToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await delete_user_data(userToDelete.id);
       setActiveTab("list");
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
+      setUserToDelete(null);
     }
   };
 
@@ -330,6 +350,8 @@ export default function usersPage() {
           </button>
         </div>
       </div>
+
+      {/* User Modal */}
       <UserModal
         onClose={() => {
           closeModal();
@@ -338,6 +360,47 @@ export default function usersPage() {
         selectedUser={selectedusers}
         isOpen={isModalOpen}
       />
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="modal modal-open z-50">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg text-error">
+              {t("common.warning")}
+            </h3>
+            <p className="py-4">{t("user.deleteConfirm")}</p>
+            <div className="modal-action">
+              <button
+                className="btn btn-ghost"
+                onClick={() => {
+                  setIsDeleteModalOpen(false);
+                  setUserToDelete(null);
+                }}
+              >
+                {t("common.cancel")}
+              </button>
+              <button
+                className="btn btn-error"
+                onClick={confirmDeleteUser}
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <span className="loading loading-spinner loading-xs"></span>
+                ) : (
+                  t("common.delete")
+                )}
+              </button>
+            </div>
+          </div>
+          <div
+            className="modal-backdrop"
+            onClick={() => {
+              setIsDeleteModalOpen(false);
+              setUserToDelete(null);
+            }}
+          ></div>
+        </div>
+      )}
     </div>
   );
 }

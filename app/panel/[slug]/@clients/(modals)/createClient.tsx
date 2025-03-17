@@ -69,7 +69,7 @@ export default function CreateClientModal({
         </form>
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button onClick={onClose}>close</button>
+        <button onClick={onClose}>{t("common.close")}</button>
       </form>
     </dialog>
   );

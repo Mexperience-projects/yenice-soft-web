@@ -10,7 +10,6 @@ import {
   CreditCard,
   User,
   Package,
-  DollarSign,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -301,7 +300,9 @@ export function FilterSection({
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text flex items-center gap-2">
-                      <DollarSign className="w-4 h-4" />
+                      <p className="flex items-center justify-center w-4 h-4">
+                        ₺
+                      </p>
                       {t("analytics.revenueRange")}
                     </span>
                   </label>
@@ -517,7 +518,9 @@ export function FilterSection({
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text flex items-center gap-2">
-                      <DollarSign className="w-4 h-4" />
+                      <p className="w-4 h-4 flex items-center justify-center">
+                        ₺
+                      </p>
                       {t("analytics.revenueRange")}
                     </span>
                   </label>

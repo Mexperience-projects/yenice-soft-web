@@ -21,7 +21,6 @@ import type {
   VisitType,
   OperationType,
   ServicesType,
-  Visit_itemType,
   PaymentsType,
 } from "@/lib/types";
 import { startOfToday, format, subDays, addDays, parseISO } from "date-fns";
@@ -146,7 +145,7 @@ export function VisitsCharts({ visits, dateRange }: VisitsChartsProps) {
 
     const stats = new Map<
       string,
-      { name: string; count: number; amount: number }
+      { key: string; name: string; count: number; amount: number }
     >();
     const paymentTypes = [
       "credit_card",
@@ -164,14 +163,17 @@ export function VisitsCharts({ visits, dateRange }: VisitsChartsProps) {
         operation.payments.forEach((payment) => {
           if (payment.type === undefined) return;
 
-          const paymentType = paymentTypes[payment.type] || "unknown";
-          const existing = stats.get(paymentType) || {
-            name: paymentType,
+          const paymentTypeKey = paymentTypes[payment.type] || "unknown";
+          const paymentTypeName = t(`analytics.paymentTypes.${paymentTypeKey}`);
+          const existing = stats.get(paymentTypeKey) || {
+            key: paymentTypeKey,
+            name: paymentTypeName,
             count: 0,
             amount: 0,
           };
-          stats.set(paymentType, {
-            name: paymentType,
+          stats.set(paymentTypeKey, {
+            key: paymentTypeKey,
+            name: paymentTypeName,
             count: existing.count + 1,
             amount: existing.amount + (payment.price || 0),
           });
@@ -180,7 +182,7 @@ export function VisitsCharts({ visits, dateRange }: VisitsChartsProps) {
     });
 
     return Array.from(stats.values());
-  }, [visits]);
+  }, [visits, t]);
 
   // Check if we have data to display
   const hasData =
