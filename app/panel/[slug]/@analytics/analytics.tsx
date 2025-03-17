@@ -19,7 +19,6 @@ import {
   type ItemsType,
   type PersonelPayments,
   type OperationType,
-  type PAYMENT_TYPE,
   PAYMENT_TYPE2text,
 } from "@/lib/types";
 
@@ -430,13 +429,12 @@ export default function Analytics() {
 
     return visit_list
       .map((visit) => {
-        const payments = visit.operations?.flatMap((op) =>
+        const payments = visit.operations?.map((op) =>
           op.payments.filter((p) => {
             // Filter by payment type
             const matchesPaymentType =
               visitFilters.paymentType === "all" ||
-              PAYMENT_TYPE2text[p.type] ===
-                (visitFilters.paymentType as unknown as string);
+              p.type === visitFilters.paymentType;
 
             // Filter by date range if specified
             const matchesDateRange =
@@ -463,9 +461,6 @@ export default function Analytics() {
         };
       })
       .filter((visit) => {
-        if (visit.payments.length === 0) {
-          return false;
-        }
         try {
           // Filter by search query
           const matchesSearch =
@@ -496,12 +491,9 @@ export default function Analytics() {
           // Filter by selected personnel
           const matchesPersonnel =
             visitFilters.selectedPersonnel === "all" ||
-            visit.operations.some((op) =>
-              op.service.some((s) =>
-                s.personel?.some(
-                  (p) => p.id.toString() === visitFilters.selectedPersonnel
-                )
-              )
+            visit.operations.some(
+              (op) =>
+                op.personel?.id.toString() === visitFilters.selectedPersonnel
             );
 
           // Filter by payment type - fixed to handle enum correctly
@@ -631,6 +623,12 @@ export default function Analytics() {
   const isDataLoading =
     personnelLoading || servicesLoading || paymentsLoading || itemsLoading;
 
+  // Handle personnel click for details modal
+  const handlePersonnelClick = (personnel: PersonnelWithMetrics) => {
+    setSelectedPersonnel(personnel);
+    setIsModalOpen(true);
+  };
+
   return (
     <div
       className={`min-h-screen bg-base-100 transition-opacity duration-500 opacity-100`}
@@ -757,8 +755,7 @@ export default function Analytics() {
             )}
             {activeTab === "visits" && (
               <VisitsCharts
-                personnelWithMetrics={filteredPersonnel}
-                visit_list={filteredVisits}
+                visits={filteredVisits}
                 dateRange={visitFilters.dateRange}
               />
             )}

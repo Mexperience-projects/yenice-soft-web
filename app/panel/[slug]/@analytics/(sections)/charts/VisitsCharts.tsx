@@ -22,18 +22,13 @@ import type {
   OperationType,
   ServicesType,
   Visit_itemType,
+  PaymentsType,
 } from "@/lib/types";
+import { startOfToday, format, subDays, addDays, parseISO } from "date-fns";
 
 interface VisitsChartsProps {
   visits: VisitType[];
-  filters?: {
-    dateRange?: { from: string; to: string };
-    selectedService?: string;
-    selectedPersonnel?: string;
-    paymentType?: string;
-    minRevenue?: number;
-    maxRevenue?: number;
-  };
+  dateRange?: { from?: string; to?: string };
 }
 
 const COLORS = [
@@ -45,111 +40,68 @@ const COLORS = [
   "#ec4899",
 ];
 
-export function VisitsCharts({ visits, filters }: VisitsChartsProps) {
+export function VisitsCharts({ visits, dateRange }: VisitsChartsProps) {
   const { t } = useTranslation();
 
-  // Calculate daily visit statistics with filters
+  // Calculate revenue and expense trends
   const dailyStats = useMemo(() => {
-    if (!visits || visits.length === 0) {
-      return [];
-    }
-
     const stats = new Map<
       string,
-      { date: string; count: number; revenue: number }
+      { name: string; revenue: number; expense: number }
     >();
 
-    visits.forEach((visit) => {
-      if (!visit.operations || visit.operations.length === 0) return;
+    // If date range is provided, use it; otherwise, use last 14 days
+    const today = startOfToday();
+    const todayStr = format(today, "yyyy-MM-dd");
+    const endDate = dateRange?.to || todayStr;
+    const startDate =
+      dateRange?.from || format(subDays(today, 13), "yyyy-MM-dd");
 
-      // Apply filters
-      const matchesService =
-        !filters?.selectedService ||
-        filters.selectedService === "all" ||
-        visit.operations.some((op) =>
-          op.service.some((s) => s.id.toString() === filters.selectedService)
-        );
+    // Initialize all dates in range with 0 values
+    let currentDate = parseISO(startDate);
+    const endDateObj = parseISO(endDate);
 
-      const matchesPersonnel =
-        !filters?.selectedPersonnel ||
-        filters.selectedPersonnel === "all" ||
-        visit.operations.some((op) =>
-          op.service.some((s) =>
-            s.personel?.some(
-              (p) => p.id.toString() === filters.selectedPersonnel
-            )
-          )
-        );
+    while (currentDate <= endDateObj) {
+      const dateStr = format(currentDate, "yyyy-MM-dd");
+      const displayDate = format(currentDate, "dd/MM/yyyy");
+      stats.set(dateStr, {
+        name: displayDate,
+        revenue: 0,
+        expense: 0,
+      });
+      currentDate = addDays(currentDate, 1);
+    }
 
-      const matchesPaymentType =
-        !filters?.paymentType ||
-        filters.paymentType === "all" ||
-        visit.operations.some((op) =>
-          op.payments.some((p) => p.type.toString() === filters.paymentType)
-        );
+    visits.forEach((visit: VisitType) => {
+      visit.operations?.forEach((operation: OperationType) => {
+        operation.payments?.forEach((payment: PaymentsType) => {
+          if (payment.date) {
+            const paymentDate = format(new Date(payment.date), "yyyy-MM-dd");
 
-      if (!matchesService || !matchesPersonnel || !matchesPaymentType) return;
-
-      const operations = visit.operations || [];
-      const date = operations[0]?.datetime
-        ? new Date(operations[0].datetime).toLocaleDateString()
-        : new Date().toLocaleDateString();
-
-      // Check if date is within range
-      if (
-        filters?.dateRange?.from &&
-        filters?.dateRange?.to &&
-        (new Date(date) < new Date(filters.dateRange.from) ||
-          new Date(date) > new Date(filters.dateRange.to))
-      ) {
-        return;
-      }
-
-      const revenue = operations.reduce(
-        (sum: number, operation: OperationType) => {
-          const serviceRevenue = operation.service
-            ? operation.service.reduce(
-                (sSum: number, service: ServicesType) =>
-                  sSum + (service.price || 0),
-                0
-              )
-            : 0;
-
-          const itemRevenue = operation.items
-            ? operation.items.reduce(
-                (iSum: number, item: Visit_itemType) =>
-                  iSum + (item.count || 0) * (item.item?.price || 0),
-                0
-              )
-            : 0;
-
-          return sum + serviceRevenue + itemRevenue;
-        },
-        0
-      );
-
-      // Apply revenue filters
-      if (
-        (filters?.minRevenue !== undefined && revenue < filters.minRevenue) ||
-        (filters?.maxRevenue !== undefined && revenue > filters.maxRevenue)
-      ) {
-        return;
-      }
-
-      const existing = stats.get(date) || { date, count: 0, revenue: 0 };
-      stats.set(date, {
-        date,
-        count: existing.count + 1,
-        revenue: existing.revenue + revenue,
+            if (stats.has(paymentDate)) {
+              const current = stats.get(paymentDate)!;
+              const paymentTotal = payment.price;
+              stats.set(paymentDate, {
+                ...current,
+                revenue: current.revenue + paymentTotal,
+              });
+            }
+          }
+        });
       });
     });
 
-    return Array.from(stats.values()).sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-  }, [visits, filters]);
+    // Convert map to array and sort by date
+    return Array.from(stats.entries())
+      .map(([date, data]) => ({
+        name: data.name,
+        revenue: data.revenue,
+        expense: data.expense,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [dateRange, visits]);
 
-  // Calculate service distribution with filters
+  // Calculate service distribution
   const serviceStats = useMemo(() => {
     if (!visits || visits.length === 0) {
       return [];
@@ -163,46 +115,11 @@ export function VisitsCharts({ visits, filters }: VisitsChartsProps) {
     visits.forEach((visit) => {
       if (!visit.operations) return;
 
-      // Apply date range filter
-      const visitDate = visit.operations[0]?.datetime
-        ? new Date(visit.operations[0].datetime)
-        : null;
-      if (
-        visitDate &&
-        filters?.dateRange?.from &&
-        filters?.dateRange?.to &&
-        (visitDate < new Date(filters.dateRange.from) ||
-          visitDate > new Date(filters.dateRange.to))
-      ) {
-        return;
-      }
-
       visit.operations.forEach((operation) => {
         if (!operation.service) return;
 
-        // Apply personnel filter
-        const matchesPersonnel =
-          !filters?.selectedPersonnel ||
-          filters.selectedPersonnel === "all" ||
-          operation.service.some((s) =>
-            s.personel?.some(
-              (p) => p.id.toString() === filters.selectedPersonnel
-            )
-          );
-
-        if (!matchesPersonnel) return;
-
         operation.service.forEach((service: ServicesType) => {
           if (!service) return;
-
-          // Apply service filter
-          if (
-            filters?.selectedService &&
-            filters.selectedService !== "all" &&
-            service.id.toString() !== filters.selectedService
-          ) {
-            return;
-          }
 
           const existing = stats.get(service.name) || {
             name: service.name,
@@ -219,9 +136,9 @@ export function VisitsCharts({ visits, filters }: VisitsChartsProps) {
     });
 
     return Array.from(stats.values());
-  }, [visits, filters]);
+  }, [visits]);
 
-  // Calculate payment type distribution with filters
+  // Calculate payment type distribution
   const paymentStats = useMemo(() => {
     if (!visits || visits.length === 0) {
       return [];
@@ -241,55 +158,11 @@ export function VisitsCharts({ visits, filters }: VisitsChartsProps) {
     visits.forEach((visit) => {
       if (!visit.operations) return;
 
-      // Apply date range filter
-      const visitDate = visit.operations[0]?.datetime
-        ? new Date(visit.operations[0].datetime)
-        : null;
-      if (
-        visitDate &&
-        filters?.dateRange?.from &&
-        filters?.dateRange?.to &&
-        (visitDate < new Date(filters.dateRange.from) ||
-          visitDate > new Date(filters.dateRange.to))
-      ) {
-        return;
-      }
-
-      // Apply service and personnel filters
-      const matchesService =
-        !filters?.selectedService ||
-        filters.selectedService === "all" ||
-        visit.operations.some((op) =>
-          op.service.some((s) => s.id.toString() === filters.selectedService)
-        );
-
-      const matchesPersonnel =
-        !filters?.selectedPersonnel ||
-        filters.selectedPersonnel === "all" ||
-        visit.operations.some((op) =>
-          op.service.some((s) =>
-            s.personel?.some(
-              (p) => p.id.toString() === filters.selectedPersonnel
-            )
-          )
-        );
-
-      if (!matchesService || !matchesPersonnel) return;
-
       visit.operations.forEach((operation) => {
         if (!operation.payments) return;
 
         operation.payments.forEach((payment) => {
           if (payment.type === undefined) return;
-
-          // Apply payment type filter
-          if (
-            filters?.paymentType &&
-            filters.paymentType !== "all" &&
-            payment.type.toString() !== filters.paymentType
-          ) {
-            return;
-          }
 
           const paymentType = paymentTypes[payment.type] || "unknown";
           const existing = stats.get(paymentType) || {
@@ -307,7 +180,7 @@ export function VisitsCharts({ visits, filters }: VisitsChartsProps) {
     });
 
     return Array.from(stats.values());
-  }, [visits, filters]);
+  }, [visits]);
 
   // Check if we have data to display
   const hasData =
