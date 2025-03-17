@@ -778,7 +778,7 @@ export default function Analytics() {
           )}
           {activeTab === "visits" && (
             <VisitsTable
-              visit_list={visit_list}
+              visit_list={filteredVisits}
               services_list={services_list}
               personel_list={personel_list}
               animateIn={animateIn}
