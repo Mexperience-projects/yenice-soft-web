@@ -38,9 +38,9 @@
     "entries":"Girişler",
     "amount":"Miktar",
     "paymentType":"Ödeme Türü",
-    "paid":"Ücretli",
+    "paid":"Ödendi",
     "updateButton":"Düğmeyi Güncelle",
-    "addButton":"Düğme ekle",
+    "addButton":"Ödeme Ekle",
     "paymentTypes": {
       "creditCard": "Kredi Kartı",
       "debitCard": "Banka Kartı",

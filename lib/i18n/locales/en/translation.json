@@ -41,7 +41,7 @@
     "paymentType":"Payment Type",
     "paid":"Paid",
     "updateButton":"Update Button",
-    "addButton":"Add Button",
+    "addButton":"Add Payment",
     "paymentTypes": {
       "creditCard": "Credit Card",
       "debitCard": "Debit Card",
