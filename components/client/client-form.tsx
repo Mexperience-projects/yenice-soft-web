@@ -4,7 +4,7 @@ import type React from "react";
 
 import { useEffect, useState } from "react";
 import type { ClientType } from "@/lib/types";
-import { User, Users, CreditCard, CalendarDays, Phone } from "lucide-react";
+import { User, CreditCard, CalendarDays, Phone } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface ClientFormProps {
@@ -91,9 +91,7 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
               value={formData.name}
               onChange={handleChange}
               placeholder={t("clients.enterFullName")}
-              className={`input input-bordered w-full ${
-                errors.name ? "input-error" : ""
-              }`}
+              className={`input input-bordered w-full ${errors.name ? "input-error" : ""}`}
             />
             <label className="label">
               <span className="label-text-alt text-base-content opacity-60">
@@ -119,9 +117,7 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
               value={formData.nationalCo}
               onChange={handleChange}
               placeholder={t("clients.enterNationalId")}
-              className={`input input-bordered w-full ${
-                errors.nationalCo ? "input-error" : ""
-              }`}
+              className={`input input-bordered w-full ${errors.nationalCo ? "input-error" : ""}`}
             />
             <label className="label">
               <span className="label-text-alt text-base-content opacity-60">
@@ -145,9 +141,7 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
               value={formData.phone || ""}
               onChange={handleChange}
               placeholder={t("clients.enterPhone")}
-              className={`input input-bordered w-full ${
-                errors.phone ? "input-error" : ""
-              }`}
+              className={`input input-bordered w-full ${errors.phone ? "input-error" : ""}`}
             />
             <label className="label">
               <span className="label-text-alt text-base-content opacity-60">
@@ -177,10 +171,13 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
                     : ""
                 }
                 onChange={handleChange}
-                className={`input input-bordered w-full ${
-                  errors.birthdate ? "input-error" : ""
-                }`}
+                className={`input input-bordered w-full ${errors.birthdate ? "input-error" : ""}`}
               />
+              {formData.birthdate && (
+                <div className="text-xs text-muted mt-1">
+                  {new Date(formData.birthdate).toLocaleDateString("tr-TR")}
+                </div>
+              )}
               {formData.birthdate && (
                 <div className="badge badge-neutral self-center whitespace-nowrap">
                   {t("clients.age")}: {calculateAge(formData.birthdate)}{" "}

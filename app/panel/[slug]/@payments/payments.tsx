@@ -156,11 +156,7 @@ export default function PaymentsManagement() {
   };
 
   const resetForm = () => {
-    setFormData({
-      visit_id: 0,
-      price: 0,
-      paid: false,
-    });
+    setFormData({ visit_id: 0, price: 0, paid: false });
   };
 
   const openVisitModal = (payment: PaymentsType) => {
@@ -329,8 +325,8 @@ export default function PaymentsManagement() {
                       filters.paid === undefined
                         ? ""
                         : filters.paid
-                        ? "paid"
-                        : "unpaid"
+                          ? "paid"
+                          : "unpaid"
                     }
                     onChange={(e) => {
                       if (e.target.value === "") {
