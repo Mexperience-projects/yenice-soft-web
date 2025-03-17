@@ -26,7 +26,7 @@ export interface PersonelType {
   revenue: number;
   visitCount: number;
   doctorExpense: number;
-  services:   ServicesType[];
+  services: ServicesType[];
 }
 
 export interface UsersType {
@@ -92,6 +92,13 @@ export enum PAYMENT_TYPE {
   cash_pay,
   card_to_card,
 }
+
+export const PAYMENT_TYPE2text: Record<PAYMENT_TYPE, string> = {
+  [PAYMENT_TYPE.credit_card]: "credit_card",
+  [PAYMENT_TYPE.debit_card]: "debit_card",
+  [PAYMENT_TYPE.cash_pay]: "cash_pay",
+  [PAYMENT_TYPE.card_to_card]: "card_to_card",
+};
 
 export interface Visit_paymentType {
   id: number;

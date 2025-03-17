@@ -19,6 +19,7 @@ import {
   Treemap,
 } from "recharts";
 import type { ItemsType } from "@/lib/types";
+import type { TreemapProps } from "recharts";
 
 interface InventoryChartsProps {
   items_list: ItemsType[];
@@ -32,6 +33,23 @@ const COLORS = [
   "#8b5cf6",
   "#ec4899",
 ];
+
+interface TreemapContentProps {
+  root?: any;
+  depth?: number;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  index?: number;
+  payload?: {
+    color: string;
+    name: string;
+  };
+  colors?: string[];
+  rank?: number;
+  name?: string;
+}
 
 export function InventoryCharts({ items_list }: InventoryChartsProps) {
   const { t } = useTranslation();
@@ -85,11 +103,29 @@ export function InventoryCharts({ items_list }: InventoryChartsProps) {
   if (!hasData) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div className="card bg-white shadow-lg border border-gray-100 lg:col-span-2">
+        <div className="card bg-base-100 shadow-xl rounded-xl lg:col-span-2">
           <div className="card-body flex items-center justify-center p-10">
-            <p className="text-lg text-gray-500">
-              {t("analytics.noInventoryDataToDisplay")}
-            </p>
+            <div className="text-center">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                />
+              </svg>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                {t("analytics.noInventoryData")}
+              </h3>
+              <p className="mt-1 text-sm text-gray-500">
+                {t("analytics.noInventoryDataToDisplay")}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -99,36 +135,55 @@ export function InventoryCharts({ items_list }: InventoryChartsProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
       {/* Stock vs Usage Bar Chart */}
-      <div className="card bg-white shadow-lg border border-gray-100">
+      <div className="card bg-base-100 shadow-xl rounded-xl hover:shadow-2xl transition-shadow duration-300">
         <div className="card-body">
-          <h3 className="card-title text-lg mb-4">
-            {t("analytics.stockVsUsage")}
-          </h3>
-          <div className="h-[300px]">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="card-title text-lg font-semibold text-gray-900">
+              {t("analytics.stockVsUsage")}
+            </h3>
+            <div className="badge badge-primary">
+              {inventoryStats.length} items
+            </div>
+          </div>
+          <div className="h-[300px] relative group">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={inventoryStats.slice(0, 10)} // Limit to top 10 items for readability
+                data={inventoryStats.slice(0, 10)}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="name" tick={{ fill: "#6b7280" }} />
+                <YAxis tick={{ fill: "#6b7280" }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "0.5rem",
+                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                  }}
+                />
+                <Legend
+                  wrapperStyle={{
+                    paddingTop: "1rem",
+                  }}
+                />
                 <Bar
                   dataKey="stock"
                   name={t("analytics.totalStock")}
                   fill="#3b82f6"
+                  radius={[4, 4, 0, 0]}
                 />
                 <Bar
                   dataKey="usage"
                   name={t("analytics.totalUsage")}
                   fill="#f59e0b"
+                  radius={[4, 4, 0, 0]}
                 />
                 <Bar
                   dataKey="remaining"
                   name={t("analytics.remaining")}
                   fill="#10b981"
+                  radius={[4, 4, 0, 0]}
                 />
               </BarChart>
             </ResponsiveContainer>
@@ -137,11 +192,16 @@ export function InventoryCharts({ items_list }: InventoryChartsProps) {
       </div>
 
       {/* Stock Status Radar Chart */}
-      <div className="card bg-white shadow-lg border border-gray-100">
+      <div className="card bg-base-100 shadow-xl rounded-xl hover:shadow-2xl transition-shadow duration-300">
         <div className="card-body">
-          <h3 className="card-title text-lg mb-4">
-            {t("analytics.stockStatus")}
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="card-title text-lg font-semibold text-gray-900">
+              {t("analytics.stockStatus")}
+            </h3>
+            <div className="badge badge-secondary">
+              {stockStatusData.length} items
+            </div>
+          </div>
           <div className="h-[300px]">
             {stockStatusData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -151,9 +211,9 @@ export function InventoryCharts({ items_list }: InventoryChartsProps) {
                   outerRadius="80%"
                   data={stockStatusData}
                 >
-                  <PolarGrid />
-                  <PolarAngleAxis dataKey="name" />
-                  <PolarRadiusAxis />
+                  <PolarGrid stroke="#e5e7eb" />
+                  <PolarAngleAxis dataKey="name" tick={{ fill: "#6b7280" }} />
+                  <PolarRadiusAxis tick={{ fill: "#6b7280" }} />
                   <Radar
                     name={t("analytics.currentStock")}
                     dataKey="stock"
@@ -168,8 +228,19 @@ export function InventoryCharts({ items_list }: InventoryChartsProps) {
                     fill="#f59e0b"
                     fillOpacity={0.6}
                   />
-                  <Legend />
-                  <Tooltip />
+                  <Legend
+                    wrapperStyle={{
+                      paddingTop: "1rem",
+                    }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "0.5rem",
+                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                    }}
+                  />
                 </RadarChart>
               </ResponsiveContainer>
             ) : (
@@ -184,11 +255,16 @@ export function InventoryCharts({ items_list }: InventoryChartsProps) {
       </div>
 
       {/* Revenue Treemap */}
-      <div className="card bg-white shadow-lg border border-gray-100 lg:col-span-2">
+      <div className="card bg-base-100 shadow-xl rounded-xl hover:shadow-2xl transition-shadow duration-300 lg:col-span-2">
         <div className="card-body">
-          <h3 className="card-title text-lg mb-4">
-            {t("analytics.revenueByItem")}
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="card-title text-lg font-semibold text-gray-900">
+              {t("analytics.revenueByItem")}
+            </h3>
+            <div className="badge badge-accent">
+              {revenueTreemapData.length} items
+            </div>
+          </div>
           <div className="h-[400px]">
             {revenueTreemapData.length > 0 &&
             revenueTreemapData.some((item) => item.size > 1) ? (
@@ -196,19 +272,42 @@ export function InventoryCharts({ items_list }: InventoryChartsProps) {
                 <Treemap
                   data={revenueTreemapData}
                   dataKey="size"
-                  stroke="#fff"
+                  stroke="#ffffff"
                   fill="#8884d8"
                   nameKey="name"
                   aspectRatio={4 / 3}
+                  animationDuration={500}
                 >
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "0.5rem",
+                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                    }}
+                  />
                 </Treemap>
               </ResponsiveContainer>
             ) : (
               <div className="flex items-center justify-center h-full">
-                <p className="text-gray-500">
-                  {t("analytics.noRevenueDataAvailable")}
-                </p>
+                <div className="text-center">
+                  <svg
+                    className="mx-auto h-12 w-12 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                  </svg>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {t("analytics.noRevenueDataAvailable")}
+                  </p>
+                </div>
               </div>
             )}
           </div>

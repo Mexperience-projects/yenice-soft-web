@@ -36,9 +36,7 @@ export interface SummaryCardsProps {
 }
 
 export interface PersonnelTableProps {
-  personnelWithMetrics: PersonnelWithMetrics[];
-  personel_list: PersonelType[];
-  onPersonnelClick: (person: PersonnelWithMetrics) => void;
+  personel_list: PersonnelWithMetrics[];
   filters: PersonnelFilters;
 }
 
@@ -94,23 +92,25 @@ export interface InventoryFilters extends TableFilters {
   minStock: number | undefined;
   maxStock: number | undefined;
   showLowStock: boolean;
-  sortBy: 'name' | 'stock' | 'usage' | 'revenue';
-  sortOrder: 'asc' | 'desc';
+  sortBy: "name" | "stock" | "usage" | "revenue";
+  sortOrder: "asc" | "desc";
 }
 
 export interface VisitFilters extends TableFilters {
   selectedService: string;
   selectedPersonnel: string;
-  paymentType: PAYMENT_TYPE | 'all';
+  paymentType: PAYMENT_TYPE | "all";
   minRevenue: number | undefined;
   maxRevenue: number | undefined;
-  sortBy: 'date' | 'revenue' | 'personnel_fee' | 'net_revenue';
-  sortOrder: 'asc' | 'desc';
+  sortBy: "date" | "revenue" | "personnel_fee" | "net_revenue";
+  sortOrder: "asc" | "desc";
 }
 
 export interface FilterSectionProps {
   filters: PersonnelFilters | InventoryFilters | VisitFilters;
-  onFilterChange: (filters: PersonnelFilters | InventoryFilters | VisitFilters) => void;
+  onFilterChange: (
+    filters: PersonnelFilters | InventoryFilters | VisitFilters
+  ) => void;
   services_list: ServicesType[];
   personel_list?: PersonelType[];
   showFilters: boolean;
@@ -118,7 +118,7 @@ export interface FilterSectionProps {
   activeFilters: number;
   resetFilters: () => void;
   applyFilters: () => void;
-  tableType: 'personnel' | 'inventory' | 'visits';
+  tableType: "personnel" | "inventory" | "visits";
 }
 
 export interface InventoryTableProps {
@@ -134,4 +134,4 @@ export interface VisitsTableProps {
   personel_list: PersonelType[];
   animateIn: boolean;
   filters: VisitFilters;
-} 
+}

@@ -1,18 +1,29 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { SlidersHorizontal, Users, Package, Calendar } from "lucide-react";
+import {
+  SlidersHorizontal,
+  Users,
+  Package,
+  Calendar,
+  FilterIcon,
+} from "lucide-react";
 import { isWithinInterval } from "date-fns";
 import { useTranslation } from "react-i18next";
-import type {
-  PersonelType,
-  ServicesType,
-  VisitType,
-  Visit_itemType,
-  PaymentsType,
-  ItemsType,
+import {
+  type PersonelType,
+  type ServicesType,
+  type VisitType,
+  type Visit_itemType,
+  type PaymentsType,
+  type ItemsType,
+  type PersonelPayments,
+  type OperationType,
+  type PAYMENT_TYPE,
+  PAYMENT_TYPE2text,
 } from "@/lib/types";
 
+import { addDays, format, parseISO, subDays, startOfToday } from "date-fns";
 // Import our custom hooks that use Redux
 import { usePersonel_e02ed2 } from "@/hooks/personel/e02ed2";
 import { useServices_10cd39 } from "@/hooks/services/10cd39";
@@ -208,11 +219,9 @@ export default function Analytics() {
     [personel_list]
   );
 
-  // Update filteredPersonnel to use personnelFilters
+  // Filter personnel based on personnel filters and calculate metrics
   const filteredPersonnel = useMemo(() => {
-    console.log("Filtering personnel from", personel_list.length, "records");
-
-    // If no filters are active, return the full list
+    // If no filters are active, return the full list with metrics
     if (
       !personnelFilters.searchQuery &&
       !personnelFilters.dateRange?.from &&
@@ -221,11 +230,109 @@ export default function Analytics() {
       personnelFilters.minRevenue === undefined &&
       personnelFilters.maxRevenue === undefined
     ) {
-      return personel_list;
+      return personel_list.map((person) => {
+        // Get all visits for this person
+        const personVisits = visit_list.filter((visit) =>
+          visit.operations?.some((op) => op.personel?.id === person.id)
+        );
+
+        // Calculate filtered revenue
+        const revenue = personVisits.reduce(
+          (total, visit) =>
+            total +
+            visit.operations.reduce(
+              (sum, op) =>
+                sum + op.payments.reduce((pSum, p) => pSum + p.price, 0),
+              0
+            ),
+          0
+        );
+        // Calculate items price
+        const itemsPrice = personVisits
+          .flatMap((visit) =>
+            visit.operations
+              ? visit.operations.flatMap((op) => op.items || [])
+              : []
+          )
+          .reduce(
+            (total, item) => total + item.count * (item.item?.price || 0),
+            0
+          );
+
+        return {
+          ...person,
+          visits: personVisits,
+          visitCount: personVisits.length,
+          revenue,
+          itemsPrice,
+          expense: person.expense || 0,
+        };
+      });
     }
 
-    return personel_list.filter((person) => {
-      try {
+    return personel_list
+      .map((person) => {
+        // Get filtered visits for this person
+        const personVisits = visit_list.filter((visit) => {
+          const matchesPersonnel = visit.operations?.some(
+            (op) => op.personel?.id === person.id
+          );
+
+          // Filter by date range if specified
+          const matchesDateRange =
+            !personnelFilters.dateRange?.from ||
+            !personnelFilters.dateRange?.to ||
+            (new Date(personnelFilters.dateRange.from) <=
+              new Date(visit.operations[0].datetime) &&
+              new Date(personnelFilters.dateRange.to) >=
+                new Date(visit.operations[0].datetime));
+
+          // Filter by service if specified
+          const matchesService =
+            personnelFilters.selectedService === "all" ||
+            visit.operations?.some((op) =>
+              op.service.some(
+                (s) => s.id.toString() === personnelFilters.selectedService
+              )
+            );
+
+          return matchesPersonnel && matchesDateRange && matchesService;
+        });
+
+        // Calculate filtered revenue
+        const revenue = personVisits.reduce(
+          (total, visit) =>
+            total +
+            visit.operations.reduce(
+              (sum, op) =>
+                sum + op.payments.reduce((pSum, p) => pSum + p.price, 0),
+              0
+            ),
+          0
+        );
+
+        // Calculate items price for filtered visits
+        const itemsPrice = personVisits
+          .flatMap((visit) =>
+            visit.operations
+              ? visit.operations.flatMap((op) => op.items || [])
+              : []
+          )
+          .reduce(
+            (total, item) => total + item.count * (item.item?.price || 0),
+            0
+          );
+
+        return {
+          ...person,
+          visits: personVisits,
+          visitCount: personVisits.length,
+          revenue,
+          itemsPrice,
+          expense: person.expense || 0,
+        };
+      })
+      .filter((person) => {
         // Filter by search query
         const matchesSearch =
           !personnelFilters.searchQuery ||
@@ -233,96 +340,16 @@ export default function Analytics() {
             .toLowerCase()
             .includes(personnelFilters.searchQuery.toLowerCase());
 
-        // Filter by service
-        const matchesService =
-          personnelFilters.selectedService === "all" ||
-          services_list.some(
-            (service) =>
-              service.personel?.some((p) => p.id === person.id) &&
-              service.id.toString() === personnelFilters.selectedService
-          );
-
-        // Filter by date range
-        let matchesDateRange = true;
-        if (
-          personnelFilters.dateRange?.from &&
-          personnelFilters.dateRange?.to
-        ) {
-          const personVisits = visit_list.filter(
-            (visit) =>
-              visit.operations &&
-              visit.operations.some(
-                (op) =>
-                  op.service &&
-                  op.service.some((s) =>
-                    s.personel?.some((p) => p.id === person.id)
-                  )
-              )
-          );
-
-          matchesDateRange = personVisits.some(
-            (visit) =>
-              visit.operations &&
-              visit.operations.some((op) => {
-                if (!op.datetime) return false;
-                const opDate = new Date(op.datetime);
-                return isWithinInterval(opDate, {
-                  start: new Date(personnelFilters.dateRange!.from!),
-                  end: new Date(personnelFilters.dateRange!.to!),
-                });
-              })
-          );
-        }
-
         // Filter by revenue range
-        const matchesRevenue =
-          (!personnelFilters.minRevenue ||
-            person.doctorExpense >= personnelFilters.minRevenue) &&
-          (!personnelFilters.maxRevenue ||
-            person.doctorExpense <= personnelFilters.maxRevenue);
+        const matchesRevenueRange =
+          (personnelFilters.minRevenue === undefined ||
+            person.revenue >= personnelFilters.minRevenue) &&
+          (personnelFilters.maxRevenue === undefined ||
+            person.revenue <= personnelFilters.maxRevenue);
 
-        return (
-          matchesSearch && matchesService && matchesDateRange && matchesRevenue
-        );
-      } catch (error) {
-        console.error("Personnel filtering error:", error);
-        return true; // In case of error, include this person
-      }
-    });
-  }, [personel_list, personnelFilters, services_list, visit_list]);
-
-  // Calculate metrics for each personnel
-  const personnelWithMetrics = useMemo(() => {
-    console.log(
-      "Calculating metrics for",
-      filteredPersonnel.length,
-      "personnel"
-    );
-
-    // Map personnel data directly since metrics are now part of PersonelType
-    const result = filteredPersonnel
-      .map((person) => {
-        // Get services provided by this personnel
-        const personServices = services_list.filter((service) =>
-          service.personel?.some((p) => p.id === person.id)
-        );
-
-        return {
-          ...person,
-          services: personServices,
-        };
-      })
-      .sort((a, b) => b.revenue - a.revenue); // Sort by revenue (highest first)
-
-    return result;
-  }, [filteredPersonnel, services_list]);
-
-  // Calculate metrics for filtered personnel
-  const filteredPersonnelWithMetrics = useMemo(() => {
-    return personnelWithMetrics.filter((person) =>
-      filteredPersonnel.some((fp) => fp.id === person.id)
-    );
-  }, [personnelWithMetrics, filteredPersonnel]);
+        return matchesSearch && matchesRevenueRange;
+      });
+  }, [personel_list, visit_list, payments_list, personnelFilters]);
 
   // Filter inventory items based on inventory filters
   const filteredItems = useMemo(() => {
@@ -338,33 +365,50 @@ export default function Analytics() {
       return items_list;
     }
 
-    return items_list.filter((item) => {
-      try {
-        // Filter by search query
-        const matchesSearch =
-          !inventoryFilters.searchQuery ||
-          item.name
-            .toLowerCase()
-            .includes(inventoryFilters.searchQuery.toLowerCase());
+    return items_list
+      .filter((item) => {
+        try {
+          // Filter by search query
+          const matchesSearch =
+            !inventoryFilters.searchQuery ||
+            item.name
+              .toLowerCase()
+              .includes(inventoryFilters.searchQuery.toLowerCase());
 
-        // Filter by stock range
-        const matchesStockRange =
-          (inventoryFilters.minStock === undefined ||
-            item.used >= inventoryFilters.minStock) &&
-          (inventoryFilters.maxStock === undefined ||
-            item.used <= inventoryFilters.maxStock);
+          // Filter by stock range
+          const matchesStockRange =
+            (inventoryFilters.minStock === undefined ||
+              item.used >= inventoryFilters.minStock) &&
+            (inventoryFilters.maxStock === undefined ||
+              item.used <= inventoryFilters.maxStock);
 
-        // Filter by low stock - using a fixed percentage or value
-        const matchesLowStock =
-          !inventoryFilters.showLowStock ||
-          (item.count > 0 && item.used / item.count >= 0.7); // Consider low stock if 70% or more is used
+          // Filter by low stock - using a fixed percentage or value
+          const matchesLowStock =
+            !inventoryFilters.showLowStock ||
+            (item.count > 0 && item.used / item.count >= 0.7); // Consider low stock if 70% or more is used
 
-        return matchesSearch && matchesStockRange && matchesLowStock;
-      } catch (error) {
-        console.error("Item filtering error:", error);
-        return true; // In case of error, include this item
-      }
-    });
+          return matchesSearch && matchesStockRange && matchesLowStock;
+        } catch (error) {
+          console.error("Item filtering error:", error);
+          return true; // In case of error, include this item
+        }
+      })
+      .map((item) => {
+        const visits = visit_list.filter((visit) =>
+          visit.operations?.some((op) =>
+            op.items?.some((i) => i.item?.id === item.id)
+          )
+        );
+
+        const used = visits
+          .flatMap((visit) => visit.operations?.flatMap((op) => op.items || []))
+          .reduce((total, i) => total + i.count, 0);
+
+        return {
+          ...item,
+          used,
+        };
+      });
   }, [items_list, inventoryFilters]);
 
   // Filter visits based on visit filters
@@ -384,111 +428,135 @@ export default function Analytics() {
       return visit_list;
     }
 
-    return visit_list.filter((visit) => {
-      try {
-        // Filter by date range
-        let matchesDateRange = true;
-        if (visitFilters.dateRange?.from && visitFilters.dateRange?.to) {
-          matchesDateRange =
-            visit.operations &&
-            visit.operations.some((op) => {
-              if (!op.datetime) return false;
-              const opDate = new Date(op.datetime);
-              return isWithinInterval(opDate, {
-                start: new Date(visitFilters.dateRange!.from!),
-                end: new Date(visitFilters.dateRange!.to!),
-              });
-            });
-        }
+    return visit_list
+      .map((visit) => {
+        const payments = visit.operations?.flatMap((op) =>
+          op.payments.filter((p) => {
+            // Filter by payment type
+            const matchesPaymentType =
+              visitFilters.paymentType === "all" ||
+              PAYMENT_TYPE2text[p.type] ===
+                (visitFilters.paymentType as unknown as string);
 
-        // Filter by search query
-        const matchesSearch =
-          !visitFilters.searchQuery ||
-          visit.operations.some(
-            (op) =>
-              op.service.some((s) =>
-                s.name
-                  .toLowerCase()
-                  .includes(visitFilters.searchQuery.toLowerCase())
-              ) ||
-              op.items.some((i) =>
-                i.item.name
-                  .toLowerCase()
-                  .includes(visitFilters.searchQuery.toLowerCase())
-              )
-          );
+            // Filter by date range if specified
+            const matchesDateRange =
+              (!visitFilters.dateRange?.from && !visitFilters.dateRange?.to) ||
+              (p.date &&
+                (!visitFilters.dateRange.from ||
+                  p.date >= new Date(visitFilters.dateRange.from)) &&
+                (!visitFilters.dateRange.to ||
+                  p.date <= new Date(visitFilters.dateRange.to)));
 
-        // Filter by selected service
-        const matchesService =
-          visitFilters.selectedService === "all" ||
-          visit.operations.some((op) =>
-            op.service.some(
-              (s) => s.id.toString() === visitFilters.selectedService
-            )
-          );
+            // Filter by revenue range if specified
+            const matchesRevenue =
+              (visitFilters.minRevenue === undefined ||
+                p.price >= visitFilters.minRevenue) &&
+              (visitFilters.maxRevenue === undefined ||
+                p.price <= visitFilters.maxRevenue);
 
-        // Filter by selected personnel
-        const matchesPersonnel =
-          visitFilters.selectedPersonnel === "all" ||
-          visit.operations.some((op) =>
-            op.service.some((s) =>
-              s.personel?.some(
-                (p) => p.id.toString() === visitFilters.selectedPersonnel
-              )
-            )
-          );
-
-        // Filter by payment type - fixed to handle enum correctly
-        const matchesPaymentType =
-          visitFilters.paymentType === "all" ||
-          visit.operations.some((op) =>
-            op.payments.some((p) => {
-              // If paymentType is "all", match all payments
-              if (visitFilters.paymentType === "all") return true;
-
-              // Otherwise, compare the payment type directly with the enum value
-              return p.type === visitFilters.paymentType;
-            })
-          );
-
-        // Filter by revenue range
-        let matchesRevenue = true;
-        if (
-          visitFilters.minRevenue !== undefined ||
-          visitFilters.maxRevenue !== undefined
-        ) {
-          const visitRevenue = visit.operations.reduce((sum, op) => {
-            const serviceRevenue = op.service.reduce(
-              (sSum, service) => sSum + service.price,
-              0
-            );
-            const itemRevenue = op.items.reduce(
-              (iSum, item) => iSum + item.count * item.item.price,
-              0
-            );
-            return sum + serviceRevenue + itemRevenue;
-          }, 0);
-
-          matchesRevenue =
-            (visitFilters.minRevenue === undefined ||
-              visitRevenue >= visitFilters.minRevenue) &&
-            (visitFilters.maxRevenue === undefined ||
-              visitRevenue <= visitFilters.maxRevenue);
-        }
-
-        return (
-          matchesSearch &&
-          matchesDateRange &&
-          matchesService &&
-          matchesPersonnel &&
-          matchesPaymentType &&
-          matchesRevenue
+            return matchesPaymentType && matchesDateRange && matchesRevenue;
+          })
         );
-      } catch (error) {
-        console.error("Visit filtering error:", error);
-        return true; // In case of error, include this visit
-      }
-    });
+        return {
+          ...visit,
+          payments,
+        };
+      })
+      .filter((visit) => {
+        if (visit.payments.length === 0) {
+          return false;
+        }
+        try {
+          // Filter by search query
+          const matchesSearch =
+            !visitFilters.searchQuery ||
+            visit.operations.some(
+              (op) =>
+                op.service.some((s) =>
+                  s.name
+                    .toLowerCase()
+                    .includes(visitFilters.searchQuery.toLowerCase())
+                ) ||
+                op.items.some((i) =>
+                  i.item.name
+                    .toLowerCase()
+                    .includes(visitFilters.searchQuery.toLowerCase())
+                )
+            );
+
+          // Filter by selected service
+          const matchesService =
+            visitFilters.selectedService === "all" ||
+            visit.operations.some((op) =>
+              op.service.some(
+                (s) => s.id.toString() === visitFilters.selectedService
+              )
+            );
+
+          // Filter by selected personnel
+          const matchesPersonnel =
+            visitFilters.selectedPersonnel === "all" ||
+            visit.operations.some((op) =>
+              op.service.some((s) =>
+                s.personel?.some(
+                  (p) => p.id.toString() === visitFilters.selectedPersonnel
+                )
+              )
+            );
+
+          // Filter by payment type - fixed to handle enum correctly
+          const matchesPaymentType =
+            visitFilters.paymentType === "all" ||
+            visit.operations.some((op) =>
+              op.payments.some((p) => {
+                // If paymentType is "all", match all payments
+                if (visitFilters.paymentType === "all") return true;
+
+                // Otherwise, compare the payment type directly with the enum value
+                return (
+                  PAYMENT_TYPE2text[p.type] ===
+                  (visitFilters.paymentType as unknown as string)
+                );
+              })
+            );
+
+          // Filter by revenue range
+          let matchesRevenue = true;
+          if (
+            visitFilters.minRevenue !== undefined ||
+            visitFilters.maxRevenue !== undefined
+          ) {
+            const visitRevenue = visit.operations.reduce((sum, op) => {
+              const serviceRevenue = op.service.reduce(
+                (sSum, service) => sSum + service.price,
+                0
+              );
+              const itemRevenue = op.items.reduce(
+                (iSum, item) => iSum + item.count * item.item.price,
+                0
+              );
+              return sum + serviceRevenue + itemRevenue;
+            }, 0);
+
+            matchesRevenue =
+              (visitFilters.minRevenue === undefined ||
+                visitRevenue >= visitFilters.minRevenue) &&
+              (visitFilters.maxRevenue === undefined ||
+                visitRevenue <= visitFilters.maxRevenue);
+          }
+
+          return (
+            matchesSearch &&
+            matchesService &&
+            matchesPersonnel &&
+            matchesPaymentType &&
+            matchesRevenue
+          );
+        } catch (error) {
+          console.error("Visit filtering error:", error);
+          return true; // In case of error, include this visit
+        }
+      });
   }, [visit_list, visitFilters]);
 
   // Get current filters based on active tab
@@ -562,23 +630,6 @@ export default function Analytics() {
   // Check if any data is still loading
   const isDataLoading =
     personnelLoading || servicesLoading || paymentsLoading || itemsLoading;
-
-  // Handle personnel click for details modal
-  const handlePersonnelClick = (personnel: PersonnelWithMetrics) => {
-    setSelectedPersonnel(personnel);
-    setIsModalOpen(true);
-  };
-
-  // Create chart data variables that directly use the filtered data
-  console.log("Filtered Personnel:", filteredPersonnelWithMetrics.length);
-  console.log("Filtered Items:", filteredItems.length);
-  console.log("Filtered Visits:", filteredVisits.length);
-
-  // Make sure we're passing the correct filtered data to each chart component
-  // No fallback to full data - charts should handle empty data internally
-  const chartPersonnelData = filteredPersonnelWithMetrics;
-  const chartItemsData = filteredItems;
-  const chartVisitsData = filteredVisits;
 
   return (
     <div
@@ -695,22 +746,28 @@ export default function Analytics() {
           {/* Charts */}
           <div className="mb-6">
             {activeTab === "personnel" && (
-              <PersonnelCharts personnelWithMetrics={chartPersonnelData} />
+              <PersonnelCharts
+                personnelWithMetrics={filteredPersonnel}
+                visit_list={visit_list}
+                dateRange={personnelFilters.dateRange}
+              />
             )}
             {activeTab === "inventory" && (
-              <InventoryCharts items_list={chartItemsData} />
+              <InventoryCharts items_list={filteredItems} />
             )}
             {activeTab === "visits" && (
-              <VisitsCharts visits={chartVisitsData} />
+              <VisitsCharts
+                personnelWithMetrics={filteredPersonnel}
+                visit_list={filteredVisits}
+                dateRange={visitFilters.dateRange}
+              />
             )}
           </div>
 
           {/* Tables */}
           {activeTab === "personnel" && (
             <PersonnelTable
-              personnelWithMetrics={filteredPersonnelWithMetrics}
-              personel_list={personel_list}
-              onPersonnelClick={handlePersonnelClick}
+              personel_list={filteredPersonnel}
               filters={personnelFilters}
             />
           )}

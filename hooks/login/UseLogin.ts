@@ -13,7 +13,6 @@ export function useLogin() {
 
   const login = async (username: string, password: string) => {
     loadingHandler(true);
-    console.log(username, password);
 
     const response = await axiosUser.post("/user/login/", {
       username,

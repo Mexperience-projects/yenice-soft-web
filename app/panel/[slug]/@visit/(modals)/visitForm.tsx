@@ -168,7 +168,7 @@ export default function VisitForm({
                   onClick={() => menuHandler(item)}
                   key={i}
                   className="btn bg-white disabled:bg-gradient-to-r 
-      from-primary to-secondary shadow disabled:text-white"
+                  from-primary to-secondary shadow disabled:text-white"
                   disabled={item.id === menu?.id}
                 >
                   {new Date(item.datetime).toLocaleDateString("tr-TR")} ({i + 1}

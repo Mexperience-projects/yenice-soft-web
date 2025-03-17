@@ -228,7 +228,14 @@
     "lowStockWarning": "Düşük Stok Uyarısı",
     "lowStockItems": "Düşük Stoklu Ürünler",
     "lowStockDescription": "Aşağıdaki ürünlerin stok seviyesi düşüktür",
-    "minimumRequired": "Minimum Gerekli"
+    "minimumRequired": "Minimum Gerekli",
+    "noVisitDataAvailable": "Ziyaret verisi bulunamadı",
+    "noServiceDataAvailable": "Hizmet verisi bulunamadı",
+    "itemsPriceDistribution": "Ürün Fiyat Dağılımı",
+    "noPersonnelData": "Personel Verisi Yok",
+    "noPersonnelDataToDisplay": "Görüntülenecek Personel Verisi Yok",
+    "noPaymentDataAvailable": "Ödeme verisi bulunamadı",
+    "noVisitData": "Ziyaret Verisi Yok"
   },
   "clients": {
     "title": "Müşteri Yönetimi",

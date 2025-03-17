@@ -18,9 +18,22 @@ import {
   Cell,
 } from "recharts";
 import type { PersonnelWithMetrics } from "../types";
+import type {
+  VisitType,
+  OperationType,
+  PaymentsType,
+  PersonelPayments,
+} from "@/lib/types";
+import { addDays, format, parseISO, subDays, startOfToday } from "date-fns";
 
 interface PersonnelChartsProps {
-  personnelWithMetrics: PersonnelWithMetrics[];
+  personnelWithMetrics: Array<
+    PersonnelWithMetrics & {
+      visits?: VisitType[];
+    }
+  >;
+  dateRange?: { from?: string | undefined; to?: string | undefined };
+  visit_list: VisitType[];
 }
 
 // Define interfaces for the item structure
@@ -50,41 +63,10 @@ const COLORS = [
 
 export function PersonnelCharts({
   personnelWithMetrics,
+  dateRange,
+  visit_list,
 }: PersonnelChartsProps) {
   const { t } = useTranslation();
-
-  // Calculate service distribution
-  const serviceStats = useMemo(() => {
-    if (!personnelWithMetrics || personnelWithMetrics.length === 0) {
-      return [];
-    }
-
-    const stats = new Map<
-      string,
-      { name: string; count: number; revenue: number }
-    >();
-
-    personnelWithMetrics.forEach((person) => {
-      if (!person.services) return;
-
-      person.services.forEach((service) => {
-        if (!service) return;
-
-        const existing = stats.get(service.name) || {
-          name: service.name,
-          count: 0,
-          revenue: 0,
-        };
-        stats.set(service.name, {
-          name: service.name,
-          count: existing.count + 1,
-          revenue: existing.revenue + (service.price || 0),
-        });
-      });
-    });
-
-    return Array.from(stats.values());
-  }, [personnelWithMetrics]);
 
   // Calculate revenue and expense trends
   const revenueStats = useMemo(() => {
@@ -97,30 +79,72 @@ export function PersonnelCharts({
       { name: string; revenue: number; expense: number }
     >();
 
-    personnelWithMetrics.forEach((person) => {
-      if (!person.payments) return;
+    // If date range is provided, use it; otherwise, use last 14 days
+    const today = startOfToday();
+    const todayStr = format(today, "yyyy-MM-dd");
+    const endDate = dateRange?.to || todayStr;
+    const startDate =
+      dateRange?.from || format(subDays(today, 13), "yyyy-MM-dd");
 
-      person.payments.forEach((payment) => {
-        if (!payment || !payment.date) return;
+    // Initialize all dates in range with 0 values
+    let currentDate = parseISO(startDate);
+    const endDateObj = parseISO(endDate);
 
-        const date = new Date(payment.date).toLocaleDateString();
-        const existing = stats.get(date) || {
-          name: date,
-          revenue: 0,
-          expense: 0,
-        };
-        stats.set(date, {
-          name: date,
-          revenue: existing.revenue,
-          expense: existing.expense + (payment.price || 0),
+    while (currentDate <= endDateObj) {
+      const dateStr = format(currentDate, "yyyy-MM-dd");
+      const displayDate = format(currentDate, "dd/MM/yyyy");
+      stats.set(dateStr, {
+        name: displayDate,
+        revenue: 0,
+        expense: 0,
+      });
+      currentDate = addDays(currentDate, 1);
+    }
+
+    visit_list.forEach((visit: VisitType) => {
+      visit.operations?.forEach((operation: OperationType) => {
+        operation.payments?.forEach((payment: PaymentsType) => {
+          if (payment.date) {
+            const paymentDate = format(new Date(payment.date), "yyyy-MM-dd");
+
+            if (stats.has(paymentDate)) {
+              const current = stats.get(paymentDate)!;
+              const paymentTotal = payment.price;
+              stats.set(paymentDate, {
+                ...current,
+                revenue: current.revenue + paymentTotal,
+              });
+            }
+          }
         });
       });
     });
+    // Calculate revenue from visit payments
+    personnelWithMetrics.forEach((personnel) => {
+      // Calculate expenses from personnel payments
+      personnel.payments?.forEach((payment: PersonelPayments) => {
+        if (payment.date) {
+          const paymentDate = format(new Date(payment.date), "yyyy-MM-dd");
+          if (stats.has(paymentDate)) {
+            const current = stats.get(paymentDate)!;
+            stats.set(paymentDate, {
+              ...current,
+              expense: current.expense + payment.price,
+            });
+          }
+        }
+      });
+    });
 
-    return Array.from(stats.values()).sort(
-      (a, b) => new Date(a.name).getTime() - new Date(b.name).getTime()
-    );
-  }, [personnelWithMetrics]);
+    // Convert map to array and sort by date
+    return Array.from(stats.entries())
+      .map(([date, data]) => ({
+        name: data.name,
+        revenue: data.revenue,
+        expense: data.expense,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [personnelWithMetrics, dateRange, visit_list]);
 
   // Calculate personnel performance metrics
   const performanceStats = useMemo(() => {
@@ -221,11 +245,29 @@ export function PersonnelCharts({
   if (!hasData) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div className="card bg-white shadow-lg border border-gray-100 lg:col-span-2">
+        <div className="card bg-base-100 shadow-xl rounded-xl lg:col-span-2">
           <div className="card-body flex items-center justify-center p-10">
-            <p className="text-lg text-gray-500">
-              {t("analytics.noPersonnelDataToDisplay")}
-            </p>
+            <div className="text-center">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                {t("analytics.noPersonnelData")}
+              </h3>
+              <p className="mt-1 text-sm text-gray-500">
+                {t("analytics.noPersonnelDataToDisplay")}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -235,11 +277,18 @@ export function PersonnelCharts({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
       {/* Revenue and Expense Trends */}
-      <div className="card bg-white shadow-lg border border-gray-100 lg:col-span-2">
+      <div className="card bg-base-100 shadow-xl rounded-xl hover:shadow-2xl transition-shadow duration-300 lg:col-span-2">
         <div className="card-body">
-          <h3 className="card-title text-lg mb-4">
-            {t("analytics.revenueAndExpenseTrends")}
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="card-title text-lg font-semibold text-gray-900">
+              {t("analytics.revenueAndExpenseTrends")}
+            </h3>
+            <div className="flex items-center gap-2">
+              <div className="badge badge-primary">
+                {revenueStats.length} days
+              </div>
+            </div>
+          </div>
           <div className="h-[300px]">
             {revenueStats.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -247,16 +296,36 @@ export function PersonnelCharts({
                   data={revenueStats}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => formatPrice(Number(value))} />
-                  <Legend />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fill: "#6b7280" }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                  />
+                  <YAxis tick={{ fill: "#6b7280" }} />
+                  <Tooltip
+                    formatter={(value) => formatPrice(Number(value))}
+                    contentStyle={{
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "0.5rem",
+                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      paddingTop: "1rem",
+                    }}
+                  />
                   <Line
                     type="monotone"
                     dataKey="revenue"
                     name={t("analytics.revenue")}
                     stroke="#10b981"
+                    strokeWidth={2}
+                    dot={{ fill: "#10b981", r: 4 }}
                     activeDot={{ r: 8 }}
                   />
                   <Line
@@ -264,6 +333,8 @@ export function PersonnelCharts({
                     dataKey="expense"
                     name={t("analytics.expense")}
                     stroke="#ef4444"
+                    strokeWidth={2}
+                    dot={{ fill: "#ef4444", r: 4 }}
                     activeDot={{ r: 8 }}
                   />
                 </LineChart>
@@ -280,11 +351,16 @@ export function PersonnelCharts({
       </div>
 
       {/* Personnel Performance Bar Chart */}
-      <div className="card bg-white shadow-lg border border-gray-100">
+      <div className="card bg-base-100 shadow-xl rounded-xl hover:shadow-2xl transition-shadow duration-300">
         <div className="card-body">
-          <h3 className="card-title text-lg mb-4">
-            {t("analytics.personnelPerformance")}
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="card-title text-lg font-semibold text-gray-900">
+              {t("analytics.personnelPerformance")}
+            </h3>
+            <div className="badge badge-secondary">
+              {performanceStats.length} personnel
+            </div>
+          </div>
           <div className="h-[300px]">
             {performanceStats.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -293,25 +369,45 @@ export function PersonnelCharts({
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                   layout="vertical"
                 >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis dataKey="name" type="category" width={150} />
-                  <Tooltip formatter={(value) => formatPrice(Number(value))} />
-                  <Legend />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis type="number" tick={{ fill: "#6b7280" }} />
+                  <YAxis
+                    dataKey="name"
+                    type="category"
+                    width={150}
+                    tick={{ fill: "#6b7280" }}
+                  />
+                  <Tooltip
+                    formatter={(value) => formatPrice(Number(value))}
+                    contentStyle={{
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "0.5rem",
+                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      paddingTop: "1rem",
+                    }}
+                  />
                   <Bar
                     dataKey="revenue"
                     name={t("analytics.revenue")}
                     fill="#10b981"
+                    radius={[0, 4, 4, 0]}
                   />
                   <Bar
                     dataKey="expense"
                     name={t("analytics.expense")}
                     fill="#ef4444"
+                    radius={[0, 4, 4, 0]}
                   />
                   <Bar
                     dataKey="profit"
                     name={t("analytics.profit")}
                     fill="#3b82f6"
+                    radius={[0, 4, 4, 0]}
                   />
                 </BarChart>
               </ResponsiveContainer>
@@ -327,11 +423,14 @@ export function PersonnelCharts({
       </div>
 
       {/* Items Price Distribution Pie Chart */}
-      <div className="card bg-white shadow-lg border border-gray-100">
+      <div className="card bg-base-100 shadow-xl rounded-xl hover:shadow-2xl transition-shadow duration-300">
         <div className="card-body">
-          <h3 className="card-title text-lg mb-4">
-            {t("analytics.itemsPriceDistribution")}
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="card-title text-lg font-semibold text-gray-900">
+              {t("analytics.itemsPriceDistribution")}
+            </h3>
+            <div className="badge badge-accent">{itemsData.length} items</div>
+          </div>
           <div className="h-[300px]">
             {itemsData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -354,15 +453,42 @@ export function PersonnelCharts({
                       />
                     ))}
                   </Pie>
-                  <Tooltip content={<ItemsPieTooltip />} />
-                  <Legend />
+                  <Tooltip
+                    formatter={(value) => formatPrice(Number(value))}
+                    contentStyle={{
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "0.5rem",
+                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      paddingTop: "1rem",
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
               <div className="flex items-center justify-center h-full">
-                <p className="text-gray-500">
-                  {t("analytics.noItemsDataAvailable")}
-                </p>
+                <div className="text-center">
+                  <svg
+                    className="mx-auto h-12 w-12 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                  </svg>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {t("analytics.noItemsDataAvailable")}
+                  </p>
+                </div>
               </div>
             )}
           </div>

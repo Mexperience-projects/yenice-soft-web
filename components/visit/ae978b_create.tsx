@@ -63,12 +63,12 @@ export default function VisitCreateForm({
 
   useEffect(() => {
     setFormData(initial);
-  }, []);
+  }, [initial]);
 
   useEffect(() => {
     if (!formData) return;
     updateFormData(formData);
-  }, []);
+  }, [formData]);
 
   // Edit payment state
   const [editingPayment, setEditingPayment] = useState<PaymentsType | null>(

@@ -229,7 +229,14 @@
     "lowStockWarning": "Low Stock Warning",
     "lowStockItems": "Low Stock Items",
     "lowStockDescription": "The following items are running low on stock",
-    "minimumRequired": "Minimum Required"
+    "minimumRequired": "Minimum Required",
+    "noVisitDataAvailable": "No visit data available",
+    "noServiceDataAvailable": "No service data available",
+    "itemsPriceDistribution": "Items Price Distribution",
+    "noPersonnelData": "No Personnel Data",
+    "noPersonnelDataToDisplay": "No Personnel Data to Display",
+    "noPaymentDataAvailable": "No payment data available",
+    "noVisitData": "No Visit Data"
   },
   "clients": {
     "title": "Client Management",
