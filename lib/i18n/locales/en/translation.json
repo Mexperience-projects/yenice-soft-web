@@ -531,6 +531,7 @@
     "enterPassword": "Enter password",
     "permissions": "Permissions",
     "details": "User Details",
-    "leaveBlankToKeepCurrent": "Leave blank to keep current password"
+    "leaveBlankToKeepCurrent": "Leave blank to keep current password",
+    "selectAtLeastOnePermission":"Select At Least One Permission"
   }
 }

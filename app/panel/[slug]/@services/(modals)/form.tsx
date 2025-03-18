@@ -27,6 +27,8 @@ export default function ServiceModal({
   const [serviceItems, setServiceItems] = useState<
     { item_id: number; count: number }[]
   >([]);
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (selectedService) {
@@ -36,25 +38,78 @@ export default function ServiceModal({
           count: item.count,
         }))
       );
+      // If editing, validate form after setting service items
+      setTimeout(() => validateForm(), 0);
     } else {
       setServiceItems([]);
+      setIsFormValid(false);
     }
-  }, [selectedService]);
+  }, [selectedService, isOpen]);
 
   const addServiceItem = () => {
     setServiceItems([...serviceItems, { item_id: 0, count: 1 }]);
+    // Validate form after adding an item
+    setTimeout(() => validateForm(), 0);
   };
 
   const removeServiceItem = (index: number) => {
     const newItems = [...serviceItems];
     newItems.splice(index, 1);
     setServiceItems(newItems);
+    // Validate form after removing an item
+    setTimeout(() => validateForm(), 0);
   };
 
   const updateServiceItem = (index: number, item_id: number, count: number) => {
     const newItems = [...serviceItems];
     newItems[index] = { item_id, count };
     setServiceItems(newItems);
+    // Validate form after updating an item
+    setTimeout(() => validateForm(), 0);
+  };
+
+  const validateForm = () => {
+    // Check if name and price are filled
+    const nameInput = document.querySelector(
+      'input[name="name"]'
+    ) as HTMLInputElement;
+    const priceInput = document.querySelector(
+      'input[name="price"]'
+    ) as HTMLInputElement;
+
+    // Check if at least one valid item is selected
+    const hasValidItems =
+      serviceItems.length > 0 &&
+      serviceItems.every((item) => item.item_id > 0 && item.count > 0);
+
+    const isValid =
+      nameInput?.value.trim() !== "" &&
+      priceInput?.value.trim() !== "" &&
+      Number.parseFloat(priceInput?.value) > 0;
+
+    // hasValidItems;
+
+    if (isValid === true) {
+      setIsFormValid(true);
+    }
+  };
+
+  const handleSubmit = async (formData: FormData) => {
+    if (!isFormValid) return;
+
+    setIsLoading(true);
+    try {
+      if (selectedService) {
+        await update_services_data(formData);
+      } else {
+        await create_services_data(formData);
+      }
+      onClose();
+    } catch (error) {
+      console.error("Error saving service:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -67,13 +122,7 @@ export default function ServiceModal({
             : t("services.editService")}
         </h3>
 
-        <form
-          action={(formData) => {
-            if (selectedService) update_services_data(formData);
-            else create_services_data(formData);
-            onClose();
-          }}
-        >
+        <form action={handleSubmit} onChange={validateForm}>
           <input type="hidden" name="id" value={selectedService?.id} />
           <input
             type="hidden"
@@ -108,6 +157,7 @@ export default function ServiceModal({
                       placeholder={t("services.namePlaceholder")}
                       className="input input-bordered w-full focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                       required
+                      onChange={validateForm}
                     />
                   </div>
 
@@ -128,6 +178,7 @@ export default function ServiceModal({
                         min="0"
                         step="0.01"
                         required
+                        onChange={validateForm}
                       />
                       <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 bg-base-200 aspect-square h-5 w-5 rounded-full text-center">
                         ₺
@@ -190,6 +241,7 @@ export default function ServiceModal({
                                 serviceItem.count
                               )
                             }
+                            required
                           >
                             <option value="0" disabled>
                               {t("services.selectItem")}
@@ -219,6 +271,7 @@ export default function ServiceModal({
                                 Number.parseInt(e.target.value)
                               )
                             }
+                            required
                           />
                         </div>
                         <div className="col-span-2 self-end">
@@ -268,11 +321,23 @@ export default function ServiceModal({
             </button>
             <button
               type="submit"
-              className="btn bg-gradient-to-r from-primary to-secondary text-white hover:from-primary/90 hover:to-secondary/90 border-none shadow-md hover:shadow-lg transition-all"
+              disabled={!isFormValid || isLoading}
+              className={`btn bg-gradient-to-r from-primary to-secondary text-white border-none shadow-md transition-all ${
+                !isFormValid || isLoading
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:from-primary/90 hover:to-secondary/90 hover:shadow-lg"
+              }`}
             >
-              {selectedService === undefined
-                ? t("services.createService")
-                : t("services.updateService")}
+              {isLoading ? (
+                <>
+                  <span className="loading loading-spinner loading-xs mr-2"></span>
+                  {t("common.saving")}
+                </>
+              ) : selectedService === undefined ? (
+                t("services.createService")
+              ) : (
+                t("services.updateService")
+              )}
             </button>
           </div>
         </form>

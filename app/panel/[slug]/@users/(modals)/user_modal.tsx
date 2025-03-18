@@ -1,5 +1,7 @@
 "use client";
 
+import type React from "react";
+
 import { useState, useEffect } from "react";
 import { useuser } from "@/hooks/user/e02ed2";
 import { useTranslation } from "react-i18next";
@@ -21,15 +23,32 @@ export default function UserModal({
 
   // State to track selected permissions
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+  // State to track form validity
+  const [isFormValid, setIsFormValid] = useState(false);
+  // State to track individual field validity
+  const [usernameValid, setUsernameValid] = useState(false);
+  const [passwordValid, setPasswordValid] = useState(false);
 
   // Initialize permissions when selectedUser changes
   useEffect(() => {
     if (selectedUser) {
       setSelectedPermissions(selectedUser.permissions || []);
+      setUsernameValid(!!selectedUser.username);
+      // For existing users, password can be empty (to keep current)
+      setPasswordValid(true);
     } else {
       setSelectedPermissions([]);
+      setUsernameValid(false);
+      setPasswordValid(false);
     }
   }, [selectedUser]);
+
+  // Check form validity whenever fields change
+  useEffect(() => {
+    setIsFormValid(
+      usernameValid && passwordValid && selectedPermissions.length > 0
+    );
+  }, [usernameValid, passwordValid, selectedPermissions]);
 
   // Handle permission checkbox changes
   const handlePermissionChange = (permission: string, checked: boolean) => {
@@ -37,6 +56,21 @@ export default function UserModal({
       setSelectedPermissions((prev) => [...prev, permission]);
     } else {
       setSelectedPermissions((prev) => prev.filter((p) => p !== permission));
+    }
+  };
+
+  // Handle username input change
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsernameValid(!!e.target.value.trim());
+  };
+
+  // Handle password input change
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // For existing users, password can be empty
+    if (selectedUser) {
+      setPasswordValid(true);
+    } else {
+      setPasswordValid(!!e.target.value.trim());
     }
   };
 
@@ -55,8 +89,12 @@ export default function UserModal({
             <button
               type="submit"
               form="update-user-form"
-              disabled={isLoading}
-              className="btn btn-sm text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-none"
+              disabled={isLoading || !isFormValid}
+              className={`btn btn-sm text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary border-none ${
+                !isFormValid || isLoading
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:from-primary/90 hover:to-secondary/90"
+              }`}
             >
               {isLoading ? (
                 <>
@@ -103,6 +141,7 @@ export default function UserModal({
                     placeholder={t("user.enterUsername")}
                     className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
                     defaultValue={selectedUser?.username}
+                    onChange={handleUsernameChange}
                     required
                   />
                 </div>
@@ -127,7 +166,8 @@ export default function UserModal({
                       selectedUser ? "••••••••" : t("user.enterPassword")
                     }
                     className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
-                    required
+                    onChange={handlePasswordChange}
+                    required={!selectedUser}
                   />
                 </div>
 
@@ -144,7 +184,6 @@ export default function UserModal({
                         className="flex items-center gap-2 cursor-pointer"
                       >
                         <input
-                          required
                           type="checkbox"
                           checked={selectedPermissions.includes(permission)}
                           onChange={(e) =>
@@ -159,10 +198,14 @@ export default function UserModal({
                       </label>
                     ))}
                   </div>
+                  {selectedPermissions.length === 0 && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {t("user.selectAtLeastOnePermission")}
+                    </p>
+                  )}
                 </div>
               </div>
               <input
-                required
                 type="hidden"
                 name="permissions"
                 value={selectedPermissions}

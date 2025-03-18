@@ -1,5 +1,7 @@
 "use client";
 
+import type React from "react";
+
 import { type items_691d50Type, useItems_691d50 } from "@/hooks/items/691d50";
 import Items_691d50_create from "@/components/items/691d50_create";
 import Items_691d50_update from "@/components/items/691d50_update";
@@ -34,6 +36,8 @@ export default function ItemsPage() {
     null
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [createFormValid, setCreateFormValid] = useState(false);
+  const [updateFormValid, setUpdateFormValid] = useState(false);
 
   useEffect(() => {
     loadItems();
@@ -48,6 +52,7 @@ export default function ItemsPage() {
   const handleUpdateClick = (item: items_691d50Type) => {
     setSelectedItem(item);
     setUpdateModal(true);
+    setUpdateFormValid(false); // Reset form validity
   };
 
   const handleDeleteClick = (item: items_691d50Type) => {
@@ -76,6 +81,16 @@ export default function ItemsPage() {
       delete_items_data(selectedItem.id);
       loadItems();
     }
+  };
+
+  const handleCreateFormChange = (e: React.FormEvent) => {
+    const form = e.currentTarget as HTMLFormElement;
+    setCreateFormValid(form.checkValidity());
+  };
+
+  const handleUpdateFormChange = (e: React.FormEvent) => {
+    const form = e.currentTarget as HTMLFormElement;
+    setUpdateFormValid(form.checkValidity());
   };
 
   return (
@@ -176,7 +191,10 @@ export default function ItemsPage() {
               </h2>
 
               <button
-                onClick={() => setCreateModal(true)}
+                onClick={() => {
+                  setCreateModal(true);
+                  setCreateFormValid(false);
+                }}
                 className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300"
               >
                 <Plus className="h-4 w-4" />
@@ -238,8 +256,7 @@ export default function ItemsPage() {
                       </td>
                       <td className="px-6 py-4 text-gray-700">
                         <div className="flex items-center gap-2">
-                          ₺
-                          {item.price.toFixed(2)}
+                          ₺{item.price.toFixed(2)}
                         </div>
                       </td>
                       <td className="px-6 py-4 text-gray-700">
@@ -248,8 +265,8 @@ export default function ItemsPage() {
                             item.count - item.used > item.limit
                               ? "bg-green-100 text-green-800"
                               : item.count - item.used > 0
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-red-100 text-red-800"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
                           }`}
                         >
                           {item.count - item.used}
@@ -300,7 +317,7 @@ export default function ItemsPage() {
             <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
             {t("inventory.addNewItem")}
           </h3>
-          <form action={handleCreateSubmit}>
+          <form action={handleCreateSubmit} onChange={handleCreateFormChange}>
             <Items_691d50_create />
             <div className="flex justify-end gap-3 mt-6">
               <button
@@ -312,7 +329,12 @@ export default function ItemsPage() {
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
+                disabled={!createFormValid}
+                className={`px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg transition-all duration-300 ${
+                  !createFormValid
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:from-primary/90 hover:to-secondary/90"
+                }`}
               >
                 {t("inventory.saveItem")}
               </button>
@@ -324,12 +346,12 @@ export default function ItemsPage() {
       {/* Update Modal */}
       {selectedItem && (
         <Modal isOpen={updateModal} onClose={() => setUpdateModal(false)}>
-          <div className="p-6  w-96">
+          <div className="p-6 w-96">
             <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
               <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
               {t("inventory.editItem")}: {selectedItem.name}
             </h3>
-            <form action={handleUpdateSubmit}>
+            <form action={handleUpdateSubmit} onChange={handleUpdateFormChange}>
               <Items_691d50_update item={selectedItem} />
               <div className="flex justify-end gap-3 mt-6">
                 <button
@@ -341,7 +363,12 @@ export default function ItemsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
+                  disabled={!updateFormValid}
+                  className={`px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg transition-all duration-300 ${
+                    !updateFormValid
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:from-primary/90 hover:to-secondary/90"
+                  }`}
                 >
                   {t("common.update")}
                 </button>

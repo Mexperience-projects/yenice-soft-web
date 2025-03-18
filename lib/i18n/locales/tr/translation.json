@@ -526,6 +526,7 @@
     "fullName": "Tam İsim",
     "enterFullName": "Tam isim girin",
     "enterPosition": "Pozisyon veya açıklama girin",
-    "deleteConfirm": "Bu kullanıcıyı silmek istediğinizden emin misiniz?"
+    "deleteConfirm": "Bu kullanıcıyı silmek istediğinizden emin misiniz?",
+    "selectAtLeastOnePermission":"En Az Bir İzinde Seçin"
   }
 }

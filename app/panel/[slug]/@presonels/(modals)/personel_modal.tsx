@@ -51,13 +51,28 @@ export default function PersonnelModal({
   // Loading state
   const [isLoading, setIsLoading] = useState(false);
 
+  // Form validation states
+  const [createFormValid, setCreateFormValid] = useState(false);
+  const [updateFormValid, setUpdateFormValid] = useState(false);
+  const [paymentFormValid, setPaymentFormValid] = useState(false);
+
   useEffect(() => {
     if (selectedPersonnel) {
       // Ensure all dates are in YYYY-MM-DD format
       const formattedPayments = selectedPersonnel.payments;
       setPayments(formattedPayments);
+      // Set update form as valid initially since we're editing existing data
+      setUpdateFormValid(true);
+    } else {
+      // Reset create form validity when opening a new form
+      setCreateFormValid(false);
     }
   }, [selectedPersonnel]);
+
+  // Check payment form validity
+  useEffect(() => {
+    setPaymentFormValid(!!paymentPrice && !!paymentDate);
+  }, [paymentPrice, paymentDate]);
 
   // Update display date when payment date changes
   useEffect(() => {
@@ -251,6 +266,17 @@ export default function PersonnelModal({
     setMaxAmount("");
   };
 
+  // Handle form input changes
+  const handleCreateFormChange = (e: React.FormEvent) => {
+    const form = e.currentTarget as HTMLFormElement;
+    setCreateFormValid(form.checkValidity());
+  };
+
+  const handleUpdateFormChange = (e: React.FormEvent) => {
+    const form = e.currentTarget as HTMLFormElement;
+    setUpdateFormValid(form.checkValidity());
+  };
+
   if (!isOpen) return undefined;
 
   // If no personnel is selected, show the same layout but with empty fields
@@ -268,8 +294,12 @@ export default function PersonnelModal({
               <button
                 type="submit"
                 form="create-personnel-form"
-                disabled={isLoading}
-                className="btn btn-sm text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-none"
+                disabled={isLoading || !createFormValid}
+                className={`btn btn-sm text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary border-none ${
+                  !createFormValid || isLoading
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:from-primary/90 hover:to-secondary/90"
+                }`}
               >
                 {isLoading ? (
                   <>
@@ -299,6 +329,7 @@ export default function PersonnelModal({
                 <h4 className="font-semibold mb-2">{t("analytics.details")}</h4>
                 <form
                   id="create-personnel-form"
+                  onChange={handleCreateFormChange}
                   action={async (formData) => {
                     setIsLoading(true);
                     await create_personel_data(formData);
@@ -431,8 +462,12 @@ export default function PersonnelModal({
             <button
               type="submit"
               form="update-personnel-form"
-              disabled={isLoading}
-              className="btn btn-sm text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-none"
+              disabled={isLoading || !updateFormValid}
+              className={`btn btn-sm text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary border-none ${
+                !updateFormValid || isLoading
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:from-primary/90 hover:to-secondary/90"
+              }`}
             >
               {isLoading ? (
                 <>
@@ -462,6 +497,7 @@ export default function PersonnelModal({
               <h4 className="font-semibold mb-2">{t("analytics.details")}</h4>
               <form
                 id="update-personnel-form"
+                onChange={handleUpdateFormChange}
                 action={async (formData) => {
                   setIsLoading(true);
                   await update_personel_data(formData);
@@ -522,7 +558,6 @@ export default function PersonnelModal({
                       placeholder="20 %"
                       name="precent"
                       defaultValue={selectedPersonnel.precent}
-                      onChange={(e) => setPaymentPrice(e.target.value)}
                       className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
                       required
                     />
@@ -635,7 +670,12 @@ export default function PersonnelModal({
                       </button>
                       <button
                         type="submit"
-                        className="btn btn-sm text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-none"
+                        disabled={!paymentFormValid}
+                        className={`btn btn-sm text-white bg-gradient-to-r from-primary to-secondary border-none ${
+                          !paymentFormValid
+                            ? "opacity-50 cursor-not-allowed"
+                            : "hover:from-primary/90 hover:to-secondary/90"
+                        }`}
                       >
                         {t("common.save")}
                       </button>

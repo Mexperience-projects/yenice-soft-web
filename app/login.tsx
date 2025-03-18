@@ -1,13 +1,29 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Lock, User } from "lucide-react";
 import { useLogin } from "@/hooks/login/UseLogin";
 import { Toaster } from "react-hot-toast";
 
 export default function Login() {
   const { login, loading } = useLogin();
+  const [formdata, setformfata] = useState({
+    username: "",
+    password: "",
+  });
+  const [isValid, setIsValid] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setformfata((prev) => ({ ...prev, [name]: value }));
+  };
+
+  useEffect(() => {
+    const isFormValid =
+      formdata.username.trim() !== "" && formdata.password.trim() !== "";
+    setIsValid(isFormValid);
+  }, [formdata]);
 
   const handleLogin = (e: any) => {
     const { username, password } = Object.fromEntries(e);
@@ -49,6 +65,7 @@ export default function Login() {
                     placeholder="Enter your username"
                     name="username"
                     required
+                    onChange={handleInputChange}
                   />
                 </label>
               </div>
@@ -67,6 +84,7 @@ export default function Login() {
                     placeholder="Enter your password"
                     name="password"
                     required
+                    onChange={handleInputChange}
                   />
                 </label>
               </div>
@@ -87,7 +105,7 @@ export default function Login() {
                   className={`btn bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white border-none btn-block ${
                     loading ? "" : ""
                   }`}
-                  disabled={loading}
+                  disabled={loading || !isValid}
                 >
                   {loading ? <span className="loading"></span> : null}
                   Sign In

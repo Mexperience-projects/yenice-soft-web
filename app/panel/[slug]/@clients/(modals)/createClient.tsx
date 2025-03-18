@@ -1,8 +1,12 @@
 "use client";
 
+import type React from "react";
+
 import ClientForm from "@/components/client/client-form";
 import { useTranslation } from "react-i18next";
-import { ClientType } from "@/lib/types";
+import type { ClientType } from "@/lib/types";
+import { useState, useEffect } from "react";
+
 interface CreateClientModal {
   isOpen: boolean;
   onClose: () => void;
@@ -17,12 +21,35 @@ export default function CreateClientModal({
   defaultValues,
 }: CreateClientModal) {
   const { t } = useTranslation();
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  // Function to check form validity
+  const checkFormValidity = (form: HTMLFormElement) => {
+    return form.checkValidity();
+  };
+
+  // Effect to reset form validity when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      // Reset form validity when modal opens
+      const form = document.querySelector(
+        'form[action="#"]'
+      ) as HTMLFormElement;
+      if (form) {
+        setIsFormValid(checkFormValidity(form));
+      }
+    }
+  }, [isOpen]);
+
+  // Handle form input changes to validate in real-time
+  const handleFormChange = (e: React.FormEvent) => {
+    const form = e.currentTarget as HTMLFormElement;
+    setIsFormValid(checkFormValidity(form));
+  };
 
   return (
     <dialog
-      className={`modal z-[99999999999999999999999] ${
-        isOpen ? "modal-open" : ""
-      }`}
+      className={`modal z-[99999999999999999999999] ${isOpen ? "modal-open" : ""}`}
     >
       <div className="modal-box max-w-2xl bg-white rounded-xl shadow-lg ">
         <form method="dialog">
@@ -41,6 +68,7 @@ export default function CreateClientModal({
 
         <form
           action="#"
+          onChange={handleFormChange}
           onSubmit={(e) => {
             e.preventDefault();
             const formData = new FormData(e.currentTarget);
@@ -61,7 +89,12 @@ export default function CreateClientModal({
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
+              disabled={!isFormValid}
+              className={`px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary to-secondary rounded-lg transition-all duration-300 ${
+                !isFormValid
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:from-primary/90 hover:to-secondary/90"
+              }`}
             >
               {t("common.create")}
             </button>
