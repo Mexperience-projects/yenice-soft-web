@@ -240,7 +240,10 @@
     "totalPayments": "Toplam Ödemeler",
     "paymentsRecorded": "ödeme kaydedildi",
     "averagePayment": "Ortalama Ödeme",
-    "perPayment": "ödeme başına"
+    "perPayment": "ödeme başına",
+    "noInventoryData":"Envanter Verisi Yok",
+    "noInventoryDataToDisplay":"Görüntülenecek Envanter Verisi Yok"
+    
   },
   "clients": {
     "title": "Müşteri Yönetimi",

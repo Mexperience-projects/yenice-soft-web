@@ -245,7 +245,10 @@
     "totalPayments": "Total Payments",
     "paymentsRecorded": "payments recorded",
     "averagePayment": "Average Payment",
-    "perPayment": "per payment"
+    "perPayment": "per payment",
+    "noInventoryData":"No Inventory Data",
+    "noInventoryDataToDisplay":"No Inventory Data To Display"
+
   },
   "clients": {
     "title": "Client Management",

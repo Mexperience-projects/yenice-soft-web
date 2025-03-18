@@ -42,6 +42,27 @@ export enum PAYMENT_TYPE {
   card_to_card = 3,
 }
 
+// Add a formatDateForDisplay function near the top of your component
+const formatDateForDisplay = (
+  date: Date | string | number | undefined
+): string => {
+  if (!date) return "";
+  const d = new Date(date);
+  const day = d.getDate().toString().padStart(2, "0");
+  const month = (d.getMonth() + 1).toString().padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+// Add a formatDateForInput function to convert dates to YYYY-MM-DD format for inputs
+const formatDateForInput = (
+  date: Date | string | number | undefined
+): string => {
+  if (!date) return "";
+  const d = new Date(date);
+  return d.toISOString().split("T")[0]; // Returns YYYY-MM-DD
+};
+
 export default function VisitCreateForm({
   initial,
   readonly,
@@ -444,6 +465,7 @@ export default function VisitCreateForm({
                         value={serviceSearch}
                         onChange={(e) => setServiceSearch(e.target.value)}
                         onClick={(e) => e.stopPropagation()}
+                        required
                       />
                     </div>
                     <ul className="menu menu-compact py-2 max-h-60 overflow-y-auto">
@@ -555,6 +577,7 @@ export default function VisitCreateForm({
                         value={itemSearch}
                         onChange={(e) => setItemSearch(e.target.value)}
                         onClick={(e) => e.stopPropagation()}
+                        required
                       />
                     </div>
                     <ul className="menu menu-compact py-2 max-h-60 overflow-y-auto">
@@ -655,18 +678,21 @@ export default function VisitCreateForm({
                 {t("common.date")}
               </span>
             </label>
-            <input
-              disabled={readonly}
-              id="datetime"
-              name="datetime"
-              type="date"
-              value={new Date(
-                formData?.datetime || Date.now()
-              ).toLocaleDateString("en-CA")}
-              onChange={handleChange}
-              className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-secondary focus:ring-secondary"
-              required
-            />
+            <div className="relative">
+              <input
+                disabled={readonly}
+                id="datetime"
+                name="datetime"
+                type="date"
+                value={formatDateForInput(formData?.datetime || Date.now())}
+                onChange={handleChange}
+                className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-secondary focus:ring-secondary opacity-0 absolute inset-0 z-10"
+                required
+              />
+              <div className="input input-bordered w-full bg-gray-50 border-gray-200 flex items-center">
+                {formatDateForDisplay(formData?.datetime || Date.now())}
+              </div>
+            </div>
           </div>
 
           {/* Personnel Field */}
@@ -714,6 +740,7 @@ export default function VisitCreateForm({
                         value={personelSearch}
                         onChange={(e) => setPersonelSearch(e.target.value)}
                         onClick={(e) => e.stopPropagation()}
+                        required
                       />
                     </div>
                     <ul className="menu menu-compact py-2 max-h-60 overflow-y-auto">
@@ -768,6 +795,7 @@ export default function VisitCreateForm({
             </label>
             <input
               disabled={readonly}
+              required
               type="number"
               name="extraPrice"
               value={formData?.extraPrice ?? 0}
@@ -797,6 +825,7 @@ export default function VisitCreateForm({
             </label>
             <input
               disabled={readonly}
+              required
               type="number"
               name="discount"
               value={formData?.discount ?? 0}
@@ -886,14 +915,20 @@ export default function VisitCreateForm({
                         {t("common.date")}
                       </span>
                     </label>
-                    <input
-                      disabled={readonly}
-                      type="date"
-                      name="date"
-                      value={newPayment.date.toString()}
-                      onChange={handleNewPaymentChange}
-                      className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary"
-                    />
+                    <div className="relative">
+                      <input
+                        disabled={readonly}
+                        required
+                        type="date"
+                        name="date"
+                        value={formatDateForInput(newPayment.date)}
+                        onChange={handleNewPaymentChange}
+                        className="input input-bordered w-full bg-white border-gray-200 focus:border-primary focus:ring-primary opacity-0 absolute inset-0 z-10"
+                      />
+                      <div className="input input-bordered w-full bg-white border-gray-200 flex items-center">
+                        {formatDateForDisplay(newPayment.date)}
+                      </div>
+                    </div>
                   </div>
 
                   <div className="form-control md:col-span-2">
@@ -906,6 +941,7 @@ export default function VisitCreateForm({
                       disabled={readonly}
                       type="text"
                       name="description"
+                      required
                       value={newPayment.description}
                       onChange={handleNewPaymentChange}
                       placeholder={t("common.description")}
@@ -923,6 +959,7 @@ export default function VisitCreateForm({
                       disabled={readonly}
                       type="number"
                       name="price"
+                      required
                       value={newPayment.price}
                       onChange={handleNewPaymentChange}
                       min="0"
@@ -972,6 +1009,7 @@ export default function VisitCreateForm({
                         disabled={readonly}
                         type="checkbox"
                         name="paid"
+                        required
                         checked={newPayment.paid}
                         onChange={handleNewPaymentChange as any}
                         className="checkbox checkbox-primary"
@@ -1033,7 +1071,7 @@ export default function VisitCreateForm({
                             payment.paid ? "bg-green-50" : "hover:bg-gray-50"
                           }
                         >
-                          <td>{new Date(payment.date).toLocaleDateString()}</td>
+                          <td>{formatDateForDisplay(payment.date)}</td>
                           <td>{payment.description}</td>
                           <td>{payment.price}</td>
                           <td>

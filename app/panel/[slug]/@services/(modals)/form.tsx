@@ -79,6 +79,7 @@ export default function ServiceModal({
             type="hidden"
             name="items"
             value={JSON.stringify(serviceItems)}
+            required
           />
           <input type="hidden" name="personel" value={[]} />
 

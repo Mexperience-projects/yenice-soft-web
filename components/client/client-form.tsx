@@ -31,10 +31,23 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
     phone: "",
   });
 
+  const [displayDate, setDisplayDate] = useState("");
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "birthdate") {
+      const date = new Date(value);
+      setFormData((prev) => ({ ...prev, [name]: date }));
+
+      // Format date as DD/MM/YYYY for display
+      const day = date.getDate().toString().padStart(2, "0");
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const year = date.getFullYear();
+      setDisplayDate(`${day}/${month}/${year}`);
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
 
     // Clear error when user types
     if (errors[name as keyof typeof errors]) {
@@ -52,6 +65,21 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
         gender: 1,
       }
     );
+
+    // Set initial display date
+    if (defaultValues?.birthdate) {
+      const date = new Date(defaultValues.birthdate);
+      const day = date.getDate().toString().padStart(2, "0");
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const year = date.getFullYear();
+      setDisplayDate(`${day}/${month}/${year}`);
+    } else {
+      const today = new Date();
+      const day = today.getDate().toString().padStart(2, "0");
+      const month = (today.getMonth() + 1).toString().padStart(2, "0");
+      const year = today.getFullYear();
+      setDisplayDate(`${day}/${month}/${year}`);
+    }
   }, [defaultValues]);
 
   const calculateAge = (birthdate: Date) => {
@@ -92,6 +120,7 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
               onChange={handleChange}
               placeholder={t("clients.enterFullName")}
               className={`input input-bordered w-full ${errors.name ? "input-error" : ""}`}
+              required
             />
             <label className="label">
               <span className="label-text-alt text-base-content opacity-60">
@@ -118,6 +147,7 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
               onChange={handleChange}
               placeholder={t("clients.enterNationalId")}
               className={`input input-bordered w-full ${errors.nationalCo ? "input-error" : ""}`}
+              required
             />
             <label className="label">
               <span className="label-text-alt text-base-content opacity-60">
@@ -142,6 +172,7 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
               onChange={handleChange}
               placeholder={t("clients.enterPhone")}
               className={`input input-bordered w-full ${errors.phone ? "input-error" : ""}`}
+              required
             />
             <label className="label">
               <span className="label-text-alt text-base-content opacity-60">
@@ -161,7 +192,7 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
                 {errors.birthdate}
               </span>
             </label>
-            <div className="flex gap-2">
+            <div className="flex gap-2 relative">
               <input
                 type="date"
                 name="birthdate"
@@ -171,13 +202,14 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
                     : ""
                 }
                 onChange={handleChange}
-                className={`input input-bordered w-full ${errors.birthdate ? "input-error" : ""}`}
+                className={`input input-bordered w-full absolute inset-0 opacity-0 z-10 ${errors.birthdate ? "input-error" : ""}`}
+                required
               />
-              {formData.birthdate && (
-                <div className="text-xs text-muted mt-1">
-                  {new Date(formData.birthdate).toLocaleDateString("tr-TR")}
-                </div>
-              )}
+              <div
+                className={`input input-bordered w-full flex items-center ${errors.birthdate ? "input-error" : ""}`}
+              >
+                {displayDate}
+              </div>
               {formData.birthdate && (
                 <div className="badge badge-neutral self-center whitespace-nowrap">
                   {t("clients.age")}: {calculateAge(formData.birthdate)}{" "}

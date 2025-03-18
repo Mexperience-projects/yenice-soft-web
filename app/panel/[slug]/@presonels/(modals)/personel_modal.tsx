@@ -11,6 +11,7 @@ import {
   TrashIcon,
   ChevronDownIcon,
   ChevronUpIcon,
+  Calendar,
 } from "lucide-react";
 import { format, subMonths } from "date-fns";
 
@@ -35,6 +36,7 @@ export default function PersonnelModal({
   >(undefined);
   const [paymentPrice, setPaymentPrice] = useState("");
   const [paymentDate, setPaymentDate] = useState<Date | undefined>(new Date());
+  const [displayDate, setDisplayDate] = useState("");
 
   // State for personnel payments
   const [payments, setPayments] = useState<PersonelPayments[]>([]);
@@ -56,6 +58,18 @@ export default function PersonnelModal({
       setPayments(formattedPayments);
     }
   }, [selectedPersonnel]);
+
+  // Update display date when payment date changes
+  useEffect(() => {
+    if (paymentDate) {
+      const day = paymentDate.getDate().toString().padStart(2, "0");
+      const month = (paymentDate.getMonth() + 1).toString().padStart(2, "0");
+      const year = paymentDate.getFullYear();
+      setDisplayDate(`${day}/${month}/${year}`);
+    } else {
+      setDisplayDate("");
+    }
+  }, [paymentDate]);
 
   // Apply filters and sorting to payments
   const filteredPayments = useMemo(() => {
@@ -167,7 +181,12 @@ export default function PersonnelModal({
   const handleEditPayment = (payment: PersonelPayments) => {
     setEditingPayment(payment);
     setPaymentPrice(payment.price.toString());
-    setPaymentDate(new Date(payment.date));
+    const date = new Date(payment.date);
+    setPaymentDate(date);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    setDisplayDate(`${day}/${month}/${year}`);
     setIsAddingPayment(true);
   };
 
@@ -188,6 +207,11 @@ export default function PersonnelModal({
     setEditingPayment(undefined);
     setPaymentPrice("");
     setPaymentDate(new Date());
+    const now = new Date();
+    const day = now.getDate().toString().padStart(2, "0");
+    const month = (now.getMonth() + 1).toString().padStart(2, "0");
+    const year = now.getFullYear();
+    setDisplayDate(`${day}/${month}/${year}`);
   };
 
   // Format currency
@@ -201,7 +225,12 @@ export default function PersonnelModal({
   // Handle date change
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
-      setPaymentDate(new Date(e.target.value));
+      const date = new Date(e.target.value);
+      setPaymentDate(date);
+      const day = date.getDate().toString().padStart(2, "0");
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const year = date.getFullYear();
+      setDisplayDate(`${day}/${month}/${year}`);
     }
   };
 
@@ -577,15 +606,23 @@ export default function PersonnelModal({
                             {t("common.date")}
                           </span>
                         </label>
-                        <input
-                          type="date"
-                          value={
-                            paymentDate ? format(paymentDate, "yyyy-MM-dd") : ""
-                          }
-                          onChange={handleDateChange}
-                          className="input input-bordered input-sm bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
-                          required
-                        />
+                        <div className="relative">
+                          <input
+                            type="date"
+                            value={
+                              paymentDate
+                                ? format(paymentDate, "yyyy-MM-dd")
+                                : ""
+                            }
+                            onChange={handleDateChange}
+                            className="input input-bordered input-sm bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary opacity-0 absolute inset-0 z-10"
+                            required
+                          />
+                          <div className="input input-bordered input-sm bg-gray-50 border-gray-200 flex items-center justify-between">
+                            {displayDate || t("common.selectDate")}
+                            <Calendar className="w-4 h-4" />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="flex justify-end gap-2">

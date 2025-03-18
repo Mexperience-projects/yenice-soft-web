@@ -127,6 +127,7 @@ export default function UserModal({
                       selectedUser ? "••••••••" : t("user.enterPassword")
                     }
                     className="input input-bordered w-full bg-gray-50 border-gray-200 focus:border-primary focus:ring-primary"
+                    required
                   />
                 </div>
 
@@ -143,6 +144,7 @@ export default function UserModal({
                         className="flex items-center gap-2 cursor-pointer"
                       >
                         <input
+                          required
                           type="checkbox"
                           checked={selectedPermissions.includes(permission)}
                           onChange={(e) =>
@@ -160,6 +162,7 @@ export default function UserModal({
                 </div>
               </div>
               <input
+                required
                 type="hidden"
                 name="permissions"
                 value={selectedPermissions}

@@ -8,13 +8,8 @@ import {
   Plus,
   Search,
   User,
-  ChevronDown,
-  Download,
-  Eye,
   AlertCircle,
-  UserCircle,
   Calendar,
-  CreditCard,
 } from "lucide-react";
 import { useClients } from "@/hooks/clients/main";
 import type { ClientType } from "@/lib/types";
@@ -465,17 +460,38 @@ function ClientForm({ client }: ClientFormProps = {}) {
         <label className="text-sm font-medium text-gray-700 mb-1">
           {t("clients.birthdate")}
         </label>
-        <input
-          type="date"
-          name="birthdate"
-          defaultValue={
-            client?.birthdate
-              ? new Date(client.birthdate).toISOString().split("T")[0]
-              : ""
-          }
-          className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
-          required
-        />
+        <div className="relative">
+          <input
+            type="date"
+            name="birthdate"
+            defaultValue={
+              client?.birthdate
+                ? new Date(client.birthdate).toISOString().split("T")[0]
+                : ""
+            }
+            className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
+            required
+            onChange={(e) => {
+              if (e.target.value) {
+                const [year, month, day] = e.target.value.split("-");
+                // This doesn't change the actual value, just helps visualize the format
+                e.target.setAttribute(
+                  "data-display-format",
+                  `${day}/${month}/${year}`
+                );
+              }
+            }}
+          />
+          {client?.birthdate && (
+            <div className="absolute top-0 left-0 w-full h-full pointer-events-none flex items-center px-2.5 opacity-0">
+              <span className="text-gray-700 text-sm">
+                {new Date(client.birthdate).getDate()}/
+                {new Date(client.birthdate).getMonth() + 1}/
+                {new Date(client.birthdate).getFullYear()}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="form-control">
