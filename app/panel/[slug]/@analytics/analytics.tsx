@@ -1,14 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import {
-  SlidersHorizontal,
-  Users,
-  Package,
-  Calendar,
-  FilterIcon,
-} from "lucide-react";
-import { isWithinInterval } from "date-fns";
+import { SlidersHorizontal, Users, Package, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   type PersonelType,
@@ -17,12 +10,8 @@ import {
   type Visit_itemType,
   type PaymentsType,
   type ItemsType,
-  type PersonelPayments,
-  type OperationType,
   PAYMENT_TYPE2text,
 } from "@/lib/types";
-
-import { addDays, format, parseISO, subDays, startOfToday } from "date-fns";
 // Import our custom hooks that use Redux
 import { usePersonel_e02ed2 } from "@/hooks/personel/e02ed2";
 import { useServices_10cd39 } from "@/hooks/services/10cd39";
@@ -352,63 +341,100 @@ export default function Analytics() {
 
   // Filter inventory items based on inventory filters
   const filteredItems = useMemo(() => {
-    // If no filters are active, return the full list
-    if (
-      !inventoryFilters.searchQuery &&
-      !inventoryFilters.dateRange?.from &&
-      !inventoryFilters.dateRange?.to &&
-      inventoryFilters.minStock === undefined &&
-      inventoryFilters.maxStock === undefined &&
-      !inventoryFilters.showLowStock
-    ) {
-      return items_list;
+    // Start with the full list
+    let filtered = items_list;
+
+    // Apply search filter if present
+    if (inventoryFilters.searchQuery) {
+      filtered = filtered.filter((item) =>
+        item.name
+          .toLowerCase()
+          .includes(inventoryFilters.searchQuery.toLowerCase())
+      );
     }
 
-    return items_list
-      .filter((item) => {
-        try {
-          // Filter by search query
-          const matchesSearch =
-            !inventoryFilters.searchQuery ||
-            item.name
-              .toLowerCase()
-              .includes(inventoryFilters.searchQuery.toLowerCase());
+    // Apply date range filter if present
+    if (inventoryFilters.dateRange?.from && inventoryFilters.dateRange?.to) {
+      const fromDate = new Date(inventoryFilters.dateRange.from);
+      const toDate = new Date(inventoryFilters.dateRange.to);
 
-          // Filter by stock range
-          const matchesStockRange =
-            (inventoryFilters.minStock === undefined ||
-              item.used >= inventoryFilters.minStock) &&
-            (inventoryFilters.maxStock === undefined ||
-              item.used <= inventoryFilters.maxStock);
-
-          // Filter by low stock - using a fixed percentage or value
-          const matchesLowStock =
-            !inventoryFilters.showLowStock ||
-            (item.count > 0 && item.used / item.count >= 0.7); // Consider low stock if 70% or more is used
-
-          return matchesSearch && matchesStockRange && matchesLowStock;
-        } catch (error) {
-          console.error("Item filtering error:", error);
-          return true; // In case of error, include this item
-        }
-      })
-      .map((item) => {
-        const visits = visit_list.filter((visit) =>
+      // Filter items based on usage dates in visits
+      filtered = filtered.filter((item) => {
+        const itemVisits = visit_list.filter((visit) =>
           visit.operations?.some((op) =>
             op.items?.some((i) => i.item?.id === item.id)
           )
         );
 
-        const used = visits
-          .flatMap((visit) => visit.operations?.flatMap((op) => op.items || []))
-          .reduce((total, i) => total + i.count, 0);
-
-        return {
-          ...item,
-          used,
-        };
+        // Check if any visit with this item falls within the date range
+        return itemVisits.some((visit) =>
+          visit.operations?.some((op) => {
+            const opDate = new Date(op.datetime);
+            return opDate >= fromDate && opDate <= toDate;
+          })
+        );
       });
-  }, [items_list, inventoryFilters]);
+    }
+
+    // Apply stock range filters if present
+    if (inventoryFilters.minStock !== undefined) {
+      filtered = filtered.filter((item) => {
+        // Explicitly check for undefined again to satisfy TypeScript
+        const minStock = inventoryFilters.minStock;
+        if (minStock === undefined) return true;
+        return item.count >= minStock;
+      });
+    }
+
+    if (inventoryFilters.maxStock !== undefined) {
+      filtered = filtered.filter((item) => {
+        // Explicitly check for undefined again to satisfy TypeScript
+        const maxStock = inventoryFilters.maxStock;
+        if (maxStock === undefined) return true;
+        return item.count <= maxStock;
+      });
+    }
+
+    // Apply low stock filter if enabled
+    if (inventoryFilters.showLowStock) {
+      filtered = filtered.filter(
+        (item) => item.count > 0 && item.used / item.count >= 0.7
+      );
+    }
+
+    // Calculate usage for each item based on visits
+    return filtered.map((item) => {
+      // Find all visits that used this item
+      const itemVisits = visit_list.filter((visit) =>
+        visit.operations?.some((op) =>
+          op.items?.some((i) => i.item?.id === item.id)
+        )
+      );
+
+      // Calculate total usage from all visits
+      const used = itemVisits.reduce((total, visit) => {
+        const itemUsage =
+          visit.operations?.reduce((opTotal, op) => {
+            const opItemUsage =
+              op.items?.reduce((itemTotal, i) => {
+                if (i.item?.id === item.id) {
+                  return itemTotal + i.count;
+                }
+                return itemTotal;
+              }, 0) || 0;
+            return opTotal + opItemUsage;
+          }, 0) || 0;
+        return total + itemUsage;
+      }, 0);
+
+      return {
+        ...item,
+        used: used || item.used, // Use calculated usage or fallback to existing value
+      };
+    });
+  }, [items_list, visit_list, inventoryFilters]);
+
+  console.log(filteredItems);
 
   // Filter visits based on visit filters
   // Filter visits based on visit filters

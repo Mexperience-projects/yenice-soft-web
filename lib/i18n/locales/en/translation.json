@@ -247,7 +247,8 @@
     "averagePayment": "Average Payment",
     "perPayment": "per payment",
     "noInventoryData":"No Inventory Data",
-    "noInventoryDataToDisplay":"No Inventory Data To Display"
+    "noInventoryDataToDisplay":"No Inventory Data To Display",
+    "noRevenueDataAvailable":"No Revenue Data Available"
 
   },
   "clients": {

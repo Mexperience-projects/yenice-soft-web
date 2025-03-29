@@ -242,7 +242,9 @@
     "averagePayment": "Ortalama Ödeme",
     "perPayment": "ödeme başına",
     "noInventoryData":"Envanter Verisi Yok",
-    "noInventoryDataToDisplay":"Görüntülenecek Envanter Verisi Yok"
+    "noInventoryDataToDisplay":"Görüntülenecek Envanter Verisi Yok",
+    "noRevenueDataAvailable":"Gelir Verisi Yok"
+
     
   },
   "clients": {
