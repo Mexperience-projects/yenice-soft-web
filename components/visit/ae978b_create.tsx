@@ -804,7 +804,7 @@ export default function VisitCreateForm({
                   if (!prev) return prev;
                   return {
                     ...prev,
-                    extraPrice: Number.parseInt(e.target.value) || 0,
+                    extraPrice: Number.parseInt(e.target.value),
                   };
                 })
               }
@@ -834,7 +834,7 @@ export default function VisitCreateForm({
                   if (!prev) return prev;
                   return {
                     ...prev,
-                    discount: Number.parseInt(e.target.value) || 0,
+                    discount: Number.parseInt(e.target.value),
                   };
                 })
               }
