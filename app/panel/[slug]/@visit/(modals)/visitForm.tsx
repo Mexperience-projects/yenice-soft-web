@@ -115,55 +115,12 @@ export default function VisitForm({
       <Modal isOpen={isOpen} onClose={onClose}>
         <div className="flex flex-row bg-gray-100">
           {/* Menu bar */}
-          <div className="w-64">
-            <ul className="space-y-2 flex flex-col p-5 pr-0 ">
-              {/* Menu header */}
-              <div className="form-control">
-                <div className="relative group">
-                  <User className="h-6 w-6 text-primary absolute left-5 top-3" />
-                  <input
-                    id="client"
-                    type="char"
-                    value={formData.client?.name}
-                    onChange={handleChange}
-                    placeholder={t("visits.enterClientName")}
-                    className="input input-bordered w-full bg-gray-50 border-gray-200
-                        focus:border-primary focus:ring-primary pl-14"
-                    required
-                  />
-                  <div className="absolute z-30 bg-white shadow-lg rounded-lg w-full hidden group-hover:flex hover:flex flex-col border border-gray-100">
-                    <div className="max-h-60 overflow-y-auto flex flex-col">
-                      {clients_list.map((client) => (
-                        <div
-                          key={client.id}
-                          className="p-2 hover:bg-gray-50 cursor-pointer"
-                          onClick={() => {
-                            setFormData((prev: any) => ({
-                              ...prev,
-                              client: client,
-                            }));
-                          }}
-                        >
-                          {client.name}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="border-t border-gray-100 w-full p-2">
-                      <button
-                        type="button"
-                        className="btn bg-gradient-to-r from-primary/10 to-secondary/10 hover:from-primary/20 hover:to-secondary/20 border-0 text-secondary btn-sm w-full flex items-center justify-center gap-2"
-                        onClick={() => setIsClientCreateModalOpen(true)}
-                      >
-                        <Plus className="h-4 w-4" />{" "}
-                        {t("visits.createNewClient")}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          {/* <div className="w-64"> */}
+          {/* <ul className="space-y-2 flex flex-col p-5 pr-0 "> */}
+          {/* Menu header */}
 
-              {/* Menu Items */}
-              {formData.operations.map((item, i) => (
+          {/* Menu Items */}
+          {/* {formData.operations.map((item, i) => (
                 <button
                   onClick={() => menuHandler(item)}
                   key={i}
@@ -174,10 +131,10 @@ export default function VisitForm({
                   {new Date(item.datetime).toLocaleDateString("tr-TR")} ({i + 1}
                   )
                 </button>
-              ))}
+              ))} */}
 
-              {/* add Visit */}
-              {editMode && (
+          {/* add Visit */}
+          {/* {editMode && (
                 <button
                   onClick={() => {
                     const newOperation: OperationType = {
@@ -201,17 +158,57 @@ export default function VisitForm({
                   <Plus />
                   <p className="">{t("visits.addVisit")}</p>
                 </button>
-              )}
-            </ul>
-          </div>
+              )} */}
+          {/* </ul> */}
+          {/* </div> */}
 
           {/* Menu Body */}
           <div className="p-6 flex flex-col min-w-[600px] md:min-w-[800px] xl:min-w-[1000px]">
             <div className="flex flex-row justify-between items-center space-y-2  mb-4">
               <h2 className="text-xl font-bold text-gray-800 flex">
-                <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-primary to-secondary rounded-full mr-2"></span>
-                {t("visits.operation")}{" "}
-                {new Date(menu?.datetime).toLocaleDateString("tr-TR")}
+                <div className="form-control">
+                  <div className="relative group">
+                    <User className="h-6 w-6 text-primary absolute left-5 top-3" />
+                    <input
+                      id="client"
+                      type="char"
+                      value={formData.client?.name}
+                      onChange={handleChange}
+                      placeholder={t("visits.enterClientName")}
+                      className="input input-bordered w-full bg-gray-50 border-gray-200
+                        focus:border-primary focus:ring-primary pl-14"
+                      required
+                    />
+                    <div className="absolute z-30 bg-white shadow-lg rounded-lg w-full hidden group-hover:flex hover:flex flex-col border border-gray-100">
+                      <div className="max-h-60 overflow-y-auto flex flex-col">
+                        {clients_list.map((client) => (
+                          <div
+                            key={client.id}
+                            className="p-2 hover:bg-gray-50 cursor-pointer"
+                            onClick={() => {
+                              setFormData((prev: any) => ({
+                                ...prev,
+                                client: client,
+                              }));
+                            }}
+                          >
+                            {client.name}
+                          </div>
+                        ))}
+                      </div>
+                      <div className="border-t border-gray-100 w-full p-2">
+                        <button
+                          type="button"
+                          className="btn bg-gradient-to-r from-primary/10 to-secondary/10 hover:from-primary/20 hover:to-secondary/20 border-0 text-secondary btn-sm w-full flex items-center justify-center gap-2"
+                          onClick={() => setIsClientCreateModalOpen(true)}
+                        >
+                          <Plus className="h-4 w-4" />{" "}
+                          {t("visits.createNewClient")}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </h2>
               <div className="flex flex-rowitems-center justify-center space-x-2">
                 <button
