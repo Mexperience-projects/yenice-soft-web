@@ -4,7 +4,7 @@ import { useServices_10cd39 } from "@/hooks/services/10cd39";
 import type { ServicesType, PersonelType, ItemsType } from "@/lib/types";
 import { useTranslation } from "react-i18next";
 import { Modal } from "@/components/ui/modal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Plus, X, Package, FileText, Tag } from "lucide-react";
 
 interface ModalProps {
@@ -24,6 +24,7 @@ export default function ServiceModal({
 }: ModalProps) {
   const { create_services_data, update_services_data } = useServices_10cd39();
   const { t } = useTranslation();
+  const itemsContainerRef = useRef<HTMLDivElement>(null);
   const [serviceItems, setServiceItems] = useState<
     { item_id: number; count: number }[]
   >([]);
@@ -50,6 +51,14 @@ export default function ServiceModal({
     setServiceItems([...serviceItems, { item_id: 0, count: 1 }]);
     // Validate form after adding an item
     setTimeout(() => validateForm(), 0);
+
+    // Scroll to bottom after state update
+    setTimeout(() => {
+      if (itemsContainerRef.current) {
+        itemsContainerRef.current.scrollTop =
+          itemsContainerRef.current.scrollHeight;
+      }
+    }, 10);
   };
 
   const removeServiceItem = (index: number) => {
@@ -218,7 +227,18 @@ export default function ServiceModal({
                 </h3>
               </div>
               <div className="p-6">
-                <div className="space-y-4">
+                <button
+                  type="button"
+                  className="btn btn-outline btn-primary w-full group hover:bg-primary hover:text-white transition-all duration-300 mb-2"
+                  onClick={addServiceItem}
+                >
+                  <Plus className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+                  {t("services.addItem")}
+                </button>
+                <div
+                  ref={itemsContainerRef}
+                  className="space-y-4 max-h-[320px] overflow-y-auto pr-2"
+                >
                   {serviceItems.length > 0 ? (
                     serviceItems.map((serviceItem, index) => (
                       <div
@@ -296,15 +316,6 @@ export default function ServiceModal({
                       </p>
                     </div>
                   )}
-
-                  <button
-                    type="button"
-                    className="btn btn-outline btn-primary w-full group hover:bg-primary hover:text-white transition-all duration-300"
-                    onClick={addServiceItem}
-                  >
-                    <Plus className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                    {t("services.addItem")}
-                  </button>
                 </div>
               </div>
             </div>
