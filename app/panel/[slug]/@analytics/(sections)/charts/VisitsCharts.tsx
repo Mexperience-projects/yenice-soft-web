@@ -185,8 +185,7 @@ export function VisitsCharts({ visits, dateRange }: VisitsChartsProps) {
   }, [visits, t]);
 
   // Check if we have data to display
-  const hasData =
-    dailyStats.length > 0 || serviceStats.length > 0 || paymentStats.length > 0;
+  const hasData = serviceStats.length > 0 || paymentStats.length > 0;
 
   if (!hasData) {
     return (
