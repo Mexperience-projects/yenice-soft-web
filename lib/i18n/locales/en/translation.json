@@ -57,7 +57,9 @@
     "extraPrice": "Extra Price",
     "discount": "Discount",
     "seeMore": "See More",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "selectDate": "Select Date",
+    "savedSuccessfully": "Saved successfully"
   },
   "menu": {
     "adminPanel": "Admin Panel",
@@ -249,7 +251,6 @@
     "noInventoryData":"No Inventory Data",
     "noInventoryDataToDisplay":"No Inventory Data To Display",
     "noRevenueDataAvailable":"No Revenue Data Available"
-
   },
   "clients": {
     "title": "Client Management",
@@ -386,7 +387,9 @@
     },
     "payments": "Payments",
     "noPaymentsMatchFilters": "No payments match filters",
-    "savePersonnelFirst": "Save personnel first to add payments"
+    "savePersonnelFirst": "Save personnel first to add payments",
+    "managePayments": "Manage Payments",
+    "paymentsFor": "Payments for"
   },
   "personnel": {
     "title": "Personnel Management",
@@ -534,5 +537,15 @@
     "details": "User Details",
     "leaveBlankToKeepCurrent": "Leave blank to keep current password",
     "selectAtLeastOnePermission":"Select At Least One Permission"
+  },
+  "filters": {
+    "allTime": "All Time",
+    "lastMonth": "Last Month",
+    "last3Months": "Last 3 Months",
+    "last6Months": "Last 6 Months",
+    "lastYear": "Last Year",
+    "minAmount": "Min Amount",
+    "maxAmount": "Max Amount",
+    "reset": "Reset"
   }
 }

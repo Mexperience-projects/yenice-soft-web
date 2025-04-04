@@ -56,7 +56,9 @@
     "extraPrice": "Ek Ücret",
     "discount": "İndirim",
     "seeMore": "Daha Fazla Gör",
-    "saving": "Kaydediliyor..."
+    "saving": "Kaydediliyor...",
+    "selectDate": "Tarih Seçin",
+    "savedSuccessfully": "Başarıyla kaydedildi"
   },
   "menu": {
     "adminPanel": "Yönetim Paneli",
@@ -244,7 +246,6 @@
     "noInventoryData":"Envanter Verisi Yok",
     "noInventoryDataToDisplay":"Görüntülenecek Envanter Verisi Yok",
     "noRevenueDataAvailable":"Gelir Verisi Yok"
-
     
   },
   "clients": {
@@ -382,7 +383,9 @@
     },
     "payments": "Ödemeler",
     "noPaymentsMatchFilters": "Filtrelere uygun ödeme bulunamadı",
-    "savePersonnelFirst": "Ödeme eklemek için önce personeli kaydedin"
+    "savePersonnelFirst": "Ödeme eklemek için önce personeli kaydedin",
+    "managePayments": "Ödemeleri Yönet",
+    "paymentsFor": "Ödemeler:"
   },
   "personnel": {
     "title": "Personel Yönetimi",
@@ -408,7 +411,7 @@
     "noPaymentsFound":"Ödeme Bulunamadı",
     "noResults": "Personel bulunamadı",
     "date": "Tarih",
-    "amount": "Tutar"
+    "amount": "Miktar"
   },
   "visits": {
     "enterClientName": "Müşteri adını girin",
@@ -530,5 +533,15 @@
     "enterPosition": "Pozisyon veya açıklama girin",
     "deleteConfirm": "Bu kullanıcıyı silmek istediğinizden emin misiniz?",
     "selectAtLeastOnePermission":"En Az Bir İzinde Seçin"
+  },
+  "filters": {
+    "allTime": "Tüm Zamanlar",
+    "lastMonth": "Son Ay",
+    "last3Months": "Son 3 Ay",
+    "last6Months": "Son 6 Ay",
+    "lastYear": "Son Yıl",
+    "minAmount": "Min. Miktar",
+    "maxAmount": "Maks. Miktar",
+    "reset": "Sıfırla"
   }
 }
