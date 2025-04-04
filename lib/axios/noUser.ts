@@ -23,7 +23,7 @@ axiosUser.interceptors.request.use(
 axiosUser.interceptors.response.use(
   (response) => {
     if (response.status >= 400 && response.status < 500)
-      toast.error(response.data.detail);
+      toast.error(response.data.detail || "unknown error");
     if (response.status >= 500) toast.error("server error");
 
     return response;
