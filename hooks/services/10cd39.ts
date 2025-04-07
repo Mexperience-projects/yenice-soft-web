@@ -13,10 +13,12 @@ export function useServices_10cd39() {
 
   const get_services_list_list = async () => {
     if (
-      !user?.is_admin &&
-      !user?.permissions.includes(USER_PERMISSIONS.SERVICES)
-    )
+      user?.permissions.includes(
+        USER_PERMISSIONS.SERVICES || USER_PERMISSIONS.VISITS
+      )
+    ) {
       return;
+    }
 
     loadingHandler(true);
     const response = await axiosUser.get("services/");

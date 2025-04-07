@@ -11,10 +11,12 @@ export function useClients() {
   const user = useAppSelector((store) => store.auth.user);
   const get_clients_list_list = async () => {
     if (
-      !user?.is_admin &&
-      !user?.permissions.includes(USER_PERMISSIONS.CLIENTS)
-    )
+      user?.permissions.includes(
+        USER_PERMISSIONS.CLIENTS || USER_PERMISSIONS.VISITS
+      )
+    ) {
       return;
+    }
     loadingHandler(true);
     const response = await axiosUser.get("clients/");
     const serverData = response.data.clients;

@@ -17,10 +17,14 @@ export function useItems_691d50() {
 
   const get_items_list_list = async () => {
     if (
-      !user?.is_admin &&
-      !user?.permissions.includes(USER_PERMISSIONS.INVENTORY)
-    )
+      user?.permissions.includes(
+        USER_PERMISSIONS.INVENTORY ||
+          USER_PERMISSIONS.VISITS ||
+          USER_PERMISSIONS.SERVICES
+      )
+    ) {
       return;
+    }
     loadingHandler(true);
     const response = await axiosUser.get("items/");
     const serverData = response.data.items;

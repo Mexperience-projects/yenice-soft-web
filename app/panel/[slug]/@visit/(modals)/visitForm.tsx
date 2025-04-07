@@ -85,6 +85,7 @@ export default function VisitForm({
   };
 
   useEffect(() => {
+    console.log("useeffect");
     get_clients_list_list();
     get_services_list_list();
     get_items_list_list();
