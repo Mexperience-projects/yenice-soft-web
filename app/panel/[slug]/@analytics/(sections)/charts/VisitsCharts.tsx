@@ -358,7 +358,7 @@ export function VisitsCharts({ visits, dateRange }: VisitsChartsProps) {
 
       {/* Payment Type Distribution Pie Chart */}
       <div className="card bg-base-100 shadow-xl rounded-xl hover:shadow-2xl transition-shadow duration-300">
-        <div className="card-body">
+        <div className="card-body ">
           <div className="flex items-center justify-between mb-4">
             <h3 className="card-title text-lg font-semibold text-gray-900">
               {t("analytics.paymentDistribution")}
@@ -377,7 +377,7 @@ export function VisitsCharts({ visits, dateRange }: VisitsChartsProps) {
                     nameKey="name"
                     cx="50%"
                     cy="50%"
-                    outerRadius={100}
+                    outerRadius={90}
                     label={(entry) =>
                       `${entry.name}: ${entry.count} (${entry.amount} ₺)`
                     }
