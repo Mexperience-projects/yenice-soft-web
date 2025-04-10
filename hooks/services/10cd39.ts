@@ -13,8 +13,9 @@ export function useServices_10cd39() {
 
   const get_services_list_list = async () => {
     if (
-      user?.permissions.includes(
-        USER_PERMISSIONS.SERVICES || USER_PERMISSIONS.VISITS
+      !user?.is_admin &&
+      !user?.permissions.some((p) =>
+        [USER_PERMISSIONS.SERVICES, USER_PERMISSIONS.VISITS].includes(p)
       )
     ) {
       return;

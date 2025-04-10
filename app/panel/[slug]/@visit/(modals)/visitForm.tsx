@@ -91,16 +91,6 @@ export default function VisitForm({
     get_items_list_list();
   }, []);
 
-  useEffect(() => {
-    if (formData.operations.length > 0) {
-      // Find the current operation in the updated formData
-      const currentOperation =
-        formData.operations.find((op) => op.id === menu?.id) ||
-        formData.operations[0];
-      menuHandler(currentOperation);
-    }
-  }, [formData.operations]);
-
   return (
     <>
       {/* create client modal */}

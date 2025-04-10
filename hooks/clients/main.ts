@@ -11,8 +11,9 @@ export function useClients() {
   const user = useAppSelector((store) => store.auth.user);
   const get_clients_list_list = async () => {
     if (
-      user?.permissions.includes(
-        USER_PERMISSIONS.CLIENTS || USER_PERMISSIONS.VISITS
+      !user?.is_admin &&
+      !user?.permissions.some((p) =>
+        [USER_PERMISSIONS.CLIENTS, USER_PERMISSIONS.VISITS].includes(p)
       )
     ) {
       return;

@@ -17,11 +17,15 @@ export function useItems_691d50() {
 
   const get_items_list_list = async () => {
     if (
-      user?.permissions.includes(
-        USER_PERMISSIONS.INVENTORY ||
-          USER_PERMISSIONS.VISITS ||
-          USER_PERMISSIONS.SERVICES
+      !user?.is_admin &&
+      !user?.permissions.some((p) =>
+        [
+          USER_PERMISSIONS.INVENTORY,
+          USER_PERMISSIONS.VISITS,
+          USER_PERMISSIONS.SERVICES,
+        ].includes(p)
       )
+      // !user.permissions.includes(USER_PERMISSIONS.VISITS)
     ) {
       return;
     }
