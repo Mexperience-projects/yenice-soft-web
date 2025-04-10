@@ -202,14 +202,14 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
                     : ""
                 }
                 onChange={handleChange}
-                className={`input input-bordered w-full absolute inset-0 opacity-0 z-10 ${errors.birthdate ? "input-error" : ""}`}
+                className={`input input-bordered flex items-center justify-between ${errors.birthdate ? "input-error" : ""}`}
                 required
               />
-              <div
+              {/* <div
                 className={`input input-bordered w-full flex items-center ${errors.birthdate ? "input-error" : ""}`}
               >
                 {displayDate}
-              </div>
+              </div> */}
               {formData.birthdate && (
                 <div className="badge badge-neutral self-center whitespace-nowrap">
                   {t("clients.age")}: {calculateAge(formData.birthdate)}{" "}
@@ -219,7 +219,7 @@ export default function ClientForm({ defaultValues }: ClientFormProps) {
             </div>
             <label className="label">
               <span className="label-text-alt text-base-content opacity-60">
-                {t("clients.dateOfBirth")}
+                {/* {t("clients.dateOfBirth")} */}
               </span>
             </label>
           </div>
